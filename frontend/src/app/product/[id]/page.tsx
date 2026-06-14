@@ -1,0 +1,301 @@
+"use client";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
+import { PRODUCTS } from "@/data/products";
+import { useStore } from "@/store/useStore";
+import ProductImageGallery from "@/components/product/ProductImageGallery";
+import QuantitySelector from "@/components/product/QuantitySelector";
+import { Heart, Star, ChevronDown } from "lucide-react";
+import { motion } from "framer-motion";
+
+export default function ProductDetailsPage() {
+  const params = useParams();
+  const router = useRouter();
+  const { addToCart, toggleWishlist, wishlist } = useStore();
+
+  const [product, setProduct] = useState<typeof PRODUCTS[0] | null>(null);
+  const [selectedFinish, setSelectedFinish] = useState("");
+  const [selectedMaterial, setSelectedMaterial] = useState("");
+  const [quantity, setQuantity] = useState(1);
+
+  useEffect(() => {
+    if (params?.id) {
+      const found = PRODUCTS.find(p => p.id === params.id);
+      if (found) {
+        setProduct(found);
+        setSelectedFinish(found.finishes[0] || "");
+        setSelectedMaterial(found.materials[0] || "");
+      }
+    }
+  }, [params]);
+
+  if (!product) {
+    return (
+      <main className="flex-grow pt-32 pb-40 text-center">
+        <h2 className="font-display text-[32px] text-on-background mb-4">Product Not Found</h2>
+        <p className="font-body text-[14px] text-on-surface-variant mb-10 font-light">The piece you are seeking does not exist in our catalog.</p>
+        <Link href="/shop" className="px-10 py-4 bg-primary text-on-primary font-label-caps text-[12px] tracking-[0.25em] uppercase hover:bg-primary-container transition-colors font-semibold">
+          Explore Our Collection
+        </Link>
+      </main>
+    );
+  }
+
+  const handleAdd = () => {
+    addToCart(product, quantity, selectedFinish, selectedMaterial);
+  };
+
+  const handleBuyNow = () => {
+    addToCart(product, quantity, selectedFinish, selectedMaterial);
+    router.push("/checkout");
+  };
+
+  const isWishlisted = wishlist.includes(product.id);
+
+  // Recommendations (fillers from same category)
+  const related = PRODUCTS.filter(
+    p => p.category === product.category && p.id !== product.id
+  ).slice(0, 4);
+
+  if (related.length < 4) {
+    const fill = PRODUCTS.filter(p => p.id !== product.id && !related.includes(p));
+    related.push(...fill.slice(0, 4 - related.length));
+  }
+
+  return (
+    <main className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-8 pb-32 bg-white text-on-background overflow-hidden">
+      {/* Breadcrumbs */}
+      <nav aria-label="Breadcrumb" className="flex text-[10px] tracking-[0.2em] uppercase text-on-surface-variant mb-12">
+        <ol className="inline-flex items-center space-x-3">
+          <li>
+            <Link href="/" className="hover:text-primary lux-transition">Home</Link>
+          </li>
+          <li>
+            <span className="text-outline mx-2">/</span>
+            <Link href={`/shop?category=${product.category}`} className="hover:text-primary lux-transition">{product.category}</Link>
+          </li>
+          <li>
+            <span className="text-outline mx-2">/</span>
+            <span className="text-primary">{product.name}</span>
+          </li>
+        </ol>
+      </nav>
+
+      {/* Main product display */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 mb-32">
+        {/* Left image gallery frame */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
+          className="lg:col-span-7"
+        >
+          <ProductImageGallery images={product.images} />
+        </motion.div>
+
+        {/* Right purchase detail parameters */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.15 }}
+          className="lg:col-span-5 flex flex-col pt-4 md:pt-0"
+        >
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <span className="font-label-caps text-[10px] tracking-[0.2em] uppercase text-primary mb-2 block font-semibold">{product.category}</span>
+              <h1 className="font-display text-[38px] md:text-[44px] text-on-background leading-[1.1] tracking-wide font-light">{product.name}</h1>
+            </div>
+            
+            <button
+              onClick={() => toggleWishlist(product.id)}
+              aria-label="Wishlist toggle"
+              className="text-on-surface-variant hover:text-primary p-2 border border-outline rounded-full ml-4 cursor-pointer transition-colors duration-300"
+            >
+              <Heart size={22} className={`stroke-[1.5] ${isWishlisted ? "fill-primary text-primary" : ""}`} />
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2 mb-6 text-[13px] text-on-surface-variant">
+            <div className="flex text-primary">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star key={i} size={16} className={`stroke-[1.5] ${i < Math.floor(product.rating) ? "fill-primary text-primary" : ""}`} />
+              ))}
+            </div>
+            <span>{product.rating} ({product.reviewsCount} verified reviews)</span>
+          </div>
+
+          <p className="font-body text-[14px] leading-relaxed text-on-surface-variant mb-8 font-light tracking-wide">
+            {product.description}
+          </p>
+
+          <div className="flex items-end gap-4 p-6 mb-8 bg-surface-container-low border border-outline/30">
+            <span className="font-body text-[24px] text-on-background font-medium">${product.price.toLocaleString()}</span>
+            {product.originalPrice && (
+              <span className="font-body text-[16px] text-on-surface-variant/70 line-through mb-1">${product.originalPrice.toLocaleString()}</span>
+            )}
+            {product.discount && (
+              <span className="bg-primary/10 border border-primary/20 text-primary text-[10px] uppercase font-label-caps px-2 py-0.5 tracking-wider ml-auto font-semibold">
+                Save {product.discount}%
+              </span>
+            )}
+          </div>
+
+          {/* Variant Selector: Finish */}
+          <div className="mb-6">
+            <span className="block font-label-caps text-[10px] tracking-[0.2em] uppercase text-on-surface mb-3 font-semibold">Color Finish: {selectedFinish}</span>
+            <div className="flex gap-3 flex-wrap">
+              {product.finishes.map(f => (
+                <button
+                  key={f}
+                  onClick={() => setSelectedFinish(f)}
+                  className={`px-5 py-2.5 border text-[12px] font-body transition-all duration-300 cursor-pointer ${
+                    selectedFinish === f
+                      ? "border-primary bg-primary/10 text-primary font-semibold"
+                      : "border-outline hover:border-primary/50 text-on-surface-variant"
+                  }`}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Variant Selector: Material */}
+          <div className="mb-8">
+            <span className="block font-label-caps text-[10px] tracking-[0.2em] uppercase text-on-surface mb-3 font-semibold">Base Metal: {selectedMaterial}</span>
+            <div className="flex gap-3 flex-wrap">
+              {product.materials.map(m => (
+                <button
+                  key={m}
+                  onClick={() => setSelectedMaterial(m)}
+                  className={`px-5 py-2.5 border text-[12px] font-body transition-all duration-300 cursor-pointer ${
+                    selectedMaterial === m
+                      ? "border-primary bg-primary/10 text-primary font-semibold"
+                      : "border-outline hover:border-primary/50 text-on-surface-variant"
+                  }`}
+                >
+                  {m}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Quantity and Actions */}
+          <div className="flex flex-col gap-4 mb-10">
+            <div className="flex gap-4">
+              <QuantitySelector
+                quantity={quantity}
+                onIncrease={() => setQuantity(q => q + 1)}
+                onDecrease={() => setQuantity(q => Math.max(1, q - 1))}
+              />
+              <button
+                onClick={handleAdd}
+                className="flex-1 bg-on-background text-white font-label-caps text-[11px] tracking-[0.2em] uppercase h-14 hover:bg-primary transition-colors flex items-center justify-center cursor-pointer font-semibold"
+              >
+                Add to Bag
+              </button>
+            </div>
+            <button
+              onClick={handleBuyNow}
+              className="w-full bg-white text-black font-label-caps text-[11px] tracking-[0.2em] uppercase h-14 hover:bg-surface-container border border-outline transition-colors cursor-pointer font-semibold"
+            >
+              Buy It Now (Express Checkout)
+            </button>
+          </div>
+
+          {/* Tabs Details */}
+          <div className="border-t border-outline/50 divide-y divide-outline/50">
+            <details className="group py-6" open>
+              <summary className="flex justify-between items-center font-label-caps text-[11px] tracking-[0.25em] uppercase cursor-pointer list-none text-on-background hover:text-primary outline-none font-semibold">
+                Specifications
+                <ChevronDown size={18} className="transition-transform duration-300 group-open:rotate-180 text-primary stroke-[1.5]" />
+              </summary>
+              <div className="text-body text-[13px] font-light tracking-wide text-on-surface-variant pt-6 pb-2 pl-2">
+                <ul className="list-disc list-inside space-y-2.5">
+                  <li>Hypoallergenic bases, free of nickel and lead.</li>
+                  <li>Electroplated with thick gold protective coating.</li>
+                  <li>Lifetime anti-corrosion, anti-rust warranty coverage.</li>
+                </ul>
+              </div>
+            </details>
+            
+            <details className="group py-6">
+              <summary className="flex justify-between items-center font-label-caps text-[11px] tracking-[0.25em] uppercase cursor-pointer list-none text-on-background hover:text-primary outline-none font-semibold">
+                Care Instructions
+                <ChevronDown size={18} className="transition-transform duration-300 group-open:rotate-180 text-primary stroke-[1.5]" />
+              </summary>
+              <div className="text-body text-[13px] font-light tracking-wide leading-relaxed text-on-surface-variant pt-6 pb-2 pr-4 pl-2">
+                {product.careInstructions || "Avoid contact with harsh detergents, chlorinated pool water, or chemicals. Clean carefully using damp cloth."}
+              </div>
+            </details>
+
+            <details className="group py-6">
+              <summary className="flex justify-between items-center font-label-caps text-[11px] tracking-[0.25em] uppercase cursor-pointer list-none text-on-background hover:text-primary outline-none font-semibold">
+                Shipping & Exchanges
+                <ChevronDown size={18} className="transition-transform duration-300 group-open:rotate-180 text-primary stroke-[1.5]" />
+              </summary>
+              <div className="text-body text-[13px] font-light tracking-wide leading-relaxed text-on-surface-variant pt-6 pb-2 pr-4 pl-2">
+                {product.shippingInfo || "Free express home deliveries. 7-day exchanges."}
+              </div>
+            </details>
+          </div>
+
+        </motion.div>
+      </div>
+
+      {/* Related recommendations */}
+      <section className="mt-24 border-t border-outline/30 pt-24">
+        <h2 className="font-display text-[32px] text-center mb-2 font-light">You May Also Love</h2>
+        <p className="font-label-caps text-[10px] tracking-[0.2em] uppercase text-on-surface-variant text-center mb-16">Explore matching items to complete your style</p>
+        
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+          {related.map((p, idx) => {
+            const isWish = wishlist.includes(p.id);
+            return (
+              <motion.div
+                key={p.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className="group relative flex flex-col bg-transparent"
+              >
+                <button
+                  onClick={() => toggleWishlist(p.id)}
+                  aria-label="Wishlist toggle"
+                  className="absolute top-3 right-3 z-10 text-on-surface hover:text-primary p-2 bg-white/70 backdrop-blur-md rounded-full shadow-md transition-colors duration-300 cursor-pointer"
+                >
+                  <Heart size={18} className={`stroke-[1.5] ${isWish ? "fill-primary text-primary" : ""}`} />
+                </button>
+
+                <Link href={`/product/${p.id}`} className="block aspect-[4/5] bg-surface-container-low relative overflow-hidden mb-4 border border-outline/30">
+                  <Image
+                    src={p.imageUrl}
+                    alt={p.name}
+                    fill
+                    className="object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-105"
+                  />
+                </Link>
+
+                <div className="text-center px-2">
+                  <Link href={`/product/${p.id}`}>
+                    <h3 className="font-display text-[18px] text-on-surface mb-1 hover:text-primary transition-colors font-medium">
+                      {p.name}
+                    </h3>
+                  </Link>
+                  <p className="font-body text-[11px] text-on-surface-variant font-light mb-3 tracking-widest uppercase">
+                    {p.category}
+                  </p>
+                  <p className="font-body text-[14px] text-primary tracking-wider font-semibold">${p.price.toLocaleString()}</p>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </section>
+
+    </main>
+  );
+}

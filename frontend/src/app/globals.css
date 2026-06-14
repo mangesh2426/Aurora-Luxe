@@ -1,0 +1,187 @@
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap");
+@import "tailwindcss";
+
+@theme {
+  /* === Primary Palette — Champagne Gold === */
+  --color-primary: #C9A227;
+  --color-primary-container: #a8841f;
+  --color-on-primary: #ffffff;
+
+  /* === Background & Surface (WHITE / LIGHT) === */
+  --color-background: #ffffff;
+  --color-on-background: #0d0d0b;
+
+  --color-surface: #f9f9f7;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f4f4f0;
+  --color-surface-container: #eeeeea;
+  --color-surface-container-high: #e6e6e2;
+  --color-surface-container-highest: #dcdcd8;
+
+  --color-on-surface: #0d0d0b;
+  --color-on-surface-variant: #6b6b65;
+
+  /* === Secondary / Neutral === */
+  --color-secondary: #6b6b65;
+  --color-secondary-container: #e8e8e4;
+  --color-on-secondary-container: #2a2a26;
+
+  /* === Borders === */
+  --color-outline: #d4d4cc;
+  --color-outline-variant: #e8e8e0;
+
+  /* === Error === */
+  --color-error: #c0392b;
+  --color-error-container: #fdecea;
+
+  /* === Radius — Sharp/Luxury === */
+  --radius: 0;
+  --radius-sm: 1px;
+  --radius-md: 2px;
+  --radius-lg: 4px;
+  --radius-xl: 8px;
+  --radius-full: 9999px;
+
+  /* === Spacing === */
+  --spacing-margin-mobile: 20px;
+  --spacing-margin-desktop: 80px;
+  --spacing-container-max: 1440px;
+  --spacing-gutter: 32px;
+
+  --spacing-base: 8px;
+  --spacing-stack-sm: 16px;
+  --spacing-stack-md: 40px;
+  --spacing-stack-lg: 80px;
+
+  /* === Typography === */
+  --font-display: var(--font-cormorant);
+  --font-body: var(--font-montserrat);
+  --font-label-caps: var(--font-montserrat);
+}
+
+/* ==========================================
+   BASE STYLES
+   ========================================== */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-on-background);
+    font-family: var(--font-body), sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: 0.01em;
+  }
+
+  h1, h2, h3, h4, h5, h6, .font-display {
+    font-family: var(--font-display), serif;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+  }
+
+  /* Subtle gold scrollbar */
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-surface-container-low);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-outline);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
+  }
+}
+
+/* ==========================================
+   CUSTOM UTILITIES
+   ========================================== */
+@layer utilities {
+  /* --- Material Symbols --- */
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+  }
+  .icon-fill {
+    font-variation-settings: 'FILL' 1, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+  }
+
+  /* --- Scrollbar Hiding --- */
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
+  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* --- Glass / Blur Panels (light version) --- */
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  /* --- Luxury Borders (sharp, minimal) --- */
+  .lux-border   { border: 1px solid var(--color-outline); }
+  .lux-border-b { border-bottom: 1px solid var(--color-outline); }
+  .lux-border-t { border-top: 1px solid var(--color-outline); }
+  .lux-border-gold { border: 1px solid var(--color-primary); }
+
+  /* --- Smooth Luxury Transition --- */
+  .lux-transition {
+    transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* --- Legacy Font Aliases (backward compat) --- */
+  .font-label-caps  { font-family: var(--font-body), sans-serif; letter-spacing: 0.15em; }
+  .text-label-caps  { font-size: 11px; text-transform: uppercase; }
+  .font-body-sm     { font-family: var(--font-body), sans-serif; }
+  .text-body-sm     { font-size: 13px; line-height: 1.6; }
+  .font-body-md     { font-family: var(--font-body), sans-serif; }
+  .text-body-md     { font-size: 14px; line-height: 1.6; }
+  .font-body-lg     { font-family: var(--font-body), sans-serif; }
+  .text-body-lg     { font-size: 16px; line-height: 1.6; }
+  .font-display-lg          { font-family: var(--font-display), serif; font-weight: 300; }
+  .text-display-lg          { font-size: clamp(36px, 5vw, 60px); }
+  .font-display-lg-mobile   { font-family: var(--font-display), serif; font-weight: 300; }
+  .text-display-lg-mobile   { font-size: 36px; }
+  .font-headline-md  { font-family: var(--font-display), serif; font-weight: 300; }
+  .text-headline-md  { font-size: clamp(28px, 3vw, 44px); }
+  .font-headline-sm  { font-family: var(--font-display), serif; font-weight: 300; }
+  .text-headline-sm  { font-size: clamp(22px, 2.5vw, 36px); }
+
+  /* --- Animations --- */
+  .animate-pulse-slow {
+    animation: pulse-slow 18s ease-in-out infinite;
+  }
+}
+
+/* ==========================================
+   KEYFRAME ANIMATIONS
+   ========================================== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { transform: scale(1.0); }
+  50%       { transform: scale(1.04); }
+}
