@@ -71,10 +71,17 @@ async function main() {
   ];
 
   for (const product of products) {
+    const { images, isNew, ...rest } = product;
     await prisma.product.upsert({
       where: { slug: product.slug },
       update: {},
-      create: product,
+      create: {
+        ...rest,
+        isNewArrival: isNew,
+        images: {
+          create: images.map(url => ({ url })),
+        },
+      },
     });
   }
   console.log('Products created.');

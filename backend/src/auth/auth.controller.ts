@@ -1,7 +1,8 @@
 import { Controller, Post, Body, UnauthorizedException, HttpCode, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
-import { RegisterDto } from './dto/register.dto';
+import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
+import { loginSchema, registerSchema } from './auth.schema';
+import type { LoginInput, RegisterInput } from './auth.schema';
 
 @Controller('auth')
 export class AuthController {
@@ -9,7 +10,7 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  async login(@Body() signInDto: LoginDto) {
+  async login(@Body(new ZodValidationPipe(loginSchema)) signInDto: LoginInput) {
     const user = await this.authService.validateUser(signInDto.email, signInDto.password);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
@@ -18,7 +19,7 @@ export class AuthController {
   }
 
   @Post('register')
-  async register(@Body() registerDto: RegisterDto) {
+  async register(@Body(new ZodValidationPipe(registerSchema)) registerDto: RegisterInput) {
     return this.authService.register(registerDto);
   }
 }
