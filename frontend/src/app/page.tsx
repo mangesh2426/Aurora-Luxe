@@ -415,35 +415,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Instagram Grid Showcase */}
-      <section className="py-24 max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
-        <h2 className="font-display text-[36px] md:text-[48px] text-center mb-2">Style Showcase</h2>
-        <p className="font-label-caps text-[10px] tracking-[0.2em] uppercase text-on-surface-variant text-center mb-16 font-medium">Tag @AuroraLuxe on Instagram to get featured</p>
-        
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuB5KgRcn3_-N2N6zecFWxG6cl3CcNVGhTtck81DLxcKwUKhKd82pnOHtR_2ukP5KFae5KDSn4LNlhr__EvK1hu6Tyr-SfPczDjOUn4XL7FXiGR5XbKsG3vqK9f8opu8SYV9EFAjgzh_3r_N0xMoPfooCOHTLqNKgC46dRf6M8v0LHvPmaSrZvX1Dt9t5A7pq8mSbABsg-7RRKFCZCFtaatSc2JX1fUeS0o7jEXtipaPycnQduhqERj-TAu_H63kAspo-iHAzo7jiHQ",
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuAb0rwjslXLOE36_JNe51leiUOT_JUC9KKkEu1Dekcn_WJFNUguVH7-SY7XJm3UvCamWmM_NDr82LxEJ6LfJuFk9ZtPaGb_6RPvue6U2_7svWCtWf5Ke1mj3_30WXTlw3GPNTq8rYlPTHzcAq0gD-g177glNz10rT6R9DSW84L5ZHjdGfxQ8bkBYN9ydBjnB7r4ZUUvoSxuZ-VcYO2LJk-fbmWtQ9vbq47TXdx3rS-PL_CdjcNf551ymhgUU0msxEfNvIPM-lLFZO0",
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuBMSEn5M-kqjnfBe6p3P8Ro25F6VGMPu1GWmuVqIVl_JPMd2a7Z68bxY8zySw27Zx_sMXueziaJMbwfHBb98K45KbeElTVnZZI5gsCsTbbntA8WyAvmUen290EGizZwR0Vmqy275zvNjM7k6lAFZnqA1kRA_Mh5qQSf1LNnYBZ_6vJKufe742YAKYRwp6Ql8c64fQkhmO4EFVW0VpwDZUQmUZjjI4fUnnX40sU3U9H_zo20Cr1HWFWszcbYNJav1t1g9FjJNvHs6VQ",
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuBs0lyiXgBcZekb9JHDqFKHtQhHa1TB7Hc70NMFWwOlPxNKpTYk69ibBG7xPKLNT-h7c5Uny1SbUiq5Dge2Dc2IrMFlw0Y9woB2Fh86H_bpW_NgyHwp8a3MnIhMcTOfn-r_4_9vC_dbUuE9XSzTZy7POTHU-VKKUyWaUZUkHekv8HgcllOrIRSJ1FwXNT3k3vPoZvhrybNSHjquhK-cAsQw0BiPWYMbHEmzaqsDsv5Kj6fWdb1lB7V4dnfs-yEdB3_KR2rptomyrS0"
-          ].map((url, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.05 }}
-              className="aspect-square bg-surface-container-low overflow-hidden relative border border-outline/30 group shadow-sm"
-            >
-              <Image src={url} alt={`Style showcase look ${i + 1}`} fill className="object-cover transition-transform duration-[1.5s] group-hover:scale-105" />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex flex-col justify-center items-center text-white transition-opacity duration-300">
-                <Instagram size={24} className="mb-2" />
-                <span className="font-label-caps text-[9px] tracking-widest uppercase font-semibold">@auroraluxe</span>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+
     </main>
   );
 }
