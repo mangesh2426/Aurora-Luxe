@@ -174,13 +174,7 @@ export default function LoginPage() {
               <div className="absolute inset-0 bg-white/15 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
             </button>
 
-            <div className="mt-2 p-4 bg-surface-container border border-outline/25 text-left rounded-sm">
-              <p className="font-body text-[11px] text-on-surface-variant/90 leading-relaxed">
-                <span className="font-semibold text-primary">Demo Admin Credentials:</span><br />
-                Email: <code className="bg-white px-1.5 py-0.5 border border-outline/10 font-mono text-[10px]">admin@auroraluxe.com</code><br />
-                Password: <code className="bg-white px-1.5 py-0.5 border border-outline/10 font-mono text-[10px]">admin123</code>
-              </p>
-            </div>
+
           </form>
 
           <div className="mt-12 text-center border-t border-outline pt-8">
