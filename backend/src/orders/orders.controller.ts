@@ -14,11 +14,11 @@ const validateCouponDtoSchema = z.object({
 });
 
 @Controller('orders')
-@UseGuards(JwtAuthGuard)
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   async createOrder(@Req() req: any, @Body(new ZodValidationPipe(createOrderSchema)) createOrderDto: CreateOrderInput) {
     const userId = req.user.userId;
     const order = await this.ordersService.createOrder(userId, createOrderDto);
@@ -26,6 +26,7 @@ export class OrdersController {
   }
 
   @Post('direct')
+  @UseGuards(JwtAuthGuard)
   async createOrderDirect(@Req() req: any, @Body() body: any) {
     const userId = req.user.userId;
     const order = await this.ordersService.createOrderDirect(userId, body);
@@ -41,6 +42,7 @@ export class OrdersController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   async getMyOrders(@Req() req: any) {
     const userId = req.user.userId;
     const orders = await this.ordersService.findAllUserOrders(userId);
@@ -48,9 +50,16 @@ export class OrdersController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   async getOrderById(@Req() req: any, @Param('id') id: string) {
     const { userId, role } = req.user;
     const order = await this.ordersService.findOneOrder(id, userId, role);
+    return { success: true, data: order };
+  }
+
+  @Get('track/:id')
+  async trackOrder(@Param('id') id: string) {
+    const order = await this.ordersService.trackOrder(id);
     return { success: true, data: order };
   }
 

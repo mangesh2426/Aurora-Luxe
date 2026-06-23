@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { trackingSchema, TrackingFields } from "@/lib/validation";
 import { useStore } from "@/store/useStore";
+import api from "@/lib/api";
 import { Order } from "@/types";
 import { Receipt, Settings, Truck, Home, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -27,13 +28,27 @@ function TrackingContent() {
   });
 
   useEffect(() => {
+    const fetchOrder = async (id: string) => {
+      try {
+        const res = await api.get(`/orders/track/${id}`);
+        if (res.data.success) {
+          setActiveOrder(res.data.data);
+        } else {
+          // fallback to local if not found in db
+          const found = orders.find(o => o.id.toUpperCase() === id.toUpperCase());
+          setActiveOrder(found || null);
+        }
+      } catch (err) {
+        // fallback to local
+        const found = orders.find(o => o.id.toUpperCase() === id.toUpperCase());
+        setActiveOrder(found || null);
+      }
+    };
+
     const queryId = searchParams.get("orderId");
     if (queryId) {
       setValue("orderId", queryId);
-      const found = orders.find(o => o.id.toUpperCase() === queryId.toUpperCase());
-      if (found) {
-        setActiveOrder(found);
-      }
+      fetchOrder(queryId);
     } else {
       setActiveOrder(null);
     }

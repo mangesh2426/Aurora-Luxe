@@ -282,6 +282,64 @@ export class OrdersService {
     return order;
   }
 
+  async trackOrder(id: string) {
+    const order = await this.prisma.order.findUnique({
+      where: { id },
+      include: {
+        items: {
+          include: { product: true },
+        },
+        payment: true,
+      },
+    });
+
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    // Map backend OrderStatus to frontend Status
+    let frontendStatus = 'Placed';
+    if (order.status === 'PROCESSING') frontendStatus = 'Processing';
+    if (order.status === 'SHIPPED') frontendStatus = 'Shipped';
+    if (order.status === 'DELIVERED') frontendStatus = 'Delivered';
+
+    // Map Payment Status
+    const paymentStatus = order.payment?.status === 'SUCCESS' ? 'Paid' : 'Unpaid';
+
+    // Build the frontend customer from shippingAddress JSON
+    const sa: any = order.shippingAddress || {};
+    const customer = {
+      name: sa.name || 'Unknown',
+      email: sa.email || 'N/A',
+      phone: sa.phone || 'N/A',
+      address: sa.address || 'N/A',
+      city: sa.city || 'N/A',
+      state: sa.state || 'N/A',
+      pincode: sa.pincode || 'N/A',
+    };
+
+    const items = order.items.map(i => ({
+      id: i.productId,
+      name: i.product.name,
+      price: Number(i.price),
+      imageUrl: i.product.imageUrl || '',
+      quantity: i.quantity,
+      selectedFinish: 'Standard', // simplified
+      selectedMaterial: 'Standard', // simplified
+    }));
+
+    return {
+      id: order.id,
+      date: order.createdAt.toISOString().split('T')[0],
+      items,
+      total: Number(order.totalAmount),
+      status: frontendStatus,
+      paymentStatus,
+      paymentMethod: order.payment?.method || 'N/A',
+      customer,
+    };
+  }
+
   // --- Admin Order Operations ---
   async findAllOrdersAdmin() {
     return this.prisma.order.findMany({
