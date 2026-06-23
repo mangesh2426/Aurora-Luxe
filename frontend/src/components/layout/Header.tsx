@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useStore } from "@/store/useStore";
 import CartDrawer from "@/components/cart/CartDrawer";
+import SearchBar from "./SearchBar";
 import { Search, Heart, ShoppingBag, User, Menu, X, Store, Truck, Home, LayoutDashboard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -11,8 +12,7 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   
   const pathname = usePathname();
   const router = useRouter();
@@ -33,15 +33,6 @@ export default function Header() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchOpen(false);
-      setSearchQuery("");
-    }
-  };
 
   return (
     <>
@@ -105,18 +96,7 @@ export default function Header() {
         {/* Right Side: Search and Icons */}
         <div className="flex gap-6 items-center">
           {/* Search Box */}
-          <form onSubmit={handleSearchSubmit} className="relative flex items-center border-b border-outline/80 pb-1">
-            <input
-              type="text"
-              placeholder="Search jewellery..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-transparent text-[13px] pr-6 focus:outline-none w-44 font-body font-light text-on-background placeholder-on-surface-variant/80"
-            />
-            <button type="submit" className="absolute right-0 text-on-surface/85 hover:text-primary transition-colors p-1 cursor-pointer">
-              <Search size={18} className="stroke-[1.5]" />
-            </button>
-          </form>
+          <SearchBar />
 
           {/* Wishlist Link */}
           <Link
@@ -182,18 +162,28 @@ export default function Header() {
           AURORA <span className="text-primary font-medium">LUXE</span>
         </Link>
         
-        <button
-          onClick={() => setCartDrawerOpen(true)}
-          aria-label="Cart"
-          className="text-on-surface hover:text-primary transition-colors p-2 relative cursor-pointer"
-        >
-          <ShoppingBag size={22} className="stroke-[1.5]" />
-          {cartCount > 0 && (
-            <span className="absolute top-0 right-0 bg-on-background text-white text-[8px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center">
-              {cartCount}
-            </span>
-          )}
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setMobileSearchOpen(true)}
+            aria-label="Search"
+            className="text-on-surface hover:text-primary transition-colors p-2 cursor-pointer"
+          >
+            <Search size={22} className="stroke-[1.5]" />
+          </button>
+          
+          <button
+            onClick={() => setCartDrawerOpen(true)}
+            aria-label="Cart"
+            className="text-on-surface hover:text-primary transition-colors p-2 relative cursor-pointer"
+          >
+            <ShoppingBag size={22} className="stroke-[1.5]" />
+            {cartCount > 0 && (
+              <span className="absolute top-0 right-0 bg-on-background text-white text-[8px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
+          </button>
+        </div>
       </header>
 
       {/* Bottom Nav Bar (Mobile Navigation Convenience) */}
@@ -317,6 +307,38 @@ export default function Header() {
               </div>
             </motion.aside>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* Mobile Search Overlay */}
+      <AnimatePresence>
+        {mobileSearchOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 bg-white z-50 md:hidden flex flex-col p-6"
+          >
+            {/* Header part of overlay */}
+            <div className="flex items-center justify-between mb-6">
+              <span className="font-display text-[22px] text-primary tracking-wider font-light">
+                AURORA <span className="font-semibold text-on-background">LUXE</span>
+              </span>
+              <button
+                onClick={() => setMobileSearchOpen(false)}
+                aria-label="Close search"
+                className="text-on-surface-variant hover:text-primary p-2 border border-outline rounded-full cursor-pointer"
+              >
+                <X size={18} className="stroke-[1.5]" />
+              </button>
+            </div>
+            
+            {/* Search Input and suggestions */}
+            <div className="flex-1 flex flex-col min-h-0">
+              <SearchBar isMobileOverlay={true} onCloseMobile={() => setMobileSearchOpen(false)} />
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
 

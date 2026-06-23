@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -18,15 +15,10 @@ model User {
   lastName  String?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  orders    Order[]
-  cart      Cart?
-  wishlist  Wishlist?
   addresses Address[]
-}
-
-enum Role {
-  USER
-  ADMIN
+  cart      Cart?
+  orders    Order[]
+  wishlist  Wishlist?
 }
 
 model Category {
@@ -34,9 +26,9 @@ model Category {
   name        String    @unique
   description String?
   slug        String    @unique
-  products    Product[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  products    Product[]
 }
 
 model Product {
@@ -50,7 +42,6 @@ model Product {
   discountPercent  Int?
   stock            Int            @default(0)
   categoryId       String
-  category         Category       @relation(fields: [categoryId], references: [id])
   isBestSeller     Boolean        @default(false)
   isNewArrival     Boolean        @default(false)
   finishes         String[]
@@ -61,9 +52,10 @@ model Product {
   shippingInfo     String?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
-  images           ProductImage[]
-  orderItems       OrderItem[]
   cartItems        CartItem[]
+  orderItems       OrderItem[]
+  category         Category       @relation(fields: [categoryId], references: [id])
+  images           ProductImage[]
   wishlistItems    WishlistItem[]
 }
 
@@ -71,67 +63,59 @@ model ProductImage {
   id        String   @id @default(uuid())
   url       String
   productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model Order {
   id              String      @id @default(uuid())
   userId          String
-  user            User        @relation(fields: [userId], references: [id])
   status          OrderStatus @default(PENDING)
   totalAmount     Decimal     @db.Decimal(10, 2)
   shippingAddress Json
   addressId       String?
-  address         Address?    @relation(fields: [addressId], references: [id])
-  paymentId       String?     // Razorpay Payment ID
-  shipmentId      String?     // Shiprocket Order ID
-  awbCode         String?     // Shiprocket AWB
+  paymentId       String?
+  shipmentId      String?
+  awbCode         String?
   trackingUrl     String?
   couponId        String?
-  coupon          Coupon?     @relation(fields: [couponId], references: [id])
-  payment         Payment?
-  items           OrderItem[]
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
-}
-
-enum OrderStatus {
-  PENDING
-  PROCESSING
-  SHIPPED
-  DELIVERED
-  CANCELLED
+  address         Address?    @relation(fields: [addressId], references: [id])
+  coupon          Coupon?     @relation(fields: [couponId], references: [id])
+  user            User        @relation(fields: [userId], references: [id])
+  items           OrderItem[]
+  payment         Payment?
 }
 
 model OrderItem {
-  id        String   @id @default(uuid())
+  id        String  @id @default(uuid())
   orderId   String
-  order     Order    @relation(fields: [orderId], references: [id])
   productId String
-  product   Product  @relation(fields: [productId], references: [id])
   quantity  Int
-  price     Decimal  @db.Decimal(10, 2)
+  price     Decimal @db.Decimal(10, 2)
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
 }
 
 model Cart {
   id        String     @id @default(uuid())
   userId    String     @unique
-  user      User       @relation(fields: [userId], references: [id])
-  items     CartItem[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+  user      User       @relation(fields: [userId], references: [id])
+  items     CartItem[]
 }
 
 model CartItem {
   id        String   @id @default(uuid())
   cartId    String
-  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
   productId String
-  product   Product  @relation(fields: [productId], references: [id])
   quantity  Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id])
 
   @@unique([cartId, productId])
 }
@@ -139,19 +123,19 @@ model CartItem {
 model Wishlist {
   id        String         @id @default(uuid())
   userId    String         @unique
-  user      User           @relation(fields: [userId], references: [id])
-  items     WishlistItem[]
   createdAt DateTime       @default(now())
   updatedAt DateTime       @updatedAt
+  user      User           @relation(fields: [userId], references: [id])
+  items     WishlistItem[]
 }
 
 model WishlistItem {
   id         String   @id @default(uuid())
   wishlistId String
-  wishlist   Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
   productId  String
-  product    Product  @relation(fields: [productId], references: [id])
   createdAt  DateTime @default(now())
+  product    Product  @relation(fields: [productId], references: [id])
+  wishlist   Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
 
   @@unique([wishlistId, productId])
 }
@@ -159,8 +143,7 @@ model WishlistItem {
 model Address {
   id        String   @id @default(uuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  title     String   // e.g., "Home", "Office"
+  title     String
   street    String
   city      String
   state     String
@@ -168,28 +151,22 @@ model Address {
   pincode   String
   phone     String
   isDefault Boolean  @default(false)
-  orders    Order[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders    Order[]
 }
 
 model Payment {
   id            String        @id @default(uuid())
   orderId       String        @unique
-  order         Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
   transactionId String?
   amount        Decimal       @db.Decimal(10, 2)
   method        String
   status        PaymentStatus @default(PENDING)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
-}
-
-enum PaymentStatus {
-  PENDING
-  SUCCESS
-  FAILED
-  REFUNDED
+  order         Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 model Coupon {
@@ -202,9 +179,29 @@ model Coupon {
   startDate   DateTime
   endDate     DateTime
   isActive    Boolean      @default(true)
-  orders      Order[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  orders      Order[]
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
 }
 
 enum DiscountType {
