@@ -65,7 +65,7 @@ export class OrdersController {
 
   // --- ADMIN ENDPOINTS ---
   @Post('coupon')
-  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   async createCoupon(@Body(new ZodValidationPipe(createCouponSchema)) createCouponDto: CreateCouponInput) {
     const coupon = await this.ordersService.createCoupon(createCouponDto);
@@ -73,7 +73,7 @@ export class OrdersController {
   }
 
   @Get('admin/all')
-  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   async getAllOrders() {
     const orders = await this.ordersService.findAllOrdersAdmin();
@@ -81,7 +81,7 @@ export class OrdersController {
   }
 
   @Patch('admin/:id/status')
-  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   async updateStatus(
     @Param('id') id: string,
