@@ -57,17 +57,30 @@ export class AdminService {
   }
 
   async getAllUsers() {
-    return this.prisma.user.findMany({
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        role: true,
-        createdAt: true,
+    const users = await this.prisma.user.findMany({
+      include: {
+        orders: {
+          where: { status: { not: 'CANCELLED' } },
+        },
+        addresses: {
+          where: { isDefault: true },
+          take: 1
+        }
       },
       orderBy: { createdAt: 'desc' },
     });
+
+    return users.map(user => ({
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+      createdAt: user.createdAt,
+      phone: user.addresses[0]?.phone || 'N/A',
+      address: user.addresses[0] ? `${user.addresses[0].city}, ${user.addresses[0].country}` : 'N/A',
+      totalSpent: user.orders.reduce((sum, order) => sum + Number(order.totalAmount), 0),
+    }));
   }
 
   async updateUserRole(userId: string, role: Role) {

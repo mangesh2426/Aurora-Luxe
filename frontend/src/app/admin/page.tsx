@@ -685,14 +685,15 @@ export default function AdminPage() {
                       <th className="p-4 pl-6">Client Name</th>
                       <th className="p-4">Email Address</th>
                       <th className="p-4">Phone</th>
-                      <th className="p-4" style={{ width: "35%" }}>Address</th>
+                      <th className="p-4" style={{ width: "25%" }}>Address</th>
+                      <th className="p-4">Role</th>
                       <th className="p-4 pr-6 text-right">Total Spent</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-outline/30 font-body text-on-surface">
                     {loadingCustomers ? (
                       <tr>
-                        <td colSpan={5} className="p-8 text-center">
+                        <td colSpan={6} className="p-8 text-center">
                           <Loader2 className="animate-spin text-primary mx-auto" size={24} />
                         </td>
                       </tr>
@@ -700,9 +701,9 @@ export default function AdminPage() {
                       <tr key={c.id}>
                         <td className="p-4 pl-6 font-semibold text-on-background">{c.firstName} {c.lastName}</td>
                         <td className="p-4">{c.email}</td>
-                        <td className="p-4 font-light text-[12px]">{new Date(c.createdAt).toLocaleDateString()}</td>
-                        <td className="p-4 font-light text-[12px] leading-relaxed truncate max-w-[250px]">{c.role}</td>
-                        <td className="p-4 pr-6 text-right font-bold text-primary">
+                        <td className="p-4 font-light text-[12px]">{c.phone}</td>
+                        <td className="p-4 font-light text-[12px] leading-relaxed truncate max-w-[200px]">{c.address}</td>
+                        <td className="p-4 font-bold text-primary">
                           <select
                             value={c.role}
                             onChange={async (e) => {
@@ -719,6 +720,9 @@ export default function AdminPage() {
                             <option value="USER">User</option>
                             <option value="ADMIN">Admin</option>
                           </select>
+                        </td>
+                        <td className="p-4 pr-6 text-right font-semibold text-on-background">
+                          ₹{c.totalSpent?.toLocaleString() || '0'}
                         </td>
                       </tr>
                     ))}
