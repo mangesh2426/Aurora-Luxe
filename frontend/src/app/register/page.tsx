@@ -21,18 +21,46 @@ export default function RegisterPage() {
     resolver: zodResolver(registerSchema)
   });
 
-  const handleRegisterSubmit = (data: RegisterFields) => {
+  const handleRegisterSubmit = async (data: RegisterFields) => {
     setLoading(true);
-    setTimeout(() => {
-      const name = `${data.firstName} ${data.lastName}`;
-      const role = "customer";
+    setSuccessMsg("");
+    
+    try {
+      const api = (await import("@/lib/api")).default;
+      const res = await api.post("/auth/register", {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        password: data.password
+      });
+
+      const { user: userData, token } = res.data;
+
       setSuccessMsg("Account created successfully! Logging you in...");
-      login(data.email, name, role);
-      localStorage.setItem("aurora_user_session", JSON.stringify({ email: data.email, name, role }));
+      
+      const role = userData.role.toLowerCase();
+      const name = `${userData.firstName} ${userData.lastName}`;
+
+      login(userData.id, userData.email, name, role, token);
+      localStorage.setItem("aurora_user_session", JSON.stringify({ 
+        id: userData.id, 
+        email: userData.email, 
+        name, 
+        role, 
+        token 
+      }));
+      
       setTimeout(() => {
         router.push("/");
-      }, 1200);
-    }, 1000);
+      }, 1000);
+    } catch (error: any) {
+      console.error(error);
+      const errMsg = error.response?.data?.message || "Registration failed. Please try again.";
+      setSuccessMsg("");
+      alert(errMsg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

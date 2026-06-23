@@ -3,16 +3,20 @@ import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { PRODUCTS } from "@/data/products";
 import { useStore } from "@/store/useStore";
 import FilterSidebar from "@/components/product/FilterSidebar";
 import MobileFilterDrawer from "@/components/product/MobileFilterDrawer";
-import { SlidersHorizontal, Search, Heart } from "lucide-react";
+import { SlidersHorizontal, Search, Heart, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import api, { mapBackendProduct } from "@/lib/api";
+import { Product } from "@/types";
 
 function ShopContent() {
   const searchParams = useSearchParams();
   const { addToCart, toggleWishlist, wishlist } = useStore();
+
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
@@ -22,6 +26,22 @@ function ShopContent() {
   
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Fetch products from API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const res = await api.get('/products');
+        setProducts(res.data.data.map(mapBackendProduct));
+      } catch (err) {
+        console.error("Failed to fetch products:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   // Sync state from query parameters
   useEffect(() => {
@@ -79,7 +99,7 @@ function ShopContent() {
   };
 
   // Filter products matching active criteria
-  let filtered = [...PRODUCTS];
+  let filtered = [...products];
 
   if (searchQuery) {
     filtered = filtered.filter(
@@ -96,13 +116,13 @@ function ShopContent() {
 
   if (selectedMaterials.length > 0) {
     filtered = filtered.filter(p =>
-      p.materials.some(m => selectedMaterials.includes(m))
+      p.materials?.some(m => selectedMaterials.includes(m))
     );
   }
 
   if (selectedFinishes.length > 0) {
     filtered = filtered.filter(p =>
-      p.finishes.some(f => selectedFinishes.includes(f))
+      p.finishes?.some(f => selectedFinishes.includes(f))
     );
   }
 
@@ -195,7 +215,16 @@ function ShopContent() {
         {/* Product Grid */}
         <div className="flex-grow">
           <AnimatePresence mode="popLayout">
-            {filtered.length === 0 ? (
+            {loading ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex justify-center items-center py-32"
+              >
+                <Loader2 className="animate-spin text-primary" size={48} />
+              </motion.div>
+            ) : filtered.length === 0 ? (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}

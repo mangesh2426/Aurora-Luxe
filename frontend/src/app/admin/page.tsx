@@ -3,10 +3,10 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useStore } from "@/store/useStore";
-import { PRODUCTS } from "@/data/products";
 import { Product, Order } from "@/types";
-import { BarChart3, Gem, ShoppingCart, Users, DollarSign, ShoppingBag, Tag, Plus, Eye, X } from "lucide-react";
+import { BarChart3, Gem, ShoppingCart, Users, DollarSign, ShoppingBag, Tag, Plus, Eye, X, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import api, { mapBackendProduct } from "@/lib/api";
 
 export default function AdminPage() {
   const { orders, updateOrderStatus, updateOrderPaymentStatus, user, login, logout } = useStore();
@@ -41,7 +41,8 @@ export default function AdminPage() {
   const [activePanel, setActivePanel] = useState<"overview" | "products" | "orders" | "customers">("overview");
   
   // Local state for product list
-  const [adminProducts, setAdminProducts] = useState<Product[]>(PRODUCTS);
+  const [adminProducts, setAdminProducts] = useState<Product[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
   const [productModalOpen, setProductModalOpen] = useState(false);
 
   // Form states for adding products
@@ -49,6 +50,24 @@ export default function AdminPage() {
   const [newProdCategory, setNewProdCategory] = useState("Rings");
   const [newProdPrice, setNewProdPrice] = useState("");
   const [newProdDesc, setNewProdDesc] = useState("");
+
+  useEffect(() => {
+    if (activePanel === "products") {
+      fetchProducts();
+    }
+  }, [activePanel]);
+
+  const fetchProducts = async () => {
+    setLoadingProducts(true);
+    try {
+      const res = await api.get('/products');
+      setAdminProducts(res.data.data.map(mapBackendProduct));
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingProducts(false);
+    }
+  };
 
   const paidOrders = orders.filter(o => o.paymentStatus === "Paid");
   const totalRevenue = paidOrders.reduce((sum, o) => sum + o.total, 0);
@@ -68,33 +87,52 @@ export default function AdminPage() {
     customersMap[email].totalSpend += o.total;
   });
 
-  const handleDeleteProduct = (id: string) => {
-    setAdminProducts(prev => prev.filter(p => p.id !== id));
+  const handleDeleteProduct = async (id: string) => {
+    try {
+      // API call to delete
+      await api.delete(`/products/${id}`);
+      setAdminProducts(prev => prev.filter(p => p.id !== id));
+    } catch (e) {
+      console.error(e);
+      alert("Failed to delete product. Ensure it has no related orders.");
+    }
   };
 
-  const handleAddProductSubmit = (e: React.FormEvent) => {
+  const handleAddProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newProdId = newProdName.toLowerCase().replace(/\s+/g, "-");
-    const newProduct: Product = {
-      id: newProdId,
-      name: newProdName,
-      description: newProdDesc,
-      category: newProdCategory,
-      price: parseInt(newProdPrice) || 0,
-      imageUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuBMSEn5M-kqjnfBe6p3P8Ro25F6VGMPu1GWmuVqIVl_JPMd2a7Z68bxY8zySw27Zx_sMXueziaJMbwfHBb98K45KbeElTVnZZI5gsCsTbbntA8WyAvmUen290EGizZwR0Vmqy275zvNjM7k6lAFZnqA1kRA_Mh5qQSf1LNnYBZ_6vJKufe742YAKYRwp6Ql8c64fQkhmO4EFVW0VpwDZUQmUZjjI4fUnnX40sU3U9H_zo20Cr1HWFWszcbYNJav1t1g9FjJNvHs6VQ",
-      images: ["https://lh3.googleusercontent.com/aida-public/AB6AXuBMSEn5M-kqjnfBe6p3P8Ro25F6VGMPu1GWmuVqIVl_JPMd2a7Z68bxY8zySw27Zx_sMXueziaJMbwfHBb98K45KbeElTVnZZI5gsCsTbbntA8WyAvmUen290EGizZwR0Vmqy275zvNjM7k6lAFZnqA1kRA_Mh5qQSf1LNnYBZ_6vJKufe742YAKYRwp6Ql8c64fQkhmO4EFVW0VpwDZUQmUZjjI4fUnnX40sU3U9H_zo20Cr1HWFWszcbYNJav1t1g9FjJNvHs6VQ"],
-      finishes: ["Champagne Gold"],
-      materials: ["18k Solid Gold"],
-      inStock: true,
-      rating: 5.0,
-      reviewsCount: 1
-    };
-
-    setAdminProducts(prev => [newProduct, ...prev]);
-    setProductModalOpen(false);
-    setNewProdName("");
-    setNewProdPrice("");
-    setNewProdDesc("");
+    
+    try {
+      const res = await api.post('/products', {
+        id: newProdId,
+        name: newProdName,
+        slug: newProdId,
+        description: newProdDesc,
+        price: parseInt(newProdPrice) || 0,
+        categoryId: "1", // TODO: proper category ID mapping or let backend handle it via name
+        finishes: ["Champagne Gold"],
+        materials: ["18k Solid Gold"],
+        stock: 50,
+        rating: 5.0,
+        reviewsCount: 0,
+        isNewArrival: true,
+        isBestSeller: false,
+        images: {
+          create: [
+            { url: "https://lh3.googleusercontent.com/aida-public/AB6AXuBMSEn5M-kqjnfBe6p3P8Ro25F6VGMPu1GWmuVqIVl_JPMd2a7Z68bxY8zySw27Zx_sMXueziaJMbwfHBb98K45KbeElTVnZZI5gsCsTbbntA8WyAvmUen290EGizZwR0Vmqy275zvNjM7k6lAFZnqA1kRA_Mh5qQSf1LNnYBZ_6vJKufe742YAKYRwp6Ql8c64fQkhmO4EFVW0VpwDZUQmUZjjI4fUnnX40sU3U9H_zo20Cr1HWFWszcbYNJav1t1g9FjJNvHs6VQ" }
+          ]
+        }
+      });
+      
+      setAdminProducts(prev => [mapBackendProduct(res.data.data), ...prev]);
+      setProductModalOpen(false);
+      setNewProdName("");
+      setNewProdPrice("");
+      setNewProdDesc("");
+    } catch (e) {
+      console.error(e);
+      alert("Failed to add product");
+    }
   };
 
   // Safe client check to prevent flicker
@@ -341,18 +379,26 @@ export default function AdminPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-outline/30 font-body text-on-surface">
-                    {adminProducts.map(p => (
+                    {loadingProducts ? (
+                      <tr>
+                        <td colSpan={6} className="p-8 text-center">
+                          <Loader2 className="animate-spin text-primary mx-auto" size={24} />
+                        </td>
+                      </tr>
+                    ) : adminProducts.map(p => (
                       <tr key={p.id}>
                         <td className="p-4 pl-6">
                           <div className="relative w-10 h-10 overflow-hidden bg-surface border border-outline/25">
-                            <Image src={p.imageUrl} alt={p.name} fill className="object-cover" />
+                            <Image src={p.imageUrl || '/hero_model.png'} alt={p.name} fill className="object-cover" />
                           </div>
                         </td>
                         <td className="p-4 font-semibold text-on-background">{p.name}</td>
                         <td className="p-4">{p.category}</td>
                         <td className="p-4 font-medium">${p.price}</td>
                         <td className="p-4">
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-600 border border-emerald-200">In Stock</span>
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${p.inStock ? "bg-emerald-50 text-emerald-600 border-emerald-200" : "bg-red-50 text-red-600 border-red-200"}`}>
+                            {p.inStock ? "In Stock" : "Out of Stock"}
+                          </span>
                         </td>
                         <td className="p-4 pr-6 text-right">
                           <button

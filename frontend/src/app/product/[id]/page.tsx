@@ -3,33 +3,63 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { PRODUCTS } from "@/data/products";
 import { useStore } from "@/store/useStore";
 import ProductImageGallery from "@/components/product/ProductImageGallery";
 import QuantitySelector from "@/components/product/QuantitySelector";
-import { Heart, Star, ChevronDown } from "lucide-react";
+import { Heart, Star, ChevronDown, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
+import api, { mapBackendProduct } from "@/lib/api";
+import { Product } from "@/types";
 
 export default function ProductDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const { addToCart, toggleWishlist, wishlist } = useStore();
 
-  const [product, setProduct] = useState<typeof PRODUCTS[0] | null>(null);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [related, setRelated] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
   const [selectedFinish, setSelectedFinish] = useState("");
   const [selectedMaterial, setSelectedMaterial] = useState("");
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
-    if (params?.id) {
-      const found = PRODUCTS.find(p => p.id === params.id);
-      if (found) {
-        setProduct(found);
-        setSelectedFinish(found.finishes[0] || "");
-        setSelectedMaterial(found.materials[0] || "");
+    const fetchData = async () => {
+      if (!params?.id) return;
+      setLoading(true);
+      try {
+        const res = await api.get(`/products/${params.id}`);
+        const p = mapBackendProduct(res.data.data);
+        setProduct(p);
+        setSelectedFinish(p.finishes[0] || "");
+        setSelectedMaterial(p.materials[0] || "");
+
+        // Fetch related
+        const allRes = await api.get('/products');
+        const allProducts = allRes.data.data.map(mapBackendProduct);
+        let rel = allProducts.filter((item: Product) => item.category === p.category && item.id !== p.id).slice(0, 4);
+        if (rel.length < 4) {
+          const fill = allProducts.filter((item: Product) => item.id !== p.id && !rel.find((r: Product) => r.id === item.id));
+          rel.push(...fill.slice(0, 4 - rel.length));
+        }
+        setRelated(rel);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
-    }
+    };
+    fetchData();
   }, [params]);
+
+  if (loading) {
+    return (
+      <main className="flex-grow pt-32 pb-40 flex justify-center items-center">
+        <Loader2 className="animate-spin text-primary" size={48} />
+      </main>
+    );
+  }
 
   if (!product) {
     return (
@@ -53,16 +83,6 @@ export default function ProductDetailsPage() {
   };
 
   const isWishlisted = wishlist.includes(product.id);
-
-  // Recommendations (fillers from same category)
-  const related = PRODUCTS.filter(
-    p => p.category === product.category && p.id !== product.id
-  ).slice(0, 4);
-
-  if (related.length < 4) {
-    const fill = PRODUCTS.filter(p => p.id !== product.id && !related.includes(p));
-    related.push(...fill.slice(0, 4 - related.length));
-  }
 
   return (
     <main className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-8 pb-32 bg-white text-on-background overflow-hidden">

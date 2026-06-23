@@ -1,10 +1,12 @@
 "use client";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { PRODUCTS } from "@/data/products";
 import { useStore } from "@/store/useStore";
-import { ShieldCheck, Droplets, HeartHandshake, Award, Heart, Star } from "lucide-react";
+import { ShieldCheck, Droplets, HeartHandshake, Award, Heart, Star, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
+import api, { mapBackendProduct } from "@/lib/api";
+import { Product } from "@/types";
 
 const Instagram = ({ size = 24, className = "" }: { size?: number; className?: string }) => (
   <svg
@@ -28,8 +30,28 @@ const Instagram = ({ size = 24, className = "" }: { size?: number; className?: s
 export default function Home() {
   const { addToCart, toggleWishlist, wishlist } = useStore();
 
-  const bestSellers = PRODUCTS.filter(p => p.isBestSeller).slice(0, 4);
-  const newArrivals = PRODUCTS.filter(p => p.isNew).slice(0, 4);
+  const [bestSellers, setBestSellers] = useState<Product[]>([]);
+  const [newArrivals, setNewArrivals] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const [bestRes, newRes] = await Promise.all([
+          api.get('/products?bestSeller=true'),
+          api.get('/products?newArrival=true')
+        ]);
+        setBestSellers(bestRes.data.data.map(mapBackendProduct).slice(0, 4));
+        setNewArrivals(newRes.data.data.map(mapBackendProduct).slice(0, 4));
+      } catch (err) {
+        console.error("Failed to fetch products:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   return (
     <main className="flex-grow bg-white text-on-background overflow-hidden">
@@ -191,7 +213,11 @@ export default function Home() {
           <p className="font-label-caps text-[10px] tracking-[0.2em] uppercase text-on-surface-variant text-center mb-16 font-medium">Timeless additions to your daily curation</p>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {bestSellers.map((product, idx) => {
+            {loading ? (
+              <div className="col-span-2 md:col-span-4 flex justify-center py-20">
+                <Loader2 className="animate-spin text-primary" size={40} />
+              </div>
+            ) : bestSellers.map((product, idx) => {
               const isWishlisted = wishlist.includes(product.id);
               return (
                 <motion.div
@@ -267,7 +293,11 @@ export default function Home() {
           <p className="font-label-caps text-[10px] tracking-[0.2em] uppercase text-on-surface-variant text-center mb-16 font-medium">Fresh pieces just introduced into store</p>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {newArrivals.map((product, idx) => {
+            {loading ? (
+              <div className="col-span-2 md:col-span-4 flex justify-center py-20">
+                <Loader2 className="animate-spin text-primary" size={40} />
+              </div>
+            ) : newArrivals.map((product, idx) => {
               const isWishlisted = wishlist.includes(product.id);
               return (
                 <motion.div

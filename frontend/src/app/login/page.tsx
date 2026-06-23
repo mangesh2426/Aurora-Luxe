@@ -30,28 +30,49 @@ export default function LoginPage() {
     }
   });
 
-  const handleLoginSubmit = (data: LoginFields) => {
+  const handleLoginSubmit = async (data: LoginFields) => {
     setLoading(true);
-    // Simulate successful login response
-    setTimeout(() => {
-      let role = "customer";
-      let name = "Riya Sen";
-      let redirectUrl = "/";
+    setSuccessMsg("");
+    
+    try {
+      // Dynamic import to avoid SSR issues with axios if necessary, but it's "use client" so fine
+      const api = (await import("@/lib/api")).default;
+      const res = await api.post("/auth/login", {
+        email: data.email,
+        password: data.password
+      });
 
-      if (data.email.toLowerCase() === "admin@auroraluxe.com" && data.password === "admin123") {
-        role = "admin";
-        name = "Admin Owner";
-        redirectUrl = "/admin";
-      }
+      const { user: userData, token } = res.data;
 
       setSuccessMsg("Logged in successfully! Redirecting...");
-      login(data.email, name, role);
-      localStorage.setItem("aurora_user_session", JSON.stringify({ email: data.email, name, role }));
+      
+      const role = userData.role.toLowerCase();
+      const name = `${userData.firstName} ${userData.lastName}`;
+      const redirectUrl = role === "admin" ? "/admin" : "/";
+
+      login(userData.id, userData.email, name, role, token);
+      localStorage.setItem("aurora_user_session", JSON.stringify({ 
+        id: userData.id, 
+        email: userData.email, 
+        name, 
+        role, 
+        token 
+      }));
       
       setTimeout(() => {
         router.push(redirectUrl);
-      }, 1200);
-    }, 1000);
+      }, 1000);
+    } catch (error: any) {
+      console.error(error);
+      const errMsg = error.response?.data?.message || "Login failed. Please check your credentials.";
+      setSuccessMsg("");
+      // Setting error on form or just alert, we don't have an error state for the whole form,
+      // so let's just reuse successMsg but maybe make a separate error state if we want.
+      // But we can just use an alert for now or add a small error text.
+      alert(errMsg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (mounted && user) {

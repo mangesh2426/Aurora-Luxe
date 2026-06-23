@@ -6,7 +6,7 @@ interface StoreState {
   cart: CartItem[];
   wishlist: string[]; // array of product IDs
   orders: Order[];
-  user: { email: string; name: string; role?: string } | null;
+  user: { id: string; email: string; name: string; role?: string; token?: string } | null;
   addToCart: (product: Product, quantity: number, finish: string, material: string) => void;
   removeFromCart: (itemId: string, finish: string, material: string) => void;
   updateCartQty: (itemId: string, finish: string, material: string, qty: number) => void;
@@ -15,7 +15,7 @@ interface StoreState {
   placeOrder: (order: Order) => void;
   updateOrderStatus: (orderId: string, status: Order["status"]) => void;
   updateOrderPaymentStatus: (orderId: string, paymentStatus: Order["paymentStatus"]) => void;
-  login: (email: string, name: string, role?: string) => void;
+  login: (id: string, email: string, name: string, role?: string, token?: string) => void;
   logout: () => void;
 }
 
@@ -173,7 +173,7 @@ export const useStore = create<StoreState>()(
           )
         })),
 
-      login: (email, name, role) => set({ user: { email, name, role } }),
+      login: (id, email, name, role, token) => set({ user: { id, email, name, role, token } }),
       logout: () => set({ user: null })
     }),
     {
