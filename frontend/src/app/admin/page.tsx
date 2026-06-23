@@ -89,7 +89,8 @@ export default function AdminPage() {
   const [newProdIsBestSeller, setNewProdIsBestSeller] = useState(false);
   const [newProdIsNewArrival, setNewProdIsNewArrival] = useState(true);
   const [existingImages, setExistingImages] = useState<string[]>([]);
-  const [newProdImageFiles, setNewProdImageFiles] = useState<File[]>([]);
+  const [newProdMainImage, setNewProdMainImage] = useState<File | null>(null);
+  const [newProdSecondaryImages, setNewProdSecondaryImages] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
@@ -197,7 +198,8 @@ export default function AdminPage() {
     setNewProdIsBestSeller(false);
     setNewProdIsNewArrival(true);
     setExistingImages([]);
-    setNewProdImageFiles([]);
+    setNewProdMainImage(null);
+    setNewProdSecondaryImages([]);
     if (categories.length > 0) setNewProdCategory(categories[0].id);
     setProductModalOpen(true);
   };
@@ -217,7 +219,8 @@ export default function AdminPage() {
     setNewProdIsBestSeller(product.isBestSeller || false);
     setNewProdIsNewArrival(product.isNewArrival || false);
     setExistingImages(product.images || (product.imageUrl ? [product.imageUrl] : []));
-    setNewProdImageFiles([]);
+    setNewProdMainImage(null);
+    setNewProdSecondaryImages([]);
     setProductModalOpen(true);
   };
 
@@ -226,18 +229,33 @@ export default function AdminPage() {
     setIsUploading(true);
     
     try {
-      let uploadedImageUrls: string[] = [...existingImages];
+      let finalMainImage = existingImages.length > 0 ? existingImages[0] : null;
+      let finalSecondaryImages = existingImages.length > 1 ? existingImages.slice(1) : [];
       
-      if (newProdImageFiles.length > 0) {
-        for (const file of newProdImageFiles) {
+      if (newProdMainImage) {
+        const formData = new FormData();
+        formData.append("image", newProdMainImage);
+        const uploadRes = await api.post("/products/upload", formData, {
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+        finalMainImage = uploadRes.data.imageUrl;
+      }
+
+      if (newProdSecondaryImages.length > 0) {
+        finalSecondaryImages = [];
+        for (const file of newProdSecondaryImages) {
           const formData = new FormData();
           formData.append("image", file);
           const uploadRes = await api.post("/products/upload", formData, {
             headers: { "Content-Type": "multipart/form-data" }
           });
-          uploadedImageUrls.push(uploadRes.data.imageUrl);
+          finalSecondaryImages.push(uploadRes.data.imageUrl);
         }
       }
+
+      let uploadedImageUrls: string[] = [];
+      if (finalMainImage) uploadedImageUrls.push(finalMainImage);
+      uploadedImageUrls.push(...finalSecondaryImages);
 
       if (uploadedImageUrls.length === 0) {
         uploadedImageUrls = ["https://lh3.googleusercontent.com/aida-public/AB6AXuBMSEn5M-kqjnfBe6p3P8Ro25F6VGMPu1GWmuVqIVl_JPMd2a7Z68bxY8zySw27Zx_sMXueziaJMbwfHBb98K45KbeElTVnZZI5gsCsTbbntA8WyAvmUen290EGizZwR0Vmqy275zvNjM7k6lAFZnqA1kRA_Mh5qQSf1LNnYBZ_6vJKufe742YAKYRwp6Ql8c64fQkhmO4EFVW0VpwDZUQmUZjjI4fUnnX40sU3U9H_zo20Cr1HWFWszcbYNJav1t1g9FjJNvHs6VQ"];
@@ -883,12 +901,31 @@ export default function AdminPage() {
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant font-semibold">Product Images (1:1 Square, &lt;2MB)</label>
-                  {existingImages.length > 0 && (
+                  <label className="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant font-semibold">Main Image (1:1 Square, &lt;2MB)</label>
+                  {existingImages.length > 0 && !newProdMainImage && (
+                    <div className="relative w-12 h-12 border border-outline/50 bg-surface mb-2">
+                      <Image src={existingImages[0]} alt="Main" fill className="object-cover" />
+                    </div>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/png, image/jpeg, image/webp"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        setNewProdMainImage(e.target.files[0]);
+                      }
+                    }}
+                    className="h-11 border border-outline px-4 py-2.5 text-[13px] font-body focus:border-primary outline-none"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant font-semibold">Secondary Images</label>
+                  {existingImages.length > 1 && newProdSecondaryImages.length === 0 && (
                     <div className="flex gap-2 mb-2 flex-wrap">
-                      {existingImages.map((img, idx) => (
+                      {existingImages.slice(1).map((img, idx) => (
                         <div key={idx} className="relative w-12 h-12 border border-outline/50 bg-surface">
-                          <Image src={img} alt={`Existing ${idx}`} fill className="object-cover" />
+                          <Image src={img} alt={`Secondary ${idx}`} fill className="object-cover" />
                         </div>
                       ))}
                     </div>
@@ -899,13 +936,12 @@ export default function AdminPage() {
                     accept="image/png, image/jpeg, image/webp"
                     onChange={(e) => {
                       if (e.target.files) {
-                        setNewProdImageFiles(Array.from(e.target.files));
-                        if (e.target.files.length > 0) setExistingImages([]); // overwrite preview
+                        setNewProdSecondaryImages(Array.from(e.target.files));
                       }
                     }}
                     className="h-11 border border-outline px-4 py-2.5 text-[13px] font-body focus:border-primary outline-none"
                   />
-                  <span className="text-[10px] text-on-surface-variant">Select multiple files at once. Choosing new files will replace existing ones.</span>
+                  <span className="text-[10px] text-on-surface-variant">Choosing new files will replace all existing secondary images.</span>
                 </div>
 
                 <button type="submit" disabled={isUploading} className="w-full bg-primary text-white h-12 font-label-caps text-[11px] tracking-widest uppercase hover:bg-primary-container transition-colors flex items-center justify-center font-bold mt-2 cursor-pointer disabled:opacity-50">
