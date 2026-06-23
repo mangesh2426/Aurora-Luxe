@@ -111,16 +111,18 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    if (activePanel === "overview") {
-      fetchStats();
-    } else if (activePanel === "products") {
-      fetchProducts();
-    } else if (activePanel === "orders") {
-      fetchOrders();
-    } else if (activePanel === "customers") {
-      fetchCustomers();
+    if (user?.role === "admin") {
+      if (activePanel === "overview") {
+        fetchStats();
+      } else if (activePanel === "products") {
+        fetchProducts();
+      } else if (activePanel === "orders") {
+        fetchOrders();
+      } else if (activePanel === "customers") {
+        fetchCustomers();
+      }
     }
-  }, [activePanel]);
+  }, [activePanel, user]);
 
   const fetchStats = async () => {
     setLoadingStats(true);
