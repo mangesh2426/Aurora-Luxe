@@ -25,8 +25,8 @@ export default function LoginPage() {
   } = useForm<LoginFields>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "riya.sen@example.com",
-      password: "password123"
+      email: "",
+      password: ""
     }
   });
 
@@ -63,7 +63,6 @@ export default function LoginPage() {
         router.push(redirectUrl);
       }, 1000);
     } catch (error: any) {
-      console.error(error);
       const errMsg = error.response?.data?.message || "Login failed. Please check your credentials.";
       setSuccessMsg("");
       // Setting error on form or just alert, we don't have an error state for the whole form,
