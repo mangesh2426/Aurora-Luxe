@@ -75,11 +75,21 @@ export default function AdminPage() {
   const [loadingCustomers, setLoadingCustomers] = useState(false);
 
   // Form states for adding products
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [newProdName, setNewProdName] = useState("");
   const [newProdCategory, setNewProdCategory] = useState("");
   const [newProdPrice, setNewProdPrice] = useState("");
+  const [newProdOriginalPrice, setNewProdOriginalPrice] = useState("");
+  const [newProdDiscountPercent, setNewProdDiscountPercent] = useState("");
   const [newProdDesc, setNewProdDesc] = useState("");
-  const [newProdImageFile, setNewProdImageFile] = useState<File | null>(null);
+  const [newProdRating, setNewProdRating] = useState("5.0");
+  const [newProdReviewsCount, setNewProdReviewsCount] = useState("0");
+  const [newProdMaterials, setNewProdMaterials] = useState<string[]>(["18k Solid Gold"]);
+  const [newProdFinishes, setNewProdFinishes] = useState<string[]>(["Champagne Gold"]);
+  const [newProdIsBestSeller, setNewProdIsBestSeller] = useState(false);
+  const [newProdIsNewArrival, setNewProdIsNewArrival] = useState(true);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [newProdImageFiles, setNewProdImageFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
@@ -162,6 +172,7 @@ export default function AdminPage() {
 
 
   const handleDeleteProduct = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this product? This action cannot be undone.")) return;
     try {
       // API call to delete
       await api.delete(`/products/${id}`);
@@ -172,46 +183,95 @@ export default function AdminPage() {
     }
   };
 
+  const handleOpenCreateModal = () => {
+    setEditingProductId(null);
+    setNewProdName("");
+    setNewProdPrice("");
+    setNewProdOriginalPrice("");
+    setNewProdDiscountPercent("");
+    setNewProdDesc("");
+    setNewProdRating("5.0");
+    setNewProdReviewsCount("0");
+    setNewProdMaterials(["18k Solid Gold"]);
+    setNewProdFinishes(["Champagne Gold"]);
+    setNewProdIsBestSeller(false);
+    setNewProdIsNewArrival(true);
+    setExistingImages([]);
+    setNewProdImageFiles([]);
+    if (categories.length > 0) setNewProdCategory(categories[0].id);
+    setProductModalOpen(true);
+  };
+
+  const handleEditProduct = (product: any) => {
+    setEditingProductId(product.id);
+    setNewProdName(product.name);
+    setNewProdCategory(product.categoryId || (categories.length > 0 ? categories[0].id : ""));
+    setNewProdPrice(product.price.toString());
+    setNewProdOriginalPrice(product.originalPrice ? product.originalPrice.toString() : "");
+    setNewProdDiscountPercent(product.discountPercent ? product.discountPercent.toString() : "");
+    setNewProdDesc(product.description || "");
+    setNewProdRating(product.rating ? product.rating.toString() : "5.0");
+    setNewProdReviewsCount(product.reviewsCount ? product.reviewsCount.toString() : "0");
+    setNewProdMaterials(product.materials || []);
+    setNewProdFinishes(product.finishes || []);
+    setNewProdIsBestSeller(product.isBestSeller || false);
+    setNewProdIsNewArrival(product.isNewArrival || false);
+    setExistingImages(product.images || (product.imageUrl ? [product.imageUrl] : []));
+    setNewProdImageFiles([]);
+    setProductModalOpen(true);
+  };
+
   const handleAddProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsUploading(true);
     
     try {
-      let uploadedImageUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuBMSEn5M-kqjnfBe6p3P8Ro25F6VGMPu1GWmuVqIVl_JPMd2a7Z68bxY8zySw27Zx_sMXueziaJMbwfHBb98K45KbeElTVnZZI5gsCsTbbntA8WyAvmUen290EGizZwR0Vmqy275zvNjM7k6lAFZnqA1kRA_Mh5qQSf1LNnYBZ_6vJKufe742YAKYRwp6Ql8c64fQkhmO4EFVW0VpwDZUQmUZjjI4fUnnX40sU3U9H_zo20Cr1HWFWszcbYNJav1t1g9FjJNvHs6VQ";
+      let uploadedImageUrls: string[] = [...existingImages];
       
-      if (newProdImageFile) {
-        const formData = new FormData();
-        formData.append("image", newProdImageFile);
-        const uploadRes = await api.post("/products/upload", formData, {
-          headers: { "Content-Type": "multipart/form-data" }
-        });
-        uploadedImageUrl = uploadRes.data.imageUrl;
+      if (newProdImageFiles.length > 0) {
+        for (const file of newProdImageFiles) {
+          const formData = new FormData();
+          formData.append("image", file);
+          const uploadRes = await api.post("/products/upload", formData, {
+            headers: { "Content-Type": "multipart/form-data" }
+          });
+          uploadedImageUrls.push(uploadRes.data.imageUrl);
+        }
       }
 
-      const res = await api.post('/products', {
+      if (uploadedImageUrls.length === 0) {
+        uploadedImageUrls = ["https://lh3.googleusercontent.com/aida-public/AB6AXuBMSEn5M-kqjnfBe6p3P8Ro25F6VGMPu1GWmuVqIVl_JPMd2a7Z68bxY8zySw27Zx_sMXueziaJMbwfHBb98K45KbeElTVnZZI5gsCsTbbntA8WyAvmUen290EGizZwR0Vmqy275zvNjM7k6lAFZnqA1kRA_Mh5qQSf1LNnYBZ_6vJKufe742YAKYRwp6Ql8c64fQkhmO4EFVW0VpwDZUQmUZjjI4fUnnX40sU3U9H_zo20Cr1HWFWszcbYNJav1t1g9FjJNvHs6VQ"];
+      }
+
+      const payload = {
         name: newProdName,
         description: newProdDesc,
-        price: parseInt(newProdPrice) || 0,
+        price: parseFloat(newProdPrice) || 0,
+        originalPrice: newProdOriginalPrice ? parseFloat(newProdOriginalPrice) : undefined,
+        discountPercent: newProdDiscountPercent ? parseInt(newProdDiscountPercent) : undefined,
         categoryId: newProdCategory,
-        finishes: ["Champagne Gold"],
-        materials: ["18k Solid Gold"],
+        finishes: newProdFinishes,
+        materials: newProdMaterials,
+        rating: parseFloat(newProdRating) || 5.0,
+        reviewsCount: parseInt(newProdReviewsCount) || 0,
+        isNewArrival: newProdIsNewArrival,
+        isBestSeller: newProdIsBestSeller,
+        images: uploadedImageUrls,
         stock: 50,
-        rating: 5.0,
-        reviewsCount: 0,
-        isNewArrival: true,
-        isBestSeller: false,
-        images: [uploadedImageUrl]
-      });
+      };
+
+      if (editingProductId) {
+        const res = await api.patch(`/products/${editingProductId}`, payload);
+        setAdminProducts(prev => prev.map(p => p.id === editingProductId ? mapBackendProduct(res.data.data) : p));
+      } else {
+        const res = await api.post('/products', payload);
+        setAdminProducts(prev => [mapBackendProduct(res.data.data), ...prev]);
+      }
       
-      setAdminProducts(prev => [mapBackendProduct(res.data.data), ...prev]);
       setProductModalOpen(false);
-      setNewProdName("");
-      setNewProdPrice("");
-      setNewProdDesc("");
-      setNewProdImageFile(null);
     } catch (e) {
       console.error(e);
-      alert("Failed to add product");
+      alert(`Failed to ${editingProductId ? "update" : "add"} product`);
     } finally {
       setIsUploading(false);
     }
@@ -441,7 +501,7 @@ export default function AdminPage() {
               <div className="p-6 border-b border-outline flex justify-between items-center bg-surface-container-low">
                 <h3 className="font-display text-[18px] text-on-background font-semibold">Store Designs</h3>
                 <button
-                  onClick={() => setProductModalOpen(true)}
+                  onClick={handleOpenCreateModal}
                   className="bg-primary text-white px-5 py-2.5 font-label-caps text-[9px] tracking-widest uppercase hover:bg-primary-container transition-colors flex items-center gap-1.5 font-bold cursor-pointer"
                 >
                   <Plus size={14} className="stroke-[1.5]" /> Add Design
@@ -483,12 +543,20 @@ export default function AdminPage() {
                           </span>
                         </td>
                         <td className="p-4 pr-6 text-right">
-                          <button
-                            onClick={() => handleDeleteProduct(p.id)}
-                            className="text-error hover:underline text-[12px] font-bold cursor-pointer"
-                          >
-                            Delete
-                          </button>
+                          <div className="flex items-center justify-end gap-3">
+                            <button
+                              onClick={() => handleEditProduct(p)}
+                              className="text-primary hover:underline text-[12px] font-bold cursor-pointer"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteProduct(p.id)}
+                              className="text-error hover:underline text-[12px] font-bold cursor-pointer"
+                            >
+                              Delete
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -664,13 +732,13 @@ export default function AdminPage() {
               className="fixed top-1/2 left-1/2 w-full max-w-[500px] bg-white z-50 shadow-2xl overflow-hidden border border-outline/30"
             >
               <div className="p-6 border-b border-outline flex justify-between items-center bg-surface-container-low">
-                <h3 className="font-display text-[22px] text-on-background font-semibold">Add New Jewellery Design</h3>
+                <h3 className="font-display text-[22px] text-on-background font-semibold">{editingProductId ? "Edit Design" : "Add New Jewellery Design"}</h3>
                 <button onClick={() => setProductModalOpen(false)} className="text-on-surface-variant hover:text-primary p-2 border border-outline rounded-full cursor-pointer">
                   <X size={16} className="stroke-[1.5]" />
                 </button>
               </div>
               
-              <form onSubmit={handleAddProductSubmit} className="p-6 space-y-5">
+              <form onSubmit={handleAddProductSubmit} className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
                 <div className="flex flex-col gap-1.5">
                   <label className="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant font-semibold">Product Name</label>
                   <input
@@ -710,6 +778,29 @@ export default function AdminPage() {
                   </div>
                 </div>
 
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant font-semibold">Original Price (Optional)</label>
+                    <input
+                      type="number"
+                      value={newProdOriginalPrice}
+                      onChange={(e) => setNewProdOriginalPrice(e.target.value)}
+                      className="h-11 border border-outline px-4 text-[13px] font-body focus:border-primary outline-none"
+                      placeholder="e.g. 1000"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant font-semibold">Discount % (Optional)</label>
+                    <input
+                      type="number"
+                      value={newProdDiscountPercent}
+                      onChange={(e) => setNewProdDiscountPercent(e.target.value)}
+                      className="h-11 border border-outline px-4 text-[13px] font-body focus:border-primary outline-none"
+                      placeholder="e.g. 15"
+                    />
+                  </div>
+                </div>
+
                 <div className="flex flex-col gap-1.5">
                   <label className="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant font-semibold">Description</label>
                   <textarea
@@ -721,22 +812,104 @@ export default function AdminPage() {
                   />
                 </div>
 
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-2">
+                    <label className="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant font-semibold">Base Metals</label>
+                    {["18k Solid Gold", "14k Solid Gold", "925 Sterling Silver", "Platinum"].map(m => (
+                      <label key={m} className="flex items-center gap-2 text-[12px] font-body">
+                        <input 
+                          type="checkbox" 
+                          checked={newProdMaterials.includes(m)}
+                          onChange={(e) => {
+                            if (e.target.checked) setNewProdMaterials([...newProdMaterials, m]);
+                            else setNewProdMaterials(newProdMaterials.filter(x => x !== m));
+                          }}
+                        />
+                        {m}
+                      </label>
+                    ))}
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant font-semibold">Color Finishes</label>
+                    {["Champagne Gold", "Rose Gold", "White Gold", "Silver"].map(f => (
+                      <label key={f} className="flex items-center gap-2 text-[12px] font-body">
+                        <input 
+                          type="checkbox" 
+                          checked={newProdFinishes.includes(f)}
+                          onChange={(e) => {
+                            if (e.target.checked) setNewProdFinishes([...newProdFinishes, f]);
+                            else setNewProdFinishes(newProdFinishes.filter(x => x !== f));
+                          }}
+                        />
+                        {f}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 border-t border-outline/40 pt-4">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant font-semibold">Rating (0-5)</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      max="5"
+                      value={newProdRating}
+                      onChange={(e) => setNewProdRating(e.target.value)}
+                      className="h-11 border border-outline px-4 text-[13px] font-body focus:border-primary outline-none"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant font-semibold">Review Count</label>
+                    <input
+                      type="number"
+                      value={newProdReviewsCount}
+                      onChange={(e) => setNewProdReviewsCount(e.target.value)}
+                      className="h-11 border border-outline px-4 text-[13px] font-body focus:border-primary outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-6 border-b border-outline/40 pb-4">
+                  <label className="flex items-center gap-2 text-[12px] font-body font-semibold">
+                    <input type="checkbox" checked={newProdIsBestSeller} onChange={(e) => setNewProdIsBestSeller(e.target.checked)} />
+                    Best Seller Badge
+                  </label>
+                  <label className="flex items-center gap-2 text-[12px] font-body font-semibold">
+                    <input type="checkbox" checked={newProdIsNewArrival} onChange={(e) => setNewProdIsNewArrival(e.target.checked)} />
+                    New Arrival Badge
+                  </label>
+                </div>
+
                 <div className="flex flex-col gap-1.5">
-                  <label className="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant font-semibold">Product Image (1:1 Square, &lt;2MB)</label>
+                  <label className="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant font-semibold">Product Images (1:1 Square, &lt;2MB)</label>
+                  {existingImages.length > 0 && (
+                    <div className="flex gap-2 mb-2 flex-wrap">
+                      {existingImages.map((img, idx) => (
+                        <div key={idx} className="relative w-12 h-12 border border-outline/50 bg-surface">
+                          <Image src={img} alt={`Existing ${idx}`} fill className="object-cover" />
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <input
                     type="file"
+                    multiple
                     accept="image/png, image/jpeg, image/webp"
                     onChange={(e) => {
-                      if (e.target.files && e.target.files.length > 0) {
-                        setNewProdImageFile(e.target.files[0]);
+                      if (e.target.files) {
+                        setNewProdImageFiles(Array.from(e.target.files));
+                        if (e.target.files.length > 0) setExistingImages([]); // overwrite preview
                       }
                     }}
                     className="h-11 border border-outline px-4 py-2.5 text-[13px] font-body focus:border-primary outline-none"
                   />
+                  <span className="text-[10px] text-on-surface-variant">Select multiple files at once. Choosing new files will replace existing ones.</span>
                 </div>
 
                 <button type="submit" disabled={isUploading} className="w-full bg-primary text-white h-12 font-label-caps text-[11px] tracking-widest uppercase hover:bg-primary-container transition-colors flex items-center justify-center font-bold mt-2 cursor-pointer disabled:opacity-50">
-                  {isUploading ? "Uploading..." : "Save Product"}
+                  {isUploading ? "Processing..." : (editingProductId ? "Update Product" : "Save Product")}
                 </button>
               </form>
             </motion.div>
