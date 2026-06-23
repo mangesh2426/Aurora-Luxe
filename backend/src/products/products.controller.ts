@@ -11,6 +11,12 @@ import type { CreateProductInput, UpdateProductInput } from './products.schema';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  @Get('categories')
+  async getAllCategories() {
+    const categories = await this.productsService.findAllCategories();
+    return { success: true, count: categories.length, data: categories };
+  }
+
   @Get()
   async getAllProducts(
     @Query('category') categorySlug?: string,

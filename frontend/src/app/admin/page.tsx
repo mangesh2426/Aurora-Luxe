@@ -62,14 +62,32 @@ export default function AdminPage() {
   
   // Local state for product list
   const [adminProducts, setAdminProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<{id: string, name: string}[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [productModalOpen, setProductModalOpen] = useState(false);
 
   // Form states for adding products
   const [newProdName, setNewProdName] = useState("");
-  const [newProdCategory, setNewProdCategory] = useState("Rings");
+  const [newProdCategory, setNewProdCategory] = useState("");
   const [newProdPrice, setNewProdPrice] = useState("");
   const [newProdDesc, setNewProdDesc] = useState("");
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const res = await api.get('/products/categories');
+      const cats = res.data.data;
+      setCategories(cats);
+      if (cats.length > 0) {
+        setNewProdCategory(cats[0].id);
+      }
+    } catch (e) {
+      console.error("Failed to fetch categories:", e);
+    }
+  };
 
   useEffect(() => {
     if (activePanel === "products") {
@@ -120,16 +138,13 @@ export default function AdminPage() {
 
   const handleAddProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newProdId = newProdName.toLowerCase().replace(/\s+/g, "-");
     
     try {
       const res = await api.post('/products', {
-        id: newProdId,
         name: newProdName,
-        slug: newProdId,
         description: newProdDesc,
         price: parseInt(newProdPrice) || 0,
-        categoryId: "1", // TODO: proper category ID mapping or let backend handle it via name
+        categoryId: newProdCategory,
         finishes: ["Champagne Gold"],
         materials: ["18k Solid Gold"],
         stock: 50,
@@ -137,11 +152,9 @@ export default function AdminPage() {
         reviewsCount: 0,
         isNewArrival: true,
         isBestSeller: false,
-        images: {
-          create: [
-            { url: "https://lh3.googleusercontent.com/aida-public/AB6AXuBMSEn5M-kqjnfBe6p3P8Ro25F6VGMPu1GWmuVqIVl_JPMd2a7Z68bxY8zySw27Zx_sMXueziaJMbwfHBb98K45KbeElTVnZZI5gsCsTbbntA8WyAvmUen290EGizZwR0Vmqy275zvNjM7k6lAFZnqA1kRA_Mh5qQSf1LNnYBZ_6vJKufe742YAKYRwp6Ql8c64fQkhmO4EFVW0VpwDZUQmUZjjI4fUnnX40sU3U9H_zo20Cr1HWFWszcbYNJav1t1g9FjJNvHs6VQ" }
-          ]
-        }
+        images: [
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuBMSEn5M-kqjnfBe6p3P8Ro25F6VGMPu1GWmuVqIVl_JPMd2a7Z68bxY8zySw27Zx_sMXueziaJMbwfHBb98K45KbeElTVnZZI5gsCsTbbntA8WyAvmUen290EGizZwR0Vmqy275zvNjM7k6lAFZnqA1kRA_Mh5qQSf1LNnYBZ_6vJKufe742YAKYRwp6Ql8c64fQkhmO4EFVW0VpwDZUQmUZjjI4fUnnX40sU3U9H_zo20Cr1HWFWszcbYNJav1t1g9FjJNvHs6VQ"
+        ]
       });
       
       setAdminProducts(prev => [mapBackendProduct(res.data.data), ...prev]);
@@ -597,13 +610,12 @@ export default function AdminPage() {
                     <select
                       value={newProdCategory}
                       onChange={(e) => setNewProdCategory(e.target.value)}
-                      className="h-11 border border-outline px-4 text-[13px] font-body outline-none focus:border-primary"
+                      className="h-11 border border-outline px-4 text-[13px] font-body outline-none focus:border-primary bg-white"
+                      required
                     >
-                      <option value="Rings">Rings</option>
-                      <option value="Earrings">Earrings</option>
-                      <option value="Necklaces">Necklaces</option>
-                      <option value="Bracelets">Bracelets</option>
-                      <option value="Combos">Combos & Sets</option>
+                      {categories.map(c => (
+                        <option key={c.id} value={c.id}>{c.name}</option>
+                      ))}
                     </select>
                   </div>
                   <div className="flex flex-col gap-1.5">
