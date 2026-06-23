@@ -214,23 +214,12 @@ function ShopContent() {
 
         {/* Product Grid */}
         <div className="flex-grow">
-          <AnimatePresence mode="popLayout">
             {loading ? (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="flex justify-center items-center py-32"
-              >
+              <div className="flex justify-center items-center py-32">
                 <Loader2 className="animate-spin text-primary" size={48} />
-              </motion.div>
+              </div>
             ) : filtered.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="text-center py-32 border border-outline/30 bg-surface"
-              >
+              <div className="text-center py-32 border border-outline/30 bg-surface">
                 <Search size={48} className="text-outline mb-6 mx-auto stroke-[1.2]" />
                 <h3 className="font-display text-[26px] text-on-background mb-4 font-semibold">No Products Match Your Criteria</h3>
                 <p className="font-body text-[14px] text-on-surface-variant font-light mb-8 max-w-sm mx-auto">Try clearing your filters or altering search words to discover items.</p>
@@ -240,22 +229,18 @@ function ShopContent() {
                 >
                   Clear All Filters
                 </button>
-              </motion.div>
+              </div>
             ) : (
-              <motion.div
-                layout
-                className="grid grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16"
-              >
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
                 {filtered.map((product, idx) => {
                   const isWishlisted = wishlist.includes(product.id);
                   return (
                     <motion.div
-                      layout
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 20 }}
-                      transition={{ duration: 0.5, delay: (idx % 6) * 0.05 }}
                       key={product.id}
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.6, delay: (idx % 6) * 0.05 }}
                       className="group relative flex flex-col bg-transparent"
                     >
                       {/* Badges */}
@@ -286,6 +271,7 @@ function ShopContent() {
                           alt={product.name}
                           fill
                           className="object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-105"
+                          sizes="(max-width: 768px) 50vw, 33vw"
                         />
                         <div className="absolute bottom-0 left-0 w-full p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 hidden md:block z-20">
                           <button
@@ -319,9 +305,8 @@ function ShopContent() {
                     </motion.div>
                   );
                 })}
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
         </div>
       </div>
 
