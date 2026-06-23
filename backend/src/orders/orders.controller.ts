@@ -25,6 +25,13 @@ export class OrdersController {
     return { success: true, message: 'Order placed successfully', data: order };
   }
 
+  @Post('direct')
+  async createOrderDirect(@Req() req: any, @Body() body: any) {
+    const userId = req.user.userId;
+    const order = await this.ordersService.createOrderDirect(userId, body);
+    return { success: true, message: 'Order placed successfully', data: order };
+  }
+
   @Post('coupon/validate')
   async validateCoupon(
     @Body(new ZodValidationPipe(validateCouponDtoSchema)) body: { code: string; subtotal: number },

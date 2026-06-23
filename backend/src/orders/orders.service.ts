@@ -195,6 +195,56 @@ export class OrdersService {
     });
   }
 
+  async createOrderDirect(userId: string, data: any) {
+    // Direct checkout bypasses the database cart and address constraints.
+    // data contains: items, totalAmount, shippingAddress, paymentMethod, paymentStatus
+    
+    const order = await this.prisma.$transaction(async (tx) => {
+      // Create Order
+      const newOrder = await tx.order.create({
+        data: {
+          id: data.id, // we can optionally use the frontend generated ID
+          userId,
+          status: OrderStatus.PENDING,
+          totalAmount: data.totalAmount,
+          shippingAddress: data.shippingAddress,
+        },
+      });
+
+      // Create OrderItems
+      if (data.items && Array.isArray(data.items)) {
+        for (const item of data.items) {
+          // Verify product exists to prevent foreign key errors
+          const product = await tx.product.findUnique({ where: { id: item.id } });
+          if (product) {
+            await tx.orderItem.create({
+              data: {
+                orderId: newOrder.id,
+                productId: product.id,
+                quantity: item.quantity,
+                price: item.price,
+              },
+            });
+          }
+        }
+      }
+
+      // Create Payment entry
+      await tx.payment.create({
+        data: {
+          orderId: newOrder.id,
+          amount: data.totalAmount,
+          method: data.paymentMethod || 'COD',
+          status: data.paymentStatus === 'Paid' ? PaymentStatus.SUCCESS : PaymentStatus.PENDING,
+        },
+      });
+
+      return newOrder;
+    });
+
+    return order;
+  }
+
   async findAllUserOrders(userId: string) {
     return this.prisma.order.findMany({
       where: { userId },

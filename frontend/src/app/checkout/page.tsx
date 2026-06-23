@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useStore } from "@/store/useStore";
+import api from "@/lib/api";
 import { checkoutSchema, CheckoutFields } from "@/lib/validation";
 import { Order, Customer } from "@/types";
 import { ShieldCheck, CreditCard, Smartphone, ChevronRight, ArrowLeft, Loader2, RotateCcw, Lock } from "lucide-react";
@@ -13,10 +14,11 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { cart, clearCart, placeOrder } = useStore();
+  const { cart, clearCart, placeOrder, user } = useStore();
 
   const [activeDiscount, setActiveDiscount] = useState<{ code: string; percent: number } | null>(null);
   const [selectedPayment, setSelectedPayment] = useState<"Razorpay" | "COD">("Razorpay");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Razorpay simulator views
   const [razorpayOpen, setRazorpayOpen] = useState(false);
@@ -31,8 +33,11 @@ export default function CheckoutPage() {
 
     if (cart.length === 0) {
       router.push("/shop");
+    } else if (!user) {
+      alert("Please sign in to complete your checkout.");
+      router.push("/login");
     }
-  }, [cart, router]);
+  }, [cart, user, router]);
 
   const {
     register,
@@ -41,8 +46,8 @@ export default function CheckoutPage() {
   } = useForm<CheckoutFields>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
-      email: "riya.sen@example.com",
-      phone: "9812345678",
+      email: user?.email || "",
+      phone: "",
       firstName: "Riya",
       lastName: "Sen",
       address: "H.No. 12, Park Street",
@@ -84,8 +89,9 @@ export default function CheckoutPage() {
     }, 2000);
   };
 
-  const completeOrder = (fields: CheckoutFields, paymentStatus: "Paid" | "Unpaid") => {
-    const orderId = `AL-₹{Math.floor(10000 + Math.random() * 90000)}`;
+  const completeOrder = async (fields: CheckoutFields, paymentStatus: "Paid" | "Unpaid") => {
+    setIsSubmitting(true);
+    const orderId = `AL-${Math.floor(10000 + Math.random() * 90000)}`;
     const orderDate = new Date().toISOString().split("T")[0];
 
     const customerDetails: Customer = {
@@ -109,11 +115,27 @@ export default function CheckoutPage() {
       customer: customerDetails
     };
 
-    placeOrder(newOrder);
-    clearCart();
-    localStorage.removeItem("aurora_active_discount");
-    setRazorpayOpen(false);
-    router.push(`/tracking?orderId=${orderId}`);
+    try {
+      await api.post('/orders/direct', {
+        id: orderId,
+        items: cart.map(item => ({ id: item.id, quantity: item.quantity, price: item.price })),
+        totalAmount: total,
+        shippingAddress: customerDetails,
+        paymentMethod: fields.paymentMethod === "Razorpay" ? "Razorpay Secure" : "Cash on Delivery",
+        paymentStatus: paymentStatus
+      });
+      
+      placeOrder(newOrder);
+      clearCart();
+      localStorage.removeItem("aurora_active_discount");
+      setRazorpayOpen(false);
+      router.push(`/tracking?orderId=${orderId}`);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to create order on server. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (cart.length === 0) {
