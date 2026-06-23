@@ -287,7 +287,7 @@ export class OrdersService {
       where: { id },
       include: {
         items: {
-          include: { product: true },
+          include: { product: { include: { images: true } } },
         },
         payment: true,
       },
@@ -322,7 +322,7 @@ export class OrdersService {
       id: i.productId,
       name: i.product.name,
       price: Number(i.price),
-      imageUrl: i.product.imageUrl || '',
+      imageUrl: i.product.images?.[0]?.url || '',
       quantity: i.quantity,
       selectedFinish: 'Standard', // simplified
       selectedMaterial: 'Standard', // simplified
