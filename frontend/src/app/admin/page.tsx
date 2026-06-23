@@ -79,6 +79,8 @@ export default function AdminPage() {
   const [newProdCategory, setNewProdCategory] = useState("");
   const [newProdPrice, setNewProdPrice] = useState("");
   const [newProdDesc, setNewProdDesc] = useState("");
+  const [newProdImageFile, setNewProdImageFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -172,8 +174,20 @@ export default function AdminPage() {
 
   const handleAddProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsUploading(true);
     
     try {
+      let uploadedImageUrl = "https://lh3.googleusercontent.com/aida-public/AB6AXuBMSEn5M-kqjnfBe6p3P8Ro25F6VGMPu1GWmuVqIVl_JPMd2a7Z68bxY8zySw27Zx_sMXueziaJMbwfHBb98K45KbeElTVnZZI5gsCsTbbntA8WyAvmUen290EGizZwR0Vmqy275zvNjM7k6lAFZnqA1kRA_Mh5qQSf1LNnYBZ_6vJKufe742YAKYRwp6Ql8c64fQkhmO4EFVW0VpwDZUQmUZjjI4fUnnX40sU3U9H_zo20Cr1HWFWszcbYNJav1t1g9FjJNvHs6VQ";
+      
+      if (newProdImageFile) {
+        const formData = new FormData();
+        formData.append("image", newProdImageFile);
+        const uploadRes = await api.post("/products/upload", formData, {
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+        uploadedImageUrl = uploadRes.data.imageUrl;
+      }
+
       const res = await api.post('/products', {
         name: newProdName,
         description: newProdDesc,
@@ -186,9 +200,7 @@ export default function AdminPage() {
         reviewsCount: 0,
         isNewArrival: true,
         isBestSeller: false,
-        images: [
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuBMSEn5M-kqjnfBe6p3P8Ro25F6VGMPu1GWmuVqIVl_JPMd2a7Z68bxY8zySw27Zx_sMXueziaJMbwfHBb98K45KbeElTVnZZI5gsCsTbbntA8WyAvmUen290EGizZwR0Vmqy275zvNjM7k6lAFZnqA1kRA_Mh5qQSf1LNnYBZ_6vJKufe742YAKYRwp6Ql8c64fQkhmO4EFVW0VpwDZUQmUZjjI4fUnnX40sU3U9H_zo20Cr1HWFWszcbYNJav1t1g9FjJNvHs6VQ"
-        ]
+        images: [uploadedImageUrl]
       });
       
       setAdminProducts(prev => [mapBackendProduct(res.data.data), ...prev]);
@@ -196,9 +208,12 @@ export default function AdminPage() {
       setNewProdName("");
       setNewProdPrice("");
       setNewProdDesc("");
+      setNewProdImageFile(null);
     } catch (e) {
       console.error(e);
       alert("Failed to add product");
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -706,8 +721,22 @@ export default function AdminPage() {
                   />
                 </div>
 
-                <button type="submit" className="w-full bg-primary text-white h-12 font-label-caps text-[11px] tracking-widest uppercase hover:bg-primary-container transition-colors flex items-center justify-center font-bold mt-2 cursor-pointer">
-                  Save Product
+                <div className="flex flex-col gap-1.5">
+                  <label className="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant font-semibold">Product Image (1:1 Square, &lt;2MB)</label>
+                  <input
+                    type="file"
+                    accept="image/png, image/jpeg, image/webp"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        setNewProdImageFile(e.target.files[0]);
+                      }
+                    }}
+                    className="h-11 border border-outline px-4 py-2.5 text-[13px] font-body focus:border-primary outline-none"
+                  />
+                </div>
+
+                <button type="submit" disabled={isUploading} className="w-full bg-primary text-white h-12 font-label-caps text-[11px] tracking-widest uppercase hover:bg-primary-container transition-colors flex items-center justify-center font-bold mt-2 cursor-pointer disabled:opacity-50">
+                  {isUploading ? "Uploading..." : "Save Product"}
                 </button>
               </form>
             </motion.div>
