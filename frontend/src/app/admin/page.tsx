@@ -644,8 +644,20 @@ export default function AdminPage() {
                             value={o.status}
                             onChange={async (e) => {
                               try {
-                                await api.patch(`/orders/admin/${o.id}/status`, { status: e.target.value });
-                                setAdminOrders(prev => prev.map(order => order.id === o.id ? { ...order, status: e.target.value } : order));
+                                const newStatus = e.target.value;
+                                await api.patch(`/orders/admin/${o.id}/status`, { status: newStatus });
+                                
+                                setAdminOrders(prev => prev.map(order => {
+                                  if (order.id === o.id) {
+                                    const updatedOrder = { ...order, status: newStatus };
+                                    // Auto-update local payment state if delivered, matching backend logic
+                                    if (newStatus === 'DELIVERED' && updatedOrder.payment) {
+                                      updatedOrder.payment = { ...updatedOrder.payment, status: 'SUCCESS' };
+                                    }
+                                    return updatedOrder;
+                                  }
+                                  return order;
+                                }));
                               } catch (err) {
                                 console.error(err);
                                 alert("Failed to update status");
