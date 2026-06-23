@@ -151,9 +151,9 @@ export default function ProductDetailsPage() {
           </p>
 
           <div className="flex items-end gap-4 p-6 mb-8 bg-surface-container-low border border-outline/30">
-            <span className="font-body text-[24px] text-on-background font-medium">${product.price.toLocaleString()}</span>
+            <span className="font-body text-[24px] text-on-background font-medium">₹{product.price.toLocaleString()}</span>
             {product.originalPrice && (
-              <span className="font-body text-[16px] text-on-surface-variant/70 line-through mb-1">${product.originalPrice.toLocaleString()}</span>
+              <span className="font-body text-[16px] text-on-surface-variant/70 line-through mb-1">₹{product.originalPrice.toLocaleString()}</span>
             )}
             {product.discount && (
               <span className="bg-primary/10 border border-primary/20 text-primary text-[10px] uppercase font-label-caps px-2 py-0.5 tracking-wider ml-auto font-semibold">
@@ -308,7 +308,7 @@ export default function ProductDetailsPage() {
                   <p className="font-body text-[11px] text-on-surface-variant font-light mb-3 tracking-widest uppercase">
                     {p.category}
                   </p>
-                  <p className="font-body text-[14px] text-primary tracking-wider font-semibold">${p.price.toLocaleString()}</p>
+                  <p className="font-body text-[14px] text-primary tracking-wider font-semibold">₹{p.price.toLocaleString()}</p>
                 </div>
               </motion.div>
             );

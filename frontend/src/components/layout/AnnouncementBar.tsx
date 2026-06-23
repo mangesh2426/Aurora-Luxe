@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 
 const ANNOUNCEMENTS = [
-  "✨ Complimentary Shipping on Orders over $1,999 ✨",
+  "✨ Complimentary Shipping on Orders over ₹1,999 ✨",
   "💖 Lifetime Warranty Against Tarnishing on All Pieces 💖",
   "🌟 Enjoy 10% Off Your First Acquisition — Code: GOLDEN10 🌟"
 ];

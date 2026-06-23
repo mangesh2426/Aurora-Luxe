@@ -188,13 +188,13 @@ function TrackingContent() {
                       <span className="font-display text-[16px] text-on-background font-semibold block">{item.name}</span>
                       <span className="font-body text-[10px] text-on-surface-variant uppercase tracking-wider block font-semibold">{item.selectedFinish} x{item.quantity}</span>
                     </div>
-                    <span className="font-body text-[14px] text-on-background font-semibold">${(item.price * item.quantity).toLocaleString()}</span>
+                    <span className="font-body text-[14px] text-on-background font-semibold">₹{(item.price * item.quantity).toLocaleString()}</span>
                   </div>
                 ))}
                 
                 <div className="border-t border-outline/50 pt-4 flex justify-between font-body text-[16px] text-on-background font-bold tracking-wider">
                   <span>Total Value</span>
-                  <span>${activeOrder.total.toLocaleString()}</span>
+                  <span>₹{activeOrder.total.toLocaleString()}</span>
                 </div>
               </div>
             </div>

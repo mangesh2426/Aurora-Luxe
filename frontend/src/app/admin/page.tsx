@@ -440,7 +440,7 @@ export default function AdminPage() {
                 <div className="bg-white p-6 border border-outline/35 shadow-sm flex items-center justify-between">
                   <div>
                     <span className="font-label-caps text-[9px] tracking-widest text-on-surface-variant uppercase font-semibold">Total Revenue</span>
-                    <div className="font-body text-[22px] font-bold text-on-background mt-2">${(dashboardStats?.revenue || 0).toLocaleString()}</div>
+                    <div className="font-body text-[22px] font-bold text-on-background mt-2">₹{(dashboardStats?.revenue || 0).toLocaleString()}</div>
                   </div>
                   <DollarSign size={28} className="text-primary stroke-[1.5]" />
                 </div>
@@ -496,7 +496,7 @@ export default function AdminPage() {
                           <td className="p-4">
                             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-blue-50 text-blue-600 border border-blue-200">{o.status}</span>
                           </td>
-                          <td className="p-4 pr-6 text-right font-medium">${Number(o.totalAmount).toLocaleString()}</td>
+                          <td className="p-4 pr-6 text-right font-medium">₹{Number(o.totalAmount).toLocaleString()}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -554,7 +554,7 @@ export default function AdminPage() {
                         </td>
                         <td className="p-4 font-semibold text-on-background">{p.name}</td>
                         <td className="p-4">{p.category}</td>
-                        <td className="p-4 font-medium">${p.price}</td>
+                        <td className="p-4 font-medium">₹{p.price}</td>
                         <td className="p-4">
                           <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${p.inStock ? "bg-emerald-50 text-emerald-600 border-emerald-200" : "bg-red-50 text-red-600 border-red-200"}`}>
                             {p.inStock ? "In Stock" : "Out of Stock"}
@@ -624,7 +624,7 @@ export default function AdminPage() {
                           <div className="font-semibold text-on-background">{o.user.firstName} {o.user.lastName}</div>
                           <div className="text-[11px] text-on-surface-variant/80 font-light">{o.user.email}</div>
                         </td>
-                        <td className="p-4 font-semibold">${Number(o.totalAmount).toLocaleString()}</td>
+                        <td className="p-4 font-semibold">₹{Number(o.totalAmount).toLocaleString()}</td>
                         <td className="p-4">
                           <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wider ${
                             o.payment ? "bg-emerald-50 text-emerald-600 border border-emerald-200" : "bg-red-50 text-red-600 border border-red-200"

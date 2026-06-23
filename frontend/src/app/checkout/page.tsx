@@ -85,7 +85,7 @@ export default function CheckoutPage() {
   };
 
   const completeOrder = (fields: CheckoutFields, paymentStatus: "Paid" | "Unpaid") => {
-    const orderId = `AL-${Math.floor(10000 + Math.random() * 90000)}`;
+    const orderId = `AL-₹{Math.floor(10000 + Math.random() * 90000)}`;
     const orderDate = new Date().toISOString().split("T")[0];
 
     const customerDetails: Customer = {
@@ -278,7 +278,7 @@ export default function CheckoutPage() {
                     <h4 className="font-display text-[15px] font-semibold truncate text-on-background">{item.name}</h4>
                     <span className="font-body text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold">{item.selectedFinish}</span>
                   </div>
-                  <span className="font-body text-[14px] text-on-background font-semibold">${(item.price * item.quantity).toLocaleString()}</span>
+                  <span className="font-body text-[14px] text-on-background font-semibold">₹{(item.price * item.quantity).toLocaleString()}</span>
                 </div>
               ))}
             </div>
@@ -286,21 +286,21 @@ export default function CheckoutPage() {
             <div className="border-t border-outline/50 pt-4 flex flex-col gap-3 font-body text-[13px] text-on-surface-variant">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>${subtotal.toLocaleString()}</span>
+                <span>₹{subtotal.toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
                 <span>Shipping Fees</span>
-                <span>{shipping === 0 ? "Complimentary" : `$${shipping}`}</span>
+                <span>{shipping === 0 ? "Complimentary" : `₹${shipping}`}</span>
               </div>
               {discount > 0 && (
                 <div className="flex justify-between text-primary font-semibold">
                   <span>Discount ({activeDiscount?.code})</span>
-                  <span>-${discount.toLocaleString()}</span>
+                  <span>-₹{discount.toLocaleString()}</span>
                 </div>
               )}
               <div className="flex justify-between text-on-background font-bold text-[17px] pt-4 border-t border-outline mt-2 tracking-wider">
                 <span>Total to Pay</span>
-                <span>${total.toLocaleString()}</span>
+                <span>₹{total.toLocaleString()}</span>
               </div>
             </div>
             
@@ -338,7 +338,7 @@ export default function CheckoutPage() {
                 <span className="text-[9px] uppercase tracking-wider font-semibold text-[#9A9FA5]">Razorpay Secure Checkout</span>
                 <div className="flex justify-between items-center mt-2">
                   <span className="font-display text-[22px] tracking-widest text-[#E6C787] font-light">AURORA <span className="font-semibold text-white">LUXE</span></span>
-                  <span className="font-body text-[18px] font-bold">${total.toLocaleString()}</span>
+                  <span className="font-body text-[18px] font-bold">₹{total.toLocaleString()}</span>
                 </div>
                 <button onClick={() => setRazorpayOpen(false)} className="absolute top-4 right-4 text-[#9A9FA5] hover:text-white text-[20px] cursor-pointer">&times;</button>
               </div>

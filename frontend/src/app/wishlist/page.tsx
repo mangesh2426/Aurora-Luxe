@@ -68,7 +68,7 @@ export default function WishlistPage() {
                       <h3 className="font-display text-[20px] text-on-background mb-2 hover:text-primary transition-colors font-semibold">{item.name}</h3>
                     </Link>
                     <p className="font-label-caps text-[10px] tracking-[0.2em] uppercase text-on-surface-variant mb-4 font-semibold">{item.category}</p>
-                    <p className="font-body text-[16px] text-primary mb-6 font-semibold">${item.price.toLocaleString()}</p>
+                    <p className="font-body text-[16px] text-primary mb-6 font-semibold">₹{item.price.toLocaleString()}</p>
                     
                     <div className="flex gap-2 mt-auto">
                       <button

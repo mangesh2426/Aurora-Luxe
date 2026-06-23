@@ -17,9 +17,9 @@ export default function ShippingPolicyPage() {
         <section className="space-y-4 font-body text-[14px] text-on-surface-variant font-light leading-relaxed">
           <h2 className="font-display text-[26px] text-on-background">Shipping Fees & Delivery Timelines</h2>
           <ul className="list-disc pl-6 space-y-2">
-            <li><strong>Complimentary Shipping:</strong> Automatically applied at checkout for all orders over $1,999.</li>
-            <li><strong>Standard Shipping:</strong> Flat charge of $99 applies to orders under $1,999. Delivered within 3-5 business days.</li>
-            <li><strong>COD orders:</strong> Subject to an additional handling fee of $50, delivered within 4-6 business days.</li>
+            <li><strong>Complimentary Shipping:</strong> Automatically applied at checkout for all orders over ₹1,999.</li>
+            <li><strong>Standard Shipping:</strong> Flat charge of ₹99 applies to orders under ₹1,999. Delivered within 3-5 business days.</li>
+            <li><strong>COD orders:</strong> Subject to an additional handling fee of ₹50, delivered within 4-6 business days.</li>
           </ul>
         </section>
 

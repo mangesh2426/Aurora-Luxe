@@ -74,7 +74,7 @@ export default function ProductCard({
           {description}
         </p>
         <p className="font-body text-[14px] text-primary mt-auto tracking-wider">
-          ${price.toLocaleString()}
+          ₹{price.toLocaleString()}
         </p>
       </div>
     </div>

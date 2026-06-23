@@ -101,7 +101,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                             <Plus size={14} className="stroke-[1.5]" />
                           </button>
                         </div>
-                        <span className="font-body text-[14px] text-primary font-medium">${(item.price * item.quantity).toLocaleString()}</span>
+                        <span className="font-body text-[14px] text-primary font-medium">₹{(item.price * item.quantity).toLocaleString()}</span>
                       </div>
                     </div>
                   </div>
@@ -114,7 +114,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               <div className="p-6 border-t border-outline bg-surface-container-low space-y-6">
                 <div className="flex justify-between items-end">
                   <span className="font-label-caps text-[11px] tracking-widest uppercase text-on-surface-variant">Subtotal</span>
-                  <span className="font-body text-[20px] text-primary font-medium">${subtotal.toLocaleString()}</span>
+                  <span className="font-body text-[20px] text-primary font-medium">₹{subtotal.toLocaleString()}</span>
                 </div>
                 <p className="font-body text-[11px] text-on-surface-variant font-light tracking-wide leading-relaxed">
                   Shipping & promotional discounts are calculated at the next checkout step.

@@ -18,7 +18,7 @@ export default function CartPage() {
 
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-  // Shipping rules: Complimentary above $1,999, else $99
+  // Shipping rules: Complimentary above ₹1,999, else ₹99
   const shippingCharge = subtotal >= 1999 || subtotal === 0 ? 0 : 99;
   
   const discountAmount = Math.round(subtotal * (appliedDiscountPercent / 100));
@@ -33,12 +33,12 @@ export default function CartPage() {
     if (code === "GOLDEN10" || code === "WELCOME10") {
       setAppliedDiscountPercent(10);
       setAppliedCodeName(code);
-      setCouponSuccess(`Promo code "${code}" applied: 10% discount!`);
+      setCouponSuccess(`Promo code "₹{code}" applied: 10% discount!`);
       localStorage.setItem("aurora_active_discount", JSON.stringify({ code, percent: 10 }));
     } else if (code === "GOLDEN15") {
       setAppliedDiscountPercent(15);
       setAppliedCodeName(code);
-      setCouponSuccess(`Promo code "${code}" applied: 15% discount!`);
+      setCouponSuccess(`Promo code "₹{code}" applied: 15% discount!`);
       localStorage.setItem("aurora_active_discount", JSON.stringify({ code, percent: 15 }));
     } else if (code === "") {
       setAppliedDiscountPercent(0);
@@ -109,7 +109,7 @@ export default function CartPage() {
                       onDecrease={() => updateCartQty(item.id, item.selectedFinish, item.selectedMaterial, item.quantity - 1)}
                       size="sm"
                     />
-                    <span className="font-body text-[18px] text-primary tracking-wider font-semibold">${(item.price * item.quantity).toLocaleString()}</span>
+                    <span className="font-body text-[18px] text-primary tracking-wider font-semibold">₹{(item.price * item.quantity).toLocaleString()}</span>
                   </div>
                 </div>
               </div>
@@ -139,24 +139,24 @@ export default function CartPage() {
               <div className="flex flex-col gap-4 font-body text-[14px]">
                 <div className="flex justify-between text-on-surface-variant">
                   <span>Subtotal</span>
-                  <span>${subtotal.toLocaleString()}</span>
+                  <span>₹{subtotal.toLocaleString()}</span>
                 </div>
                 
                 <div className="flex justify-between text-on-surface-variant">
                   <span>Shipping</span>
-                  <span>{shippingCharge === 0 ? "Complimentary" : `$${shippingCharge}`}</span>
+                  <span>{shippingCharge === 0 ? "Complimentary" : `₹₹{shippingCharge}`}</span>
                 </div>
 
                 {appliedDiscountPercent > 0 && (
                   <div className="flex justify-between text-primary font-semibold">
                     <span>Discount ({appliedCodeName})</span>
-                    <span>-${discountAmount.toLocaleString()}</span>
+                    <span>-₹{discountAmount.toLocaleString()}</span>
                   </div>
                 )}
                 
                 <div className="flex justify-between font-body text-[18px] text-primary pt-6 border-t border-outline mt-2 tracking-wider font-bold">
                   <span>Total</span>
-                  <span>${total.toLocaleString()}</span>
+                  <span>₹{total.toLocaleString()}</span>
                 </div>
               </div>
               
@@ -220,7 +220,7 @@ export default function CartPage() {
                 </div>
                 <div className="text-center">
                   <h3 className="font-display text-[18px] text-on-background mb-2 group-hover:text-primary transition-colors font-medium">{product.name}</h3>
-                  <p className="font-body text-[14px] text-primary tracking-wider font-semibold">${product.price.toLocaleString()}</p>
+                  <p className="font-body text-[14px] text-primary tracking-wider font-semibold">₹{product.price.toLocaleString()}</p>
                 </div>
               </Link>
             </motion.div>

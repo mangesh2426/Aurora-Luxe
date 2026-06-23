@@ -310,9 +310,9 @@ function ShopContent() {
                           {product.category}
                         </p>
                         <div className="flex gap-2 justify-center items-center font-body text-[14px]">
-                          <span className="text-primary font-medium">${product.price.toLocaleString()}</span>
+                          <span className="text-primary font-medium">₹{product.price.toLocaleString()}</span>
                           {product.originalPrice && (
-                            <span className="text-on-surface-variant/70 line-through text-[12px]">${product.originalPrice.toLocaleString()}</span>
+                            <span className="text-on-surface-variant/70 line-through text-[12px]">₹{product.originalPrice.toLocaleString()}</span>
                           )}
                         </div>
                       </div>

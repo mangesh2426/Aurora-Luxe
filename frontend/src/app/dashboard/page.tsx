@@ -83,7 +83,7 @@ export default function DashboardPage() {
                       Delivered
                     </span>
                   </div>
-                  <p className="font-body text-[12px] font-light tracking-[0.05em] text-on-surface-variant mt-4">Placed on Oct 12, 2023 • <span className="text-primary">$450.00</span></p>
+                  <p className="font-body text-[12px] font-light tracking-[0.05em] text-on-surface-variant mt-4">Placed on Oct 12, 2023 • <span className="text-primary">₹450.00</span></p>
                 </div>
               </div>
 
@@ -102,7 +102,7 @@ export default function DashboardPage() {
                       In Transit
                     </span>
                   </div>
-                  <p className="font-body text-[12px] font-light tracking-[0.05em] text-on-surface-variant mt-4">Placed on Nov 05, 2023 • <span className="text-primary">$1,250.00</span></p>
+                  <p className="font-body text-[12px] font-light tracking-[0.05em] text-on-surface-variant mt-4">Placed on Nov 05, 2023 • <span className="text-primary">₹1,250.00</span></p>
                 </div>
               </div>
 

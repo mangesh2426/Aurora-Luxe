@@ -60,9 +60,9 @@ export default function FilterSidebar({
         <h3 className="font-label-caps text-[12px] tracking-[0.2em] uppercase text-on-background mb-6">Price</h3>
         <div className="space-y-4">
           {[
-            { label: "Under $1,000", value: "under-1000" },
-            { label: "$1,000 - $2,000", value: "1000-2000" },
-            { label: "Above $2,000", value: "above-2000" }
+            { label: "Under ₹1,000", value: "under-1000" },
+            { label: "₹1,000 - ₹2,000", value: "1000-2000" },
+            { label: "Above ₹2,000", value: "above-2000" }
           ].map((range) => {
             const isChecked = selectedPrices.includes(range.value);
             return (
