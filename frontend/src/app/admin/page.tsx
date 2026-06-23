@@ -22,20 +22,40 @@ export default function AdminPage() {
     setMounted(true);
   }, []);
 
-  const handlePortalSubmit = (e: React.FormEvent) => {
+  const handlePortalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setPortalLoading(true);
     setPortalError("");
 
-    setTimeout(() => {
-      if (portalEmail.toLowerCase() === "admin@auroraluxe.com" && portalPassword === "admin123") {
-        login(portalEmail, "Admin Owner", "admin");
-        localStorage.setItem("aurora_user_session", JSON.stringify({ email: portalEmail, name: "Admin Owner", role: "admin" }));
-      } else {
-        setPortalError("Invalid administrator credentials.");
+    try {
+      const res = await api.post("/auth/login", {
+        email: portalEmail,
+        password: portalPassword
+      });
+
+      const { user: userData, token } = res.data;
+      const role = userData.role.toLowerCase();
+      
+      if (role !== "admin") {
+        setPortalError("Access denied. Admin privileges required.");
+        return;
       }
+
+      const name = `${userData.firstName} ${userData.lastName}`;
+      login(userData.id, userData.email, name, role, token);
+      localStorage.setItem("aurora_user_session", JSON.stringify({ 
+        id: userData.id, 
+        email: userData.email, 
+        name, 
+        role, 
+        token 
+      }));
+    } catch (error: any) {
+      console.error(error);
+      setPortalError(error.response?.data?.message || "Invalid administrator credentials.");
+    } finally {
       setPortalLoading(false);
-    }, 800);
+    }
   };
 
   const [activePanel, setActivePanel] = useState<"overview" | "products" | "orders" | "customers">("overview");
