@@ -161,9 +161,33 @@ export const useStore = create<StoreState>()(
 
       updateOrderStatus: (orderId, status) =>
         set((state) => ({
-          orders: state.orders.map((o) =>
-            o.id === orderId ? { ...o, status } : o
-          )
+          orders: state.orders.map((o) => {
+            if (o.id === orderId) {
+              const now = new Date().toISOString();
+              const updatedOrder = { ...o, status };
+              if (status === "Placed") {
+                updatedOrder.placedAt = now;
+                updatedOrder.processingAt = undefined;
+                updatedOrder.shippedAt = undefined;
+                updatedOrder.deliveredAt = undefined;
+                updatedOrder.cancelledAt = undefined;
+              } else if (status === "Processing") {
+                updatedOrder.processingAt = now;
+                updatedOrder.shippedAt = undefined;
+                updatedOrder.deliveredAt = undefined;
+                updatedOrder.cancelledAt = undefined;
+              } else if (status === "Shipped") {
+                updatedOrder.shippedAt = now;
+                updatedOrder.deliveredAt = undefined;
+                updatedOrder.cancelledAt = undefined;
+              } else if (status === "Delivered") {
+                updatedOrder.deliveredAt = now;
+                updatedOrder.cancelledAt = undefined;
+              }
+              return updatedOrder;
+            }
+            return o;
+          })
         })),
 
       updateOrderPaymentStatus: (orderId, paymentStatus) =>

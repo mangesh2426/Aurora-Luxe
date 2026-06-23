@@ -337,6 +337,11 @@ export class OrdersService {
       paymentStatus,
       paymentMethod: order.payment?.method || 'N/A',
       customer,
+      placedAt: order.placedAt ? order.placedAt.toISOString() : order.createdAt.toISOString(),
+      processingAt: order.processingAt ? order.processingAt.toISOString() : null,
+      shippedAt: order.shippedAt ? order.shippedAt.toISOString() : null,
+      deliveredAt: order.deliveredAt ? order.deliveredAt.toISOString() : null,
+      cancelledAt: order.cancelledAt ? order.cancelledAt.toISOString() : null,
     };
   }
 
@@ -364,9 +369,34 @@ export class OrdersService {
 
     // Auto-update Payment Status to SUCCESS if status is set to DELIVERED
     const updatedOrder = await this.prisma.$transaction(async (tx) => {
+      const now = new Date();
+      const updateData: any = { status };
+
+      if (status === OrderStatus.PENDING) {
+        updateData.placedAt = now;
+        updateData.processingAt = null;
+        updateData.shippedAt = null;
+        updateData.deliveredAt = null;
+        updateData.cancelledAt = null;
+      } else if (status === OrderStatus.PROCESSING) {
+        updateData.processingAt = now;
+        updateData.shippedAt = null;
+        updateData.deliveredAt = null;
+        updateData.cancelledAt = null;
+      } else if (status === OrderStatus.SHIPPED) {
+        updateData.shippedAt = now;
+        updateData.deliveredAt = null;
+        updateData.cancelledAt = null;
+      } else if (status === OrderStatus.DELIVERED) {
+        updateData.deliveredAt = now;
+        updateData.cancelledAt = null;
+      } else if (status === OrderStatus.CANCELLED) {
+        updateData.cancelledAt = now;
+      }
+
       const nextOrder = await tx.order.update({
         where: { id: orderId },
-        data: { status },
+        data: updateData,
       });
 
       if (status === OrderStatus.DELIVERED) {

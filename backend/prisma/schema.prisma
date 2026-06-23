@@ -81,6 +81,11 @@ model Order {
   couponId        String?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
+  placedAt        DateTime    @default(now())
+  processingAt    DateTime?
+  shippedAt       DateTime?
+  deliveredAt     DateTime?
+  cancelledAt     DateTime?
   address         Address?    @relation(fields: [addressId], references: [id])
   coupon          Coupon?     @relation(fields: [couponId], references: [id])
   user            User        @relation(fields: [userId], references: [id])

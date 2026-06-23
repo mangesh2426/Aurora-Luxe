@@ -63,6 +63,47 @@ function TrackingContent() {
     setActiveOrder(null);
   };
 
+  const getStepTimestamp = (label: string, order: Order) => {
+    const formatDateTime = (dateStr?: string) => {
+      if (!dateStr) return null;
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return null;
+      return d.toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric"
+      }) + ", " + d.toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true
+      });
+    };
+
+    const formatFallbackDate = (dateStr: string) => {
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return dateStr;
+      return d.toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric"
+      });
+    };
+
+    if (label === "Placed") {
+      return formatDateTime(order.placedAt) || `${formatFallbackDate(order.date)}, 10:15 AM`;
+    }
+    if (label === "Processing") {
+      return formatDateTime(order.processingAt);
+    }
+    if (label === "Shipped") {
+      return formatDateTime(order.shippedAt);
+    }
+    if (label === "Delivered") {
+      return formatDateTime(order.deliveredAt);
+    }
+    return null;
+  };
+
   // Determine active step index: Placed=0, Processing=1, Shipped=2, Delivered=3
   const getStepIndex = (status: Order["status"]) => {
     if (status === "Placed") return 0;
@@ -146,10 +187,10 @@ function TrackingContent() {
 
             {/* Steps details mapping */}
             {[
-              { label: "Placed", icon: Receipt, time: "10:15 AM" },
-              { label: "Processing", icon: Settings, time: "02:30 PM" },
-              { label: "Shipped", icon: Truck, time: "06:00 PM" },
-              { label: "Delivered", icon: Home, time: "11:45 AM" }
+              { label: "Placed", icon: Receipt },
+              { label: "Processing", icon: Settings },
+              { label: "Shipped", icon: Truck },
+              { label: "Delivered", icon: Home }
             ].map((step, idx) => {
               const activeIndex = getStepIndex(activeOrder.status);
               const isCompleted = idx < activeIndex || activeOrder.status === "Delivered";
@@ -175,7 +216,7 @@ function TrackingContent() {
                     {step.label}
                   </span>
                   <span className="font-body text-[9px] text-on-surface-variant/80 font-light mt-1">
-                    {idx <= activeIndex ? `${activeOrder.date} ${step.time}` : "--:--"}
+                    {idx <= activeIndex ? (getStepTimestamp(step.label, activeOrder) || "--:--") : "--:--"}
                   </span>
                 </div>
               );

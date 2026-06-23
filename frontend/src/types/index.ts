@@ -48,4 +48,9 @@ export interface Order {
   paymentStatus: "Paid" | "Unpaid";
   paymentMethod: string;
   customer: Customer;
+  placedAt?: string;
+  processingAt?: string;
+  shippedAt?: string;
+  deliveredAt?: string;
+  cancelledAt?: string;
 }
