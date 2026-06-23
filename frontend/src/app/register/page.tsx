@@ -34,7 +34,7 @@ export default function RegisterPage() {
         password: data.password
       });
 
-      const { user: userData, token } = res.data;
+      const { user: userData, access_token: token } = res.data;
 
       setSuccessMsg("Account created successfully! Logging you in...");
       

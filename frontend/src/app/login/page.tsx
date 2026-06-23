@@ -42,7 +42,7 @@ export default function LoginPage() {
         password: data.password
       });
 
-      const { user: userData, token } = res.data;
+      const { user: userData, access_token: token } = res.data;
 
       setSuccessMsg("Logged in successfully! Redirecting...");
       

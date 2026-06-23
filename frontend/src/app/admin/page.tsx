@@ -33,7 +33,7 @@ export default function AdminPage() {
         password: portalPassword
       });
 
-      const { user: userData, token } = res.data;
+      const { user: userData, access_token: token } = res.data;
       const role = userData.role.toLowerCase();
       
       if (role !== "admin") {
