@@ -14,11 +14,19 @@ api.interceptors.request.use((config) => {
   if (session) {
     try {
       const parsed = JSON.parse(session);
-      if (parsed.token) {
+      if (parsed.token && parsed.token !== "undefined") {
         config.headers.Authorization = `Bearer ${parsed.token}`;
+      } else {
+        // Token is missing or literally "undefined", which means the session is broken.
+        // We will remove it so the app doesn't keep trying to use a broken session.
+        localStorage.removeItem('aurora_user_session');
+        if (typeof window !== "undefined") {
+          window.location.href = '/login';
+        }
       }
     } catch (e) {
       console.error('Failed to parse session from localStorage', e);
+      localStorage.removeItem('aurora_user_session');
     }
   }
   return config;
