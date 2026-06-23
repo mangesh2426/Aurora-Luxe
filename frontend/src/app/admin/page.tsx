@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import api, { mapBackendProduct } from "@/lib/api";
 
 export default function AdminPage() {
-  const { orders, updateOrderStatus, updateOrderPaymentStatus, user, login, logout } = useStore();
+  const { user, login, logout } = useStore();
   const [mounted, setMounted] = useState(false);
   
   // Authentication Portal States
@@ -65,6 +65,14 @@ export default function AdminPage() {
   const [categories, setCategories] = useState<{id: string, name: string}[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [productModalOpen, setProductModalOpen] = useState(false);
+  
+  // New backend states
+  const [dashboardStats, setDashboardStats] = useState<any>(null);
+  const [adminOrders, setAdminOrders] = useState<any[]>([]);
+  const [adminCustomers, setAdminCustomers] = useState<any[]>([]);
+  const [loadingStats, setLoadingStats] = useState(false);
+  const [loadingOrders, setLoadingOrders] = useState(false);
+  const [loadingCustomers, setLoadingCustomers] = useState(false);
 
   // Form states for adding products
   const [newProdName, setNewProdName] = useState("");
@@ -90,10 +98,52 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    if (activePanel === "products") {
+    if (activePanel === "overview") {
+      fetchStats();
+    } else if (activePanel === "products") {
       fetchProducts();
+    } else if (activePanel === "orders") {
+      fetchOrders();
+    } else if (activePanel === "customers") {
+      fetchCustomers();
     }
   }, [activePanel]);
+
+  const fetchStats = async () => {
+    setLoadingStats(true);
+    try {
+      const res = await api.get('/admin/stats');
+      setDashboardStats(res.data.data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingStats(false);
+    }
+  };
+
+  const fetchOrders = async () => {
+    setLoadingOrders(true);
+    try {
+      const res = await api.get('/orders/admin/all');
+      setAdminOrders(res.data.data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingOrders(false);
+    }
+  };
+
+  const fetchCustomers = async () => {
+    setLoadingCustomers(true);
+    try {
+      const res = await api.get('/admin/users');
+      setAdminCustomers(res.data.data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingCustomers(false);
+    }
+  };
 
   const fetchProducts = async () => {
     setLoadingProducts(true);
@@ -107,23 +157,7 @@ export default function AdminPage() {
     }
   };
 
-  const paidOrders = orders.filter(o => o.paymentStatus === "Paid");
-  const totalRevenue = paidOrders.reduce((sum, o) => sum + o.total, 0);
 
-  // Customer directories (aggregate spends by customer email)
-  const customersMap: { [email: string]: { name: string; phone: string; address: string; totalSpend: number } } = {};
-  orders.forEach(o => {
-    const email = o.customer.email.toLowerCase();
-    if (!customersMap[email]) {
-      customersMap[email] = {
-        name: o.customer.name,
-        phone: o.customer.phone,
-        address: o.customer.address,
-        totalSpend: 0
-      };
-    }
-    customersMap[email].totalSpend += o.total;
-  });
 
   const handleDeleteProduct = async (id: string) => {
     try {
@@ -313,28 +347,28 @@ export default function AdminPage() {
                 <div className="bg-white p-6 border border-outline/35 shadow-sm flex items-center justify-between">
                   <div>
                     <span className="font-label-caps text-[9px] tracking-widest text-on-surface-variant uppercase font-semibold">Total Revenue</span>
-                    <div className="font-body text-[22px] font-bold text-on-background mt-2">${totalRevenue.toLocaleString()}</div>
+                    <div className="font-body text-[22px] font-bold text-on-background mt-2">${(dashboardStats?.revenue || 0).toLocaleString()}</div>
                   </div>
                   <DollarSign size={28} className="text-primary stroke-[1.5]" />
                 </div>
                 <div className="bg-white p-6 border border-outline/35 shadow-sm flex items-center justify-between">
                   <div>
                     <span className="font-label-caps text-[9px] tracking-widest text-on-surface-variant uppercase font-semibold">Orders Logged</span>
-                    <div className="font-body text-[22px] font-bold text-on-background mt-2">{orders.length}</div>
+                    <div className="font-body text-[22px] font-bold text-on-background mt-2">{dashboardStats?.ordersCount || 0}</div>
                   </div>
                   <ShoppingBag size={28} className="text-primary stroke-[1.5]" />
                 </div>
                 <div className="bg-white p-6 border border-outline/35 shadow-sm flex items-center justify-between">
                   <div>
                     <span className="font-label-caps text-[9px] tracking-widest text-on-surface-variant uppercase font-semibold">Live Inventory</span>
-                    <div className="font-body text-[22px] font-bold text-on-background mt-2">{adminProducts.length}</div>
+                    <div className="font-body text-[22px] font-bold text-on-background mt-2">{dashboardStats?.totalProducts || 0}</div>
                   </div>
                   <Tag size={28} className="text-primary stroke-[1.5]" />
                 </div>
                 <div className="bg-white p-6 border border-outline/35 shadow-sm flex items-center justify-between">
                   <div>
                     <span className="font-label-caps text-[9px] tracking-widest text-on-surface-variant uppercase font-semibold">Unique Clients</span>
-                    <div className="font-body text-[22px] font-bold text-on-background mt-2">{Object.keys(customersMap).length}</div>
+                    <div className="font-body text-[22px] font-bold text-on-background mt-2">{dashboardStats?.usersCount || 0}</div>
                   </div>
                   <Users size={28} className="text-primary stroke-[1.5]" />
                 </div>
@@ -357,19 +391,19 @@ export default function AdminPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-outline/30 font-body text-on-surface">
-                      {orders.slice(0, 4).map(o => (
+                      {dashboardStats?.recentOrders?.map((o: any) => (
                         <tr key={o.id}>
-                          <td className="p-4 pl-6 font-semibold">{o.id}</td>
-                          <td className="p-4">{o.customer.name}</td>
+                          <td className="p-4 pl-6 font-semibold">{o.id.substring(0, 8)}...</td>
+                          <td className="p-4">{o.user.firstName} {o.user.lastName}</td>
                           <td className="p-4">
                             <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wider ${
-                              o.paymentStatus === "Paid" ? "bg-emerald-50 text-emerald-600 border border-emerald-200" : "bg-red-50 text-red-600 border border-red-200"
-                            }`}>{o.paymentStatus}</span>
+                              o.payment ? "bg-emerald-50 text-emerald-600 border border-emerald-200" : "bg-red-50 text-red-600 border border-red-200"
+                            }`}>{o.payment ? "PAID" : "UNPAID"}</span>
                           </td>
                           <td className="p-4">
                             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-blue-50 text-blue-600 border border-blue-200">{o.status}</span>
                           </td>
-                          <td className="p-4 pr-6 text-right font-medium">${o.total.toLocaleString()}</td>
+                          <td className="p-4 pr-6 text-right font-medium">${Number(o.totalAmount).toLocaleString()}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -476,34 +510,44 @@ export default function AdminPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-outline/30 font-body text-on-surface">
-                    {orders.map(o => (
-                      <tr key={o.id}>
-                        <td className="p-4 pl-6 font-semibold text-on-background">{o.id}</td>
-                        <td className="p-4 leading-normal">
-                          <div className="font-semibold text-on-background">{o.customer.name}</div>
-                          <div className="text-[11px] text-on-surface-variant/80 font-light">{o.customer.email}</div>
+                    {loadingOrders ? (
+                      <tr>
+                        <td colSpan={6} className="p-8 text-center">
+                          <Loader2 className="animate-spin text-primary mx-auto" size={24} />
                         </td>
-                        <td className="p-4 font-semibold">${o.total.toLocaleString()}</td>
+                      </tr>
+                    ) : adminOrders.map((o: any) => (
+                      <tr key={o.id}>
+                        <td className="p-4 pl-6 font-semibold text-on-background">{o.id.substring(0, 8)}...</td>
+                        <td className="p-4 leading-normal">
+                          <div className="font-semibold text-on-background">{o.user.firstName} {o.user.lastName}</div>
+                          <div className="text-[11px] text-on-surface-variant/80 font-light">{o.user.email}</div>
+                        </td>
+                        <td className="p-4 font-semibold">${Number(o.totalAmount).toLocaleString()}</td>
                         <td className="p-4">
-                          <select
-                            value={o.paymentStatus}
-                            onChange={(e) => updateOrderPaymentStatus(o.id, e.target.value as any)}
-                            className="border border-outline bg-white px-2 py-1 text-[12px] font-body outline-none focus:border-primary"
-                          >
-                            <option value="Paid">Paid</option>
-                            <option value="Unpaid">Pending</option>
-                          </select>
+                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wider ${
+                            o.payment ? "bg-emerald-50 text-emerald-600 border border-emerald-200" : "bg-red-50 text-red-600 border border-red-200"
+                          }`}>{o.payment ? "PAID" : "UNPAID"}</span>
                         </td>
                         <td className="p-4">
                           <select
                             value={o.status}
-                            onChange={(e) => updateOrderStatus(o.id, e.target.value as any)}
+                            onChange={async (e) => {
+                              try {
+                                await api.patch(`/orders/admin/${o.id}/status`, { status: e.target.value });
+                                setAdminOrders(prev => prev.map(order => order.id === o.id ? { ...order, status: e.target.value } : order));
+                              } catch (err) {
+                                console.error(err);
+                                alert("Failed to update status");
+                              }
+                            }}
                             className="border border-outline bg-white px-2 py-1 text-[12px] font-body outline-none focus:border-primary"
                           >
-                            <option value="Placed">Placed</option>
-                            <option value="Processing">Processing</option>
-                            <option value="Shipped">Shipped</option>
-                            <option value="Delivered">Delivered</option>
+                            <option value="PENDING">Pending</option>
+                            <option value="PROCESSING">Processing</option>
+                            <option value="SHIPPED">Shipped</option>
+                            <option value="DELIVERED">Delivered</option>
+                            <option value="CANCELLED">Cancelled</option>
                           </select>
                         </td>
                         <td className="p-4 pr-6 text-right">
@@ -545,18 +589,38 @@ export default function AdminPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-outline/30 font-body text-on-surface">
-                    {Object.keys(customersMap).map(email => {
-                      const c = customersMap[email];
-                      return (
-                        <tr key={email}>
-                          <td className="p-4 pl-6 font-semibold text-on-background">{c.name}</td>
-                          <td className="p-4">{email}</td>
-                          <td className="p-4 font-light text-[12px]">{c.phone}</td>
-                          <td className="p-4 font-light text-[12px] leading-relaxed truncate max-w-[250px]">{c.address}</td>
-                          <td className="p-4 pr-6 text-right font-bold text-primary">${c.totalSpend.toLocaleString()}</td>
-                        </tr>
-                      );
-                    })}
+                    {loadingCustomers ? (
+                      <tr>
+                        <td colSpan={5} className="p-8 text-center">
+                          <Loader2 className="animate-spin text-primary mx-auto" size={24} />
+                        </td>
+                      </tr>
+                    ) : adminCustomers.map((c: any) => (
+                      <tr key={c.id}>
+                        <td className="p-4 pl-6 font-semibold text-on-background">{c.firstName} {c.lastName}</td>
+                        <td className="p-4">{c.email}</td>
+                        <td className="p-4 font-light text-[12px]">{new Date(c.createdAt).toLocaleDateString()}</td>
+                        <td className="p-4 font-light text-[12px] leading-relaxed truncate max-w-[250px]">{c.role}</td>
+                        <td className="p-4 pr-6 text-right font-bold text-primary">
+                          <select
+                            value={c.role}
+                            onChange={async (e) => {
+                              try {
+                                await api.patch(`/admin/users/${c.id}/role`, { role: e.target.value });
+                                setAdminCustomers(prev => prev.map(user => user.id === c.id ? { ...user, role: e.target.value } : user));
+                              } catch (err) {
+                                console.error(err);
+                                alert("Failed to update role");
+                              }
+                            }}
+                            className="border border-outline bg-white px-2 py-1 text-[12px] font-body outline-none focus:border-primary"
+                          >
+                            <option value="USER">User</option>
+                            <option value="ADMIN">Admin</option>
+                          </select>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
