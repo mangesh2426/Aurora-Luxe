@@ -907,16 +907,31 @@ export default function AdminPage() {
                       <Image src={existingImages[0]} alt="Main" fill className="object-cover" />
                     </div>
                   )}
-                  <input
-                    type="file"
-                    accept="image/png, image/jpeg, image/webp"
-                    onChange={(e) => {
-                      if (e.target.files && e.target.files.length > 0) {
-                        setNewProdMainImage(e.target.files[0]);
-                      }
-                    }}
-                    className="h-11 border border-outline px-4 py-2.5 text-[13px] font-body focus:border-primary outline-none"
-                  />
+                  {newProdMainImage && (
+                    <div className="relative w-12 h-12 border border-outline/50 bg-surface mb-2 group">
+                      <Image src={URL.createObjectURL(newProdMainImage)} alt="New Main" fill className="object-cover" />
+                      <button 
+                        type="button" 
+                        onClick={() => setNewProdMainImage(null)} 
+                        className="absolute -top-2 -right-2 bg-error text-white rounded-full p-0.5 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                        title="Cancel Image"
+                      >
+                        <X size={12} />
+                      </button>
+                    </div>
+                  )}
+                  {!newProdMainImage && (
+                    <input
+                      type="file"
+                      accept="image/png, image/jpeg, image/webp"
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files.length > 0) {
+                          setNewProdMainImage(e.target.files[0]);
+                        }
+                      }}
+                      className="h-11 border border-outline px-4 py-2.5 text-[13px] font-body focus:border-primary outline-none"
+                    />
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-1.5">
@@ -930,18 +945,38 @@ export default function AdminPage() {
                       ))}
                     </div>
                   )}
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/png, image/jpeg, image/webp"
-                    onChange={(e) => {
-                      if (e.target.files) {
-                        setNewProdSecondaryImages(Array.from(e.target.files));
-                      }
-                    }}
-                    className="h-11 border border-outline px-4 py-2.5 text-[13px] font-body focus:border-primary outline-none"
-                  />
-                  <span className="text-[10px] text-on-surface-variant">Choosing new files will replace all existing secondary images.</span>
+                  {newProdSecondaryImages.length > 0 && (
+                    <div className="flex gap-2 mb-2 flex-wrap items-center">
+                      {newProdSecondaryImages.map((file, idx) => (
+                        <div key={idx} className="relative w-12 h-12 border border-outline/50 bg-surface">
+                          <Image src={URL.createObjectURL(file)} alt={`New Secondary ${idx}`} fill className="object-cover" />
+                        </div>
+                      ))}
+                      <button 
+                        type="button" 
+                        onClick={() => setNewProdSecondaryImages([])} 
+                        className="flex items-center justify-center bg-error/10 text-error px-2 py-1 rounded font-label-caps text-[9px] hover:bg-error/20 font-bold"
+                      >
+                        Clear All
+                      </button>
+                    </div>
+                  )}
+                  {newProdSecondaryImages.length === 0 && (
+                    <>
+                      <input
+                        type="file"
+                        multiple
+                        accept="image/png, image/jpeg, image/webp"
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files.length > 0) {
+                            setNewProdSecondaryImages(Array.from(e.target.files));
+                          }
+                        }}
+                        className="h-11 border border-outline px-4 py-2.5 text-[13px] font-body focus:border-primary outline-none"
+                      />
+                      <span className="text-[10px] text-on-surface-variant">Choosing new files will replace all existing secondary images.</span>
+                    </>
+                  )}
                 </div>
 
                 <button type="submit" disabled={isUploading} className="w-full bg-primary text-white h-12 font-label-caps text-[11px] tracking-widest uppercase hover:bg-primary-container transition-colors flex items-center justify-center font-bold mt-2 cursor-pointer disabled:opacity-50">
