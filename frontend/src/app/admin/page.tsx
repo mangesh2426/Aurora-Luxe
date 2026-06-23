@@ -628,9 +628,16 @@ export default function AdminPage() {
                         </td>
                         <td className="p-4 font-semibold">₹{Number(o.totalAmount).toLocaleString()}</td>
                         <td className="p-4">
-                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wider ${
-                            o.payment ? "bg-emerald-50 text-emerald-600 border border-emerald-200" : "bg-red-50 text-red-600 border border-red-200"
-                          }`}>{o.payment ? "PAID" : "UNPAID"}</span>
+                          <div className="flex flex-col gap-1 items-start">
+                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wider uppercase ${
+                              o.payment?.status === 'SUCCESS' ? "bg-emerald-50 text-emerald-600 border border-emerald-200" :
+                              o.payment?.status === 'PENDING' ? "bg-amber-50 text-amber-600 border border-amber-200" :
+                              "bg-red-50 text-red-600 border border-red-200"
+                            }`}>{o.payment?.status || "UNPAID"}</span>
+                            <span className="text-[10px] text-on-surface-variant font-medium tracking-wide">
+                              {o.payment?.method || "Unknown"}
+                            </span>
+                          </div>
                         </td>
                         <td className="p-4">
                           <select
