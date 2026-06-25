@@ -11,7 +11,6 @@ import { SlidersHorizontal, Search, Heart, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api, { mapBackendProduct } from "@/lib/api";
 import { Product } from "@/types";
-import ProductCard from "@/components/ProductCard";
 
 function ShopContent() {
   const searchParams = useSearchParams();
