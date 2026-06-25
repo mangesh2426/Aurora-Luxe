@@ -2,10 +2,14 @@ import { Injectable, NotFoundException, BadRequestException, ForbiddenException,
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrderInput, CreateCouponInput } from './orders.schema';
 import { OrderStatus, PaymentStatus } from '@prisma/client';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class OrdersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private notificationsService: NotificationsService,
+  ) {}
 
   // --- Coupon Operations ---
   async createCoupon(data: CreateCouponInput) {
@@ -413,5 +417,9 @@ export class OrdersService {
       where: { id: orderId },
       include: { payment: true },
     });
+  }
+
+  async sendManualNotification(orderId: string): Promise<boolean> {
+    return this.notificationsService.sendOrderNotifications(orderId);
   }
 }

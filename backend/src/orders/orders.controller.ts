@@ -90,4 +90,11 @@ export class OrdersController {
     const order = await this.ordersService.updateOrderStatusAdmin(id, body.status);
     return { success: true, message: 'Order status updated successfully', data: order };
   }
+
+  @Post(':id/notify')
+  @UseGuards(JwtAuthGuard)
+  async triggerNotification(@Param('id') id: string) {
+    const success = await this.ordersService.sendManualNotification(id);
+    return { success, message: success ? 'Notifications sent successfully' : 'Failed to send notifications' };
+  }
 }

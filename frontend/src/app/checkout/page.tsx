@@ -125,6 +125,24 @@ export default function CheckoutPage() {
         paymentStatus: paymentStatus
       });
       
+      // Call email notification API safely in the background
+      try {
+        await fetch('/api/orders/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            orderId,
+            customer: customerDetails,
+            items: cart,
+            total,
+            paymentMethod: fields.paymentMethod === "Razorpay" ? "Razorpay Secure" : "Cash on Delivery",
+            paymentStatus
+          })
+        });
+      } catch (notifyErr) {
+        console.error("Failed to send order emails", notifyErr);
+      }
+      
       placeOrder(newOrder);
       clearCart();
       localStorage.removeItem("aurora_active_discount");
