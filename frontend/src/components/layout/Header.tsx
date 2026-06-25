@@ -38,45 +38,55 @@ export default function Header() {
     <>
       {/* Sticky Main Nav (Desktop) */}
       <nav
-        className={`hidden md:flex justify-between items-center w-full px-12 py-5 bg-white border-b border-outline/30 sticky top-0 z-40 transition-all duration-300 ${
-          scrolled ? "shadow-sm" : ""
+        className={`hidden md:flex justify-between items-center w-full px-16 sticky top-0 z-40 transition-all duration-300 border-b border-outline/20 ${
+          scrolled
+            ? "bg-white/85 backdrop-blur-md shadow-[0_4px_30px_rgba(0,0,0,0.02)] py-3.5"
+            : "bg-white py-5.5"
         }`}
       >
         {/* Left Side: Logo */}
-        <Link href="/" className="font-display text-[26px] text-on-background tracking-[0.15em] font-light hover:opacity-85 transition-opacity">
-          AURORA <span className="text-primary font-medium">LUXE</span>
+        <Link href="/" className="font-display text-[25px] text-on-background tracking-[0.2em] font-light hover:opacity-80 transition-opacity">
+          AURORA <span className="text-primary font-medium tracking-[0.15em]">LUXE</span>
         </Link>
 
         {/* Center: Navigation Links */}
-        <div className="flex gap-8 items-center">
+        <div className="flex gap-9 items-center">
           <Link
             href="/"
-            className={`font-label-caps text-[12px] tracking-[0.15em] uppercase transition-colors duration-300 font-medium ${
-              pathname === "/" ? "text-primary font-semibold" : "text-on-surface hover:text-primary"
+            className={`font-label-caps text-[10.5px] tracking-[0.2em] uppercase transition-colors duration-300 relative py-1 ${
+              pathname === "/"
+                ? "text-primary font-semibold after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1.5px] after:bg-primary"
+                : "text-on-surface-variant hover:text-primary after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:h-[1.5px] after:bg-primary after:transition-all after:duration-300"
             }`}
           >
             Home
           </Link>
           <Link
             href="/shop"
-            className={`font-label-caps text-[12px] tracking-[0.15em] uppercase transition-colors duration-300 font-medium ${
-              pathname === "/shop" ? "text-primary font-semibold" : "text-on-surface hover:text-primary"
+            className={`font-label-caps text-[10.5px] tracking-[0.2em] uppercase transition-colors duration-300 relative py-1 ${
+              pathname === "/shop"
+                ? "text-primary font-semibold after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1.5px] after:bg-primary"
+                : "text-on-surface-variant hover:text-primary after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:h-[1.5px] after:bg-primary after:transition-all after:duration-300"
             }`}
           >
             Shop
           </Link>
           <Link
             href="/wishlist"
-            className={`font-label-caps text-[12px] tracking-[0.15em] uppercase transition-colors duration-300 font-medium ${
-              pathname === "/wishlist" ? "text-primary font-semibold" : "text-on-surface hover:text-primary"
+            className={`font-label-caps text-[10.5px] tracking-[0.2em] uppercase transition-colors duration-300 relative py-1 ${
+              pathname === "/wishlist"
+                ? "text-primary font-semibold after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1.5px] after:bg-primary"
+                : "text-on-surface-variant hover:text-primary after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:h-[1.5px] after:bg-primary after:transition-all after:duration-300"
             }`}
           >
             Wishlist
           </Link>
           <Link
             href="/tracking"
-            className={`font-label-caps text-[12px] tracking-[0.15em] uppercase transition-colors duration-300 font-medium ${
-              pathname === "/tracking" ? "text-primary font-semibold" : "text-on-surface hover:text-primary"
+            className={`font-label-caps text-[10.5px] tracking-[0.2em] uppercase transition-colors duration-300 relative py-1 ${
+              pathname === "/tracking"
+                ? "text-primary font-semibold after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1.5px] after:bg-primary"
+                : "text-on-surface-variant hover:text-primary after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:h-[1.5px] after:bg-primary after:transition-all after:duration-300"
             }`}
           >
             Track Order
@@ -84,17 +94,19 @@ export default function Header() {
           {mounted && user?.role === "admin" && (
             <Link
               href="/admin"
-              className={`font-label-caps text-[12px] tracking-[0.15em] uppercase transition-colors duration-300 font-medium ${
-                pathname?.startsWith("/admin") ? "text-primary font-semibold" : "text-on-surface hover:text-primary"
+              className={`font-label-caps text-[10.5px] tracking-[0.2em] uppercase transition-colors duration-300 relative py-1 ${
+                pathname?.startsWith("/admin")
+                  ? "text-primary font-semibold after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1.5px] after:bg-primary"
+                  : "text-on-surface-variant hover:text-primary after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:h-[1.5px] after:bg-primary after:transition-all after:duration-300"
               }`}
             >
-              Admin Dashboard
+              Admin
             </Link>
           )}
         </div>
 
         {/* Right Side: Search and Icons */}
-        <div className="flex gap-6 items-center">
+        <div className="flex gap-7 items-center">
           {/* Search Box */}
           <SearchBar />
 
@@ -104,9 +116,9 @@ export default function Header() {
             aria-label="Wishlist"
             className="text-on-surface hover:text-primary transition-colors duration-300 relative p-1"
           >
-            <Heart size={22} className={`stroke-[1.5] ${wishlistCount > 0 ? "fill-primary text-primary" : ""}`} />
+            <Heart size={21} className={`stroke-[1.5] ${wishlistCount > 0 ? "fill-primary text-primary" : ""}`} />
             {wishlistCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-primary text-white text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-primary text-white text-[8px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center">
                 {wishlistCount}
               </span>
             )}
@@ -118,9 +130,9 @@ export default function Header() {
             aria-label="Cart"
             className="text-on-surface hover:text-primary transition-colors duration-300 relative p-1 cursor-pointer"
           >
-            <ShoppingBag size={22} className="stroke-[1.5]" />
+            <ShoppingBag size={21} className="stroke-[1.5]" />
             {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-on-background text-white text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-on-background text-white text-[8px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center">
                 {cartCount}
               </span>
             )}
@@ -129,7 +141,7 @@ export default function Header() {
           {/* Account/Profile Link */}
           <div className="flex items-center gap-2">
             {mounted && user && (
-              <span className="text-[11px] font-body text-on-surface-variant/80 max-w-[80px] truncate">
+              <span className="text-[11px] font-body text-on-surface-variant/80 max-w-[80px] truncate font-light tracking-wide">
                 Hi, {user.name.split(" ")[0]}
               </span>
             )}
@@ -138,7 +150,7 @@ export default function Header() {
               aria-label="Account"
               className="text-on-surface hover:text-primary transition-colors duration-300 p-1"
             >
-              <User size={22} className="stroke-[1.5]" />
+              <User size={21} className="stroke-[1.5]" />
             </Link>
           </div>
         </div>

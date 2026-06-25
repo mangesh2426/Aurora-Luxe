@@ -10,6 +10,7 @@ import { Heart, Star, ChevronDown, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import api, { mapBackendProduct } from "@/lib/api";
 import { Product } from "@/types";
+import ProductCard from "@/components/ProductCard";
 
 export default function ProductDetailsPage() {
   const params = useParams();
@@ -52,6 +53,13 @@ export default function ProductDetailsPage() {
     };
     fetchData();
   }, [params]);
+
+  // Scroll to top when product details finish loading
+  useEffect(() => {
+    if (!loading) {
+      window.scrollTo({ top: 0, behavior: 'instant' as any });
+    }
+  }, [loading]);
 
   if (loading) {
     return (
@@ -225,6 +233,22 @@ export default function ProductDetailsPage() {
             </button>
           </div>
 
+          {/* Trust Assurances Block */}
+          <div className="mt-7 p-5 bg-[#FAF8F5] border border-outline/20 flex flex-col gap-3.5 mb-8">
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined text-[19px] text-primary">verified</span>
+              <span className="font-label-caps text-[9px] tracking-[0.15em] text-on-background uppercase font-semibold">Lifetime Anti-Tarnish Warranty</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined text-[19px] text-primary">local_shipping</span>
+              <span className="font-label-caps text-[9px] tracking-[0.15em] text-on-background uppercase font-semibold">Free Insured Home Delivery (7-Day Exchange)</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined text-[19px] text-primary">check_circle</span>
+              <span className="font-label-caps text-[9px] tracking-[0.15em] text-on-background uppercase font-semibold">100% Skin Safe & Hypoallergenic</span>
+            </div>
+          </div>
+
           {/* Tabs Details */}
           <div className="border-t border-outline/50 divide-y divide-outline/50">
             <details className="group py-6" open>
@@ -271,48 +295,9 @@ export default function ProductDetailsPage() {
         <p className="font-label-caps text-[10px] tracking-[0.2em] uppercase text-on-surface-variant text-center mb-16">Explore matching items to complete your style</p>
         
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-          {related.map((p, idx) => {
-            const isWish = wishlist.includes(p.id);
-            return (
-              <motion.div
-                key={p.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="group relative flex flex-col bg-transparent"
-              >
-                <button
-                  onClick={() => toggleWishlist(p.id)}
-                  aria-label="Wishlist toggle"
-                  className="absolute top-3 right-3 z-10 text-on-surface hover:text-primary p-2 bg-white/70 backdrop-blur-md rounded-full shadow-md transition-colors duration-300 cursor-pointer"
-                >
-                  <Heart size={18} className={`stroke-[1.5] ${isWish ? "fill-primary text-primary" : ""}`} />
-                </button>
-
-                <Link href={`/product/${p.id}`} className="block aspect-[4/5] bg-surface-container-low relative overflow-hidden mb-4 border border-outline/30">
-                  <Image
-                    src={p.imageUrl}
-                    alt={p.name}
-                    fill
-                    className="object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-105"
-                  />
-                </Link>
-
-                <div className="text-center px-2">
-                  <Link href={`/product/${p.id}`}>
-                    <h3 className="font-display text-[18px] text-on-surface mb-1 hover:text-primary transition-colors font-medium">
-                      {p.name}
-                    </h3>
-                  </Link>
-                  <p className="font-body text-[11px] text-on-surface-variant font-light mb-3 tracking-widest uppercase">
-                    {p.category}
-                  </p>
-                  <p className="font-body text-[14px] text-primary tracking-wider font-semibold">₹{p.price.toLocaleString()}</p>
-                </div>
-              </motion.div>
-            );
-          })}
+          {related.map((p) => (
+            <ProductCard key={p.id} product={p} />
+          ))}
         </div>
       </section>
 

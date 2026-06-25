@@ -28,9 +28,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <body
         className={`${cormorant.variable} ${montserrat.variable} bg-white text-on-background min-h-screen flex flex-col font-body antialiased overflow-x-hidden selection:bg-primary selection:text-white`}
+        suppressHydrationWarning
       >
         <AnnouncementBar />
         <Header />

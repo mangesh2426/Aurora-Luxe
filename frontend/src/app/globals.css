@@ -3,48 +3,48 @@
 
 @theme {
   /* === Primary Palette — Champagne Gold === */
-  --color-primary: #C9A227;
-  --color-primary-container: #a8841f;
+  --color-primary: #C59F27;
+  --color-primary-container: #A47E1B;
   --color-on-primary: #ffffff;
 
-  /* === Background & Surface (WHITE / LIGHT) === */
+  /* === Background & Surface (WARM LUXURY IVORY) === */
   --color-background: #ffffff;
-  --color-on-background: #0d0d0b;
+  --color-on-background: #11110f;
 
-  --color-surface: #f9f9f7;
+  --color-surface: #FAF8F5;
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f4f4f0;
-  --color-surface-container: #eeeeea;
-  --color-surface-container-high: #e6e6e2;
-  --color-surface-container-highest: #dcdcd8;
+  --color-surface-container-low: #F6F4F0;
+  --color-surface-container: #EFEBFA;
+  --color-surface-container-high: #EAEAE4;
+  --color-surface-container-highest: #E0E0DA;
 
-  --color-on-surface: #0d0d0b;
-  --color-on-surface-variant: #6b6b65;
+  --color-on-surface: #11110f;
+  --color-on-surface-variant: #5A5A54;
 
   /* === Secondary / Neutral === */
-  --color-secondary: #6b6b65;
-  --color-secondary-container: #e8e8e4;
-  --color-on-secondary-container: #2a2a26;
+  --color-secondary: #5A5A54;
+  --color-secondary-container: #F0F0EC;
+  --color-on-secondary-container: #22221E;
 
-  /* === Borders === */
-  --color-outline: #d4d4cc;
-  --color-outline-variant: #e8e8e0;
+  /* === Borders (Delicate Fine Lines) === */
+  --color-outline: #EAEAE5;
+  --color-outline-variant: #F5F5F0;
 
   /* === Error === */
-  --color-error: #c0392b;
-  --color-error-container: #fdecea;
+  --color-error: #B03A2E;
+  --color-error-container: #FDEDEC;
 
   /* === Radius — Sharp/Luxury === */
   --radius: 0;
-  --radius-sm: 1px;
-  --radius-md: 2px;
-  --radius-lg: 4px;
-  --radius-xl: 8px;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
   --radius-full: 9999px;
 
   /* === Spacing === */
-  --spacing-margin-mobile: 20px;
-  --spacing-margin-desktop: 80px;
+  --spacing-margin-mobile: 24px;
+  --spacing-margin-desktop: 96px;
   --spacing-container-max: 1440px;
   --spacing-gutter: 32px;
 
