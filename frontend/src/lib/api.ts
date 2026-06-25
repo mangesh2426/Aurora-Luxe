@@ -9,25 +9,18 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  // If we have a token stored from auth
-  const session = localStorage.getItem('aurora_user_session');
-  if (session) {
-    try {
-      const parsed = JSON.parse(session);
-      if (parsed.token && parsed.token !== "undefined") {
-        config.headers.Authorization = `Bearer ${parsed.token}`;
-      } else {
-        // Token is missing or literally "undefined", which means the session is broken.
-        // We will remove it so the app doesn't keep trying to use a broken session.
-        localStorage.removeItem('aurora_user_session');
-        if (typeof window !== "undefined") {
-          window.location.href = '/login';
-        }
+  // Read token from Zustand's persisted store (single source of truth)
+  try {
+    const storeRaw = localStorage.getItem('aurora-luxe-store');
+    if (storeRaw) {
+      const storeData = JSON.parse(storeRaw);
+      const token = storeData?.state?.user?.token;
+      if (token && token !== 'undefined') {
+        config.headers.Authorization = `Bearer ${token}`;
       }
-    } catch (e) {
-      console.error('Failed to parse session from localStorage', e);
-      localStorage.removeItem('aurora_user_session');
     }
+  } catch (e) {
+    console.error('Failed to read auth token from store', e);
   }
   return config;
 });

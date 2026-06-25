@@ -283,7 +283,7 @@ export default function Home() {
                 <p className="font-body text-[13.5px] text-on-surface-variant/90 font-light italic leading-relaxed mb-8">
                   {t.text}
                 </p>
-                <div>
+                <div suppressHydrationWarning>
                   <h4 className="font-display text-[17px] text-on-background font-medium tracking-wide">{t.author}</h4>
                   <span className="font-label-caps text-[9px] tracking-[0.15em] text-primary uppercase font-semibold">{t.loc} — Verified Muse</span>
                 </div>
