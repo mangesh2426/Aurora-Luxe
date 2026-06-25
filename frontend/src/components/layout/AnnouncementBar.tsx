@@ -24,9 +24,9 @@ export default function AnnouncementBar() {
   }, []);
 
   return (
-    <div className="w-full bg-surface-container-low border-b border-outline/50 py-3 text-center transition-all duration-300">
+    <div className="w-full bg-[#111111] py-2.5 text-center transition-all duration-300">
       <p
-        className={`font-label-caps text-[9px] md:text-[10px] tracking-[0.2em] uppercase text-on-surface transition-all duration-500 ${
+        className={`font-label-caps text-[9px] md:text-[9.5px] tracking-[0.25em] uppercase text-primary transition-all duration-500 font-medium ${
           fade ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1"
         }`}
       >

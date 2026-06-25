@@ -76,6 +76,7 @@ export default function AdminPage() {
 
   // Form states for adding products
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [newProdName, setNewProdName] = useState("");
   const [newProdCategory, setNewProdCategory] = useState("");
   const [newProdPrice, setNewProdPrice] = useState("");
@@ -175,11 +176,11 @@ export default function AdminPage() {
 
 
   const handleDeleteProduct = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this product? This action cannot be undone.")) return;
     try {
       // API call to delete
       await api.delete(`/products/${id}`);
       setAdminProducts(prev => prev.filter(p => p.id !== id));
+      setDeleteConfirmId(null);
     } catch (e) {
       console.error(e);
       alert("Failed to delete product. Ensure it has no related orders.");
@@ -571,7 +572,7 @@ export default function AdminPage() {
                               Edit
                             </button>
                             <button
-                              onClick={() => handleDeleteProduct(p.id)}
+                              onClick={() => setDeleteConfirmId(p.id)}
                               className="text-error hover:underline text-[12px] font-bold cursor-pointer"
                             >
                               Delete
@@ -1008,6 +1009,57 @@ export default function AdminPage() {
                   {isUploading ? "Processing..." : (editingProductId ? "Update Product" : "Save Product")}
                 </button>
               </form>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Product deletion confirmation modal */}
+      <AnimatePresence>
+        {deleteConfirmId && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 bg-black/40 z-50 backdrop-blur-sm pointer-events-auto"
+              onClick={() => setDeleteConfirmId(null)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: "-40%", x: "-50%" }}
+              animate={{ opacity: 1, scale: 1, y: "-50%", x: "-50%" }}
+              exit={{ opacity: 0, scale: 0.9, y: "-40%", x: "-50%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 250 }}
+              className="fixed top-1/2 left-1/2 w-full max-w-[420px] bg-white z-50 shadow-2xl p-8 border border-outline/30 text-center"
+            >
+              <div className="flex justify-center mb-4 text-error">
+                <div className="w-12 h-12 rounded-full bg-error/10 flex items-center justify-center">
+                  <X size={24} className="stroke-[1.5]" />
+                </div>
+              </div>
+              
+              <h3 className="font-display text-[22px] text-on-background font-semibold mb-2">Delete Design?</h3>
+              <p className="font-body text-[13px] text-on-surface-variant font-light mb-8 leading-relaxed">
+                Are you sure you want to remove this piece from the inventory? This action is permanent and cannot be undone.
+              </p>
+              
+              <div className="flex gap-4">
+                <button
+                  type="button"
+                  onClick={() => setDeleteConfirmId(null)}
+                  className="flex-1 h-12 border border-outline font-label-caps text-[11px] tracking-widest uppercase hover:bg-surface transition-colors cursor-pointer font-bold text-on-background bg-white"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteProduct(deleteConfirmId)}
+                  className="flex-1 h-12 bg-red-600 hover:bg-red-700 text-white font-label-caps text-[11px] tracking-widest uppercase transition-colors cursor-pointer font-bold"
+                >
+                  Delete
+                </button>
+              </div>
             </motion.div>
           </>
         )}

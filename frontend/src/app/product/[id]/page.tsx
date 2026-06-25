@@ -1,12 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useStore } from "@/store/useStore";
 import ProductImageGallery from "@/components/product/ProductImageGallery";
 import QuantitySelector from "@/components/product/QuantitySelector";
-import { Heart, Star, ChevronDown, Loader2 } from "lucide-react";
+import { Heart, Star, ChevronDown, Loader2, ShieldCheck, Truck, RefreshCw } from "lucide-react";
 import { motion } from "framer-motion";
 import api, { mapBackendProduct } from "@/lib/api";
 import { Product } from "@/types";
@@ -74,7 +73,7 @@ export default function ProductDetailsPage() {
       <main className="flex-grow pt-32 pb-40 text-center">
         <h2 className="font-display text-[32px] text-on-background mb-4">Product Not Found</h2>
         <p className="font-body text-[14px] text-on-surface-variant mb-10 font-light">The piece you are seeking does not exist in our catalog.</p>
-        <Link href="/shop" className="px-10 py-4 bg-primary text-on-primary font-label-caps text-[12px] tracking-[0.25em] uppercase hover:bg-primary-container transition-colors font-semibold">
+        <Link href="/shop" className="px-10 py-4 bg-[#C59F27] text-white font-label-caps text-[12px] tracking-[0.25em] uppercase hover:bg-primary-container transition-all duration-300 font-semibold rounded-xl">
           Explore Our Collection
         </Link>
       </main>
@@ -93,26 +92,26 @@ export default function ProductDetailsPage() {
   const isWishlisted = wishlist.includes(product.id);
 
   return (
-    <main className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-8 pb-32 bg-white text-on-background overflow-hidden">
+    <main className="max-w-container-max mx-auto px-6 md:px-16 pt-8 pb-32 bg-[#FCFBF9] text-on-background overflow-hidden">
       {/* Breadcrumbs */}
-      <nav aria-label="Breadcrumb" className="flex text-[10px] tracking-[0.2em] uppercase text-on-surface-variant mb-12">
-        <ol className="inline-flex items-center space-x-3">
+      <nav aria-label="Breadcrumb" className="flex text-[10px] tracking-[0.2em] uppercase text-on-surface-variant mb-10">
+        <ol className="inline-flex items-center space-x-2">
           <li>
-            <Link href="/" className="hover:text-primary lux-transition">Home</Link>
+            <Link href="/" className="hover:text-primary transition-colors">Home</Link>
           </li>
           <li>
             <span className="text-outline mx-2">/</span>
-            <Link href={`/shop?category=${product.category}`} className="hover:text-primary lux-transition">{product.category}</Link>
+            <Link href={`/shop?category=${product.category}`} className="hover:text-primary transition-colors">{product.category}</Link>
           </li>
           <li>
             <span className="text-outline mx-2">/</span>
-            <span className="text-primary">{product.name}</span>
+            <span className="text-[#C59F27] font-semibold">{product.name}</span>
           </li>
         </ol>
       </nav>
 
       {/* Main product display */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 mb-32">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 mb-32">
         {/* Left image gallery frame */}
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
@@ -120,7 +119,9 @@ export default function ProductDetailsPage() {
           transition={{ duration: 0.6 }}
           className="lg:col-span-7"
         >
-          <ProductImageGallery images={product.images} />
+          <div className="bg-white p-4 rounded-3xl border border-outline/10 shadow-[0_8px_30px_rgba(0,0,0,0.01)]">
+            <ProductImageGallery images={product.images} />
+          </div>
         </motion.div>
 
         {/* Right purchase detail parameters */}
@@ -132,39 +133,41 @@ export default function ProductDetailsPage() {
         >
           <div className="flex justify-between items-start mb-4">
             <div>
-              <span className="font-label-caps text-[10px] tracking-[0.2em] uppercase text-primary mb-2 block font-semibold">{product.category}</span>
-              <h1 className="font-display text-[38px] md:text-[44px] text-on-background leading-[1.1] tracking-wide font-light">{product.name}</h1>
+              <span className="font-label-caps text-[10px] tracking-[0.22em] uppercase text-primary mb-2 block font-bold">{product.category}</span>
+              <h1 className="font-display text-[36px] md:text-[42px] text-on-background leading-[1.15] tracking-wide font-light">{product.name}</h1>
             </div>
             
             <button
               onClick={() => toggleWishlist(product.id)}
               aria-label="Wishlist toggle"
-              className="text-on-surface-variant hover:text-primary p-2 border border-outline rounded-full ml-4 cursor-pointer transition-colors duration-300"
+              className="text-on-surface-variant hover:text-primary p-3 border border-outline/15 rounded-full ml-4 cursor-pointer transition-all duration-300 hover:scale-105 bg-white shadow-sm"
             >
-              <Heart size={22} className={`stroke-[1.5] ${isWishlisted ? "fill-primary text-primary" : ""}`} />
+              <Heart size={20} className={`stroke-[1.5] ${isWishlisted ? "fill-primary text-primary" : "text-on-surface-variant"}`} />
             </button>
           </div>
 
-          <div className="flex items-center gap-2 mb-6 text-[13px] text-on-surface-variant">
-            <div className="flex text-primary">
+          {/* Rating */}
+          <div className="flex items-center gap-2 mb-6 text-[13px] text-on-surface-variant/80">
+            <div className="flex text-[#C59F27]">
               {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} size={16} className={`stroke-[1.5] ${i < Math.floor(product.rating) ? "fill-primary text-primary" : ""}`} />
+                <Star key={i} size={15} className={`stroke-[1.5] ${i < Math.floor(product.rating) ? "fill-[#C59F27] text-[#C59F27]" : "text-[#C59F27]/20"}`} />
               ))}
             </div>
-            <span>{product.rating} ({product.reviewsCount} verified reviews)</span>
+            <span className="font-body font-light">{product.rating} ({product.reviewsCount} verified reviews)</span>
           </div>
 
-          <p className="font-body text-[14px] leading-relaxed text-on-surface-variant mb-8 font-light tracking-wide">
+          <p className="font-body text-[13.5px] leading-relaxed text-on-surface-variant/90 mb-8 font-light tracking-wide">
             {product.description}
           </p>
 
-          <div className="flex items-end gap-4 p-6 mb-8 bg-surface-container-low border border-outline/30">
-            <span className="font-body text-[24px] text-on-background font-medium">₹{product.price.toLocaleString()}</span>
+          {/* Price Container */}
+          <div className="flex items-end gap-4 p-6 mb-8 bg-white border border-outline/10 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.015)]">
+            <span className="font-body text-[25px] text-[#111111] font-semibold">₹{product.price.toLocaleString()}</span>
             {product.originalPrice && (
-              <span className="font-body text-[16px] text-on-surface-variant/70 line-through mb-1">₹{product.originalPrice.toLocaleString()}</span>
+              <span className="font-body text-[15px] text-on-surface-variant/50 line-through mb-1.5">₹{product.originalPrice.toLocaleString()}</span>
             )}
             {product.discount && (
-              <span className="bg-primary/10 border border-primary/20 text-primary text-[10px] uppercase font-label-caps px-2 py-0.5 tracking-wider ml-auto font-semibold">
+              <span className="bg-[#C59F27]/10 border border-[#C59F27]/20 text-[#C59F27] text-[9.5px] uppercase font-label-caps px-3 py-1 tracking-wider ml-auto font-bold rounded-lg">
                 Save {product.discount}%
               </span>
             )}
@@ -172,16 +175,16 @@ export default function ProductDetailsPage() {
 
           {/* Variant Selector: Finish */}
           <div className="mb-6">
-            <span className="block font-label-caps text-[10px] tracking-[0.2em] uppercase text-on-surface mb-3 font-semibold">Color Finish: {selectedFinish}</span>
+            <span className="block font-label-caps text-[9px] tracking-[0.2em] uppercase text-on-surface mb-3 font-bold">Color Finish: {selectedFinish}</span>
             <div className="flex gap-3 flex-wrap">
               {product.finishes.map(f => (
                 <button
                   key={f}
                   onClick={() => setSelectedFinish(f)}
-                  className={`px-5 py-2.5 border text-[12px] font-body transition-all duration-300 cursor-pointer ${
+                  className={`px-5 py-2.5 border text-[12px] font-body transition-all duration-300 cursor-pointer rounded-xl ${
                     selectedFinish === f
-                      ? "border-primary bg-primary/10 text-primary font-semibold"
-                      : "border-outline hover:border-primary/50 text-on-surface-variant"
+                      ? "border-primary bg-primary/5 text-primary font-semibold"
+                      : "border-outline hover:border-primary/50 text-on-surface-variant/80 bg-white"
                   }`}
                 >
                   {f}
@@ -192,16 +195,16 @@ export default function ProductDetailsPage() {
 
           {/* Variant Selector: Material */}
           <div className="mb-8">
-            <span className="block font-label-caps text-[10px] tracking-[0.2em] uppercase text-on-surface mb-3 font-semibold">Base Metal: {selectedMaterial}</span>
+            <span className="block font-label-caps text-[9px] tracking-[0.2em] uppercase text-on-surface mb-3 font-bold">Base Metal: {selectedMaterial}</span>
             <div className="flex gap-3 flex-wrap">
               {product.materials.map(m => (
                 <button
                   key={m}
                   onClick={() => setSelectedMaterial(m)}
-                  className={`px-5 py-2.5 border text-[12px] font-body transition-all duration-300 cursor-pointer ${
+                  className={`px-5 py-2.5 border text-[12px] font-body transition-all duration-300 cursor-pointer rounded-xl ${
                     selectedMaterial === m
-                      ? "border-primary bg-primary/10 text-primary font-semibold"
-                      : "border-outline hover:border-primary/50 text-on-surface-variant"
+                      ? "border-primary bg-primary/5 text-primary font-semibold"
+                      : "border-outline hover:border-primary/50 text-on-surface-variant/80 bg-white"
                   }`}
                 >
                   {m}
@@ -211,7 +214,7 @@ export default function ProductDetailsPage() {
           </div>
 
           {/* Quantity and Actions */}
-          <div className="flex flex-col gap-4 mb-10">
+          <div className="flex flex-col gap-4 mb-8">
             <div className="flex gap-4">
               <QuantitySelector
                 quantity={quantity}
@@ -220,68 +223,74 @@ export default function ProductDetailsPage() {
               />
               <button
                 onClick={handleAdd}
-                className="flex-1 bg-on-background text-white font-label-caps text-[11px] tracking-[0.2em] uppercase h-14 hover:bg-primary transition-colors flex items-center justify-center cursor-pointer font-semibold"
+                className="flex-1 bg-[#111111] text-white hover:bg-primary font-label-caps text-[10px] tracking-[0.22em] uppercase h-14 hover:shadow-lg transition-all duration-300 flex items-center justify-center cursor-pointer font-bold rounded-2xl border border-white/5"
               >
                 Add to Bag
               </button>
             </div>
             <button
               onClick={handleBuyNow}
-              className="w-full bg-white text-black font-label-caps text-[11px] tracking-[0.2em] uppercase h-14 hover:bg-surface-container border border-outline transition-colors cursor-pointer font-semibold"
+              className="w-full bg-[#C59F27] text-white hover:bg-[#111111] font-label-caps text-[10px] tracking-[0.22em] uppercase h-14 hover:shadow-lg transition-all duration-300 cursor-pointer font-bold rounded-2xl"
             >
               Buy It Now (Express Checkout)
             </button>
           </div>
 
           {/* Trust Assurances Block */}
-          <div className="mt-7 p-5 bg-[#FAF8F5] border border-outline/20 flex flex-col gap-3.5 mb-8">
-            <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-[19px] text-primary">verified</span>
-              <span className="font-label-caps text-[9px] tracking-[0.15em] text-on-background uppercase font-semibold">Lifetime Anti-Tarnish Warranty</span>
+          <div className="mt-4 p-6 bg-white border border-outline/10 rounded-2xl flex flex-col gap-4 mb-8 shadow-sm">
+            <div className="flex items-center gap-3.5">
+              <div className="text-primary bg-primary/5 p-1.5 rounded-lg border border-primary/10">
+                <ShieldCheck size={18} className="stroke-[2]" />
+              </div>
+              <span className="font-label-caps text-[9px] tracking-[0.18em] text-on-background uppercase font-bold">Lifetime Anti-Tarnish Warranty</span>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-[19px] text-primary">local_shipping</span>
-              <span className="font-label-caps text-[9px] tracking-[0.15em] text-on-background uppercase font-semibold">Free Insured Home Delivery (7-Day Exchange)</span>
+            <div className="flex items-center gap-3.5">
+              <div className="text-primary bg-primary/5 p-1.5 rounded-lg border border-primary/10">
+                <Truck size={18} className="stroke-[2]" />
+              </div>
+              <span className="font-label-caps text-[9px] tracking-[0.18em] text-on-background uppercase font-bold">Free Insured Shipping & 7-Day Exchange</span>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-[19px] text-primary">check_circle</span>
-              <span className="font-label-caps text-[9px] tracking-[0.15em] text-on-background uppercase font-semibold">100% Skin Safe & Hypoallergenic</span>
+            <div className="flex items-center gap-3.5">
+              <div className="text-primary bg-primary/5 p-1.5 rounded-lg border border-primary/10">
+                <RefreshCw size={18} className="stroke-[2]" />
+              </div>
+              <span className="font-label-caps text-[9px] tracking-[0.18em] text-on-background uppercase font-bold">100% Skin Safe & Hypoallergenic</span>
             </div>
           </div>
 
-          {/* Tabs Details */}
-          <div className="border-t border-outline/50 divide-y divide-outline/50">
-            <details className="group py-6" open>
-              <summary className="flex justify-between items-center font-label-caps text-[11px] tracking-[0.25em] uppercase cursor-pointer list-none text-on-background hover:text-primary outline-none font-semibold">
+          {/* Collapsible Tabs Details */}
+          <div className="border-t border-outline/30 divide-y divide-outline/30 bg-white rounded-2xl border border-outline/10 overflow-hidden shadow-sm">
+            <details className="group border-none" open>
+              <summary className="flex justify-between items-center px-6 py-5 font-label-caps text-[10.5px] tracking-[0.22em] uppercase cursor-pointer list-none text-on-background hover:text-primary outline-none font-bold bg-[#FAF8F5]/30">
                 Specifications
-                <ChevronDown size={18} className="transition-transform duration-300 group-open:rotate-180 text-primary stroke-[1.5]" />
+                <ChevronDown size={16} className="transition-transform duration-300 group-open:rotate-180 text-primary stroke-[2]" />
               </summary>
-              <div className="text-body text-[13px] font-light tracking-wide text-on-surface-variant pt-6 pb-2 pl-2">
-                <ul className="list-disc list-inside space-y-2.5">
-                  <li>Hypoallergenic bases, free of nickel and lead.</li>
-                  <li>Electroplated with thick gold protective coating.</li>
-                  <li>Lifetime anti-corrosion, anti-rust warranty coverage.</li>
+              <div className="text-body text-[13px] font-light tracking-wide text-on-surface-variant/90 px-6 pb-5 pt-3 leading-relaxed border-t border-outline/10">
+                <ul className="list-disc list-inside space-y-2">
+                  <li>Hypoallergenic medical-grade bases, 100% free of nickel and lead.</li>
+                  <li>Electroplated with thick 18K gold via physical vapor deposition.</li>
+                  <li>Lifetime anti-corrosion, anti-rust, and anti-greening warranty coverage.</li>
                 </ul>
               </div>
             </details>
             
-            <details className="group py-6">
-              <summary className="flex justify-between items-center font-label-caps text-[11px] tracking-[0.25em] uppercase cursor-pointer list-none text-on-background hover:text-primary outline-none font-semibold">
+            <details className="group border-none">
+              <summary className="flex justify-between items-center px-6 py-5 font-label-caps text-[10.5px] tracking-[0.22em] uppercase cursor-pointer list-none text-on-background hover:text-primary outline-none font-bold bg-[#FAF8F5]/30">
                 Care Instructions
-                <ChevronDown size={18} className="transition-transform duration-300 group-open:rotate-180 text-primary stroke-[1.5]" />
+                <ChevronDown size={16} className="transition-transform duration-300 group-open:rotate-180 text-primary stroke-[2]" />
               </summary>
-              <div className="text-body text-[13px] font-light tracking-wide leading-relaxed text-on-surface-variant pt-6 pb-2 pr-4 pl-2">
-                {product.careInstructions || "Avoid contact with harsh detergents, chlorinated pool water, or chemicals. Clean carefully using damp cloth."}
+              <div className="text-body text-[13px] font-light tracking-wide leading-relaxed text-on-surface-variant/90 px-6 pb-5 pt-3 border-t border-outline/10">
+                {product.careInstructions || "Avoid contact with harsh industrial chemicals or highly concentrated detergents. Simply clean using a soft dry microfiber cloth."}
               </div>
             </details>
 
-            <details className="group py-6">
-              <summary className="flex justify-between items-center font-label-caps text-[11px] tracking-[0.25em] uppercase cursor-pointer list-none text-on-background hover:text-primary outline-none font-semibold">
+            <details className="group border-none">
+              <summary className="flex justify-between items-center px-6 py-5 font-label-caps text-[10.5px] tracking-[0.22em] uppercase cursor-pointer list-none text-on-background hover:text-primary outline-none font-bold bg-[#FAF8F5]/30">
                 Shipping & Exchanges
-                <ChevronDown size={18} className="transition-transform duration-300 group-open:rotate-180 text-primary stroke-[1.5]" />
+                <ChevronDown size={16} className="transition-transform duration-300 group-open:rotate-180 text-primary stroke-[2]" />
               </summary>
-              <div className="text-body text-[13px] font-light tracking-wide leading-relaxed text-on-surface-variant pt-6 pb-2 pr-4 pl-2">
-                {product.shippingInfo || "Free express home deliveries. 7-day exchanges."}
+              <div className="text-body text-[13px] font-light tracking-wide leading-relaxed text-on-surface-variant/90 px-6 pb-5 pt-3 border-t border-outline/10">
+                {product.shippingInfo || "Free express home deliveries. Standard delivery time is 3-5 business days. 7-day exchanges on clean items."}
               </div>
             </details>
           </div>
@@ -290,9 +299,12 @@ export default function ProductDetailsPage() {
       </div>
 
       {/* Related recommendations */}
-      <section className="mt-24 border-t border-outline/30 pt-24">
-        <h2 className="font-display text-[32px] text-center mb-2 font-light">You May Also Love</h2>
-        <p className="font-label-caps text-[10px] tracking-[0.2em] uppercase text-on-surface-variant text-center mb-16">Explore matching items to complete your style</p>
+      <section className="mt-24 border-t border-outline/20 pt-20">
+        <div className="text-center mb-16">
+          <span className="font-label-caps text-[9px] tracking-[0.3em] uppercase text-primary font-bold mb-3 block">Complete The Look</span>
+          <h2 className="font-display text-[36px] md:text-[46px] font-light">You May Also Love</h2>
+          <div className="w-12 h-[1px] bg-primary/40 mx-auto mt-4"></div>
+        </div>
         
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
           {related.map((p) => (

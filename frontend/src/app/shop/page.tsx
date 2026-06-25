@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { useStore } from "@/store/useStore";
 import FilterSidebar from "@/components/product/FilterSidebar";
 import MobileFilterDrawer from "@/components/product/MobileFilterDrawer";
+import ProductCard from "@/components/ProductCard";
 import { SlidersHorizontal, Search, Heart, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api, { mapBackendProduct } from "@/lib/api";

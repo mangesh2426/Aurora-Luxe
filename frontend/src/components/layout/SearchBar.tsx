@@ -90,7 +90,7 @@ export default function SearchBar({ isMobileOverlay = false, onCloseMobile }: Se
       <>
         {parts.map((part, i) =>
           part.toLowerCase() === highlight.toLowerCase() ? (
-            <span key={i} className="text-primary font-semibold bg-primary/5 px-0.5">
+            <span key={i} className="text-primary font-medium">
               {part}
             </span>
           ) : (
@@ -170,41 +170,41 @@ export default function SearchBar({ isMobileOverlay = false, onCloseMobile }: Se
       {/* Live Dropdown Card */}
       {dropdownOpen && (
         <div
-          className={`absolute top-full left-0 right-0 mt-3 bg-white border border-outline-variant/60 shadow-2xl rounded-lg z-50 overflow-hidden lux-transition`}
+          className="absolute top-full left-0 right-0 mt-3 bg-white/95 backdrop-blur-md border border-outline/10 shadow-[0_20px_50px_rgba(0,0,0,0.08)] rounded-2xl z-50 overflow-hidden transition-all duration-300"
         >
           {searchResults.length > 0 ? (
-            <div className="divide-y divide-outline-variant/40">
+            <div className="divide-y divide-outline/10">
               {searchResults.map((product, idx) => {
                 const isActive = idx === activeIndex;
                 return (
                   <div
                     key={product.id}
                     onClick={() => handleSelectResult(product)}
-                    className={`flex items-center gap-4 p-3.5 cursor-pointer transition-colors duration-200 ${
-                      isActive ? "bg-surface-container" : "hover:bg-surface"
+                    className={`flex items-center gap-4 p-3.5 cursor-pointer transition-colors duration-300 ${
+                      isActive ? "bg-surface-container" : "hover:bg-[#FAF8F5]"
                     }`}
                   >
                     {/* Thumbnail */}
-                    <div className="relative w-10 h-12 bg-surface-container-low border border-outline/20 flex-shrink-0">
+                    <div className="relative w-11 h-13 bg-[#FAF8F5] border border-outline/10 rounded-lg overflow-hidden flex-shrink-0">
                       <Image
                         src={product.imageUrl || "/hero_model.png"}
                         alt={product.name}
                         fill
-                        sizes="40px"
-                        className="object-cover"
+                        sizes="48px"
+                        className="object-cover transition-transform duration-500 hover:scale-105"
                       />
                     </div>
                     {/* Info */}
                     <div className="flex-grow min-w-0">
-                      <h4 className="font-display text-[14px] text-on-surface font-semibold truncate">
+                      <h4 className="font-display text-[15px] text-on-surface font-medium truncate">
                         {highlightText(product.name, searchQuery)}
                       </h4>
-                      <p className="font-body text-[11px] text-on-surface-variant/85 uppercase tracking-wider mt-0.5">
+                      <p className="font-body text-[10px] text-on-surface-variant/80 uppercase tracking-[0.12em] font-light mt-1">
                         {highlightText(product.category, searchQuery)}
                       </p>
                     </div>
                     {/* Price */}
-                    <div className="font-body text-[13px] text-primary font-medium flex-shrink-0">
+                    <div className="font-body text-[13px] text-primary font-semibold flex-shrink-0">
                       ₹{product.price.toLocaleString()}
                     </div>
                   </div>

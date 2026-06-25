@@ -38,15 +38,15 @@ export default function Header() {
     <>
       {/* Sticky Main Nav (Desktop) */}
       <nav
-        className={`hidden md:flex justify-between items-center w-full px-16 sticky top-0 z-40 transition-all duration-300 border-b border-outline/20 ${
+        className={`hidden md:flex justify-between items-center w-full px-16 sticky top-0 z-40 transition-all duration-500 ${
           scrolled
-            ? "bg-white/85 backdrop-blur-md shadow-[0_4px_30px_rgba(0,0,0,0.02)] py-3.5"
-            : "bg-white py-5.5"
+            ? "bg-white/80 backdrop-blur-lg border-b border-outline/10 shadow-[0_8px_30px_rgba(0,0,0,0.015)] py-3"
+            : "bg-white border-b border-outline/20 py-5.5"
         }`}
       >
         {/* Left Side: Logo */}
-        <Link href="/" className="font-display text-[25px] text-on-background tracking-[0.2em] font-light hover:opacity-80 transition-opacity">
-          AURORA <span className="text-primary font-medium tracking-[0.15em]">LUXE</span>
+        <Link href="/" className="font-display text-[26px] text-on-background tracking-[0.25em] font-light hover:text-primary transition-colors duration-300">
+          AURORA <span className="text-primary font-semibold tracking-[0.2em]">LUXE</span>
         </Link>
 
         {/* Center: Navigation Links */}
@@ -158,8 +158,8 @@ export default function Header() {
 
       {/* Mobile Top Header */}
       <header
-        className={`md:hidden flex justify-between items-center w-full px-6 py-4 bg-white border-b border-outline/30 sticky top-0 z-40 transition-all duration-300 ${
-          scrolled ? "shadow-sm" : ""
+        className={`md:hidden flex justify-between items-center w-full px-6 py-3.5 sticky top-0 z-40 transition-all duration-300 border-b border-outline/10 ${
+          scrolled ? "bg-white/80 backdrop-blur-md shadow-sm" : "bg-white"
         }`}
       >
         <button
@@ -167,11 +167,11 @@ export default function Header() {
           aria-label="Menu"
           className="text-on-surface hover:text-primary transition-colors p-2 cursor-pointer"
         >
-          <Menu size={24} className="stroke-[1.5]" />
+          <Menu size={22} className="stroke-[1.5]" />
         </button>
         
-        <Link href="/" className="font-display text-[24px] text-on-background tracking-[0.1em] font-light">
-          AURORA <span className="text-primary font-medium">LUXE</span>
+        <Link href="/" className="font-display text-[22px] text-on-background tracking-[0.2em] font-light">
+          AURORA <span className="text-primary font-medium tracking-[0.12em]">LUXE</span>
         </Link>
         
         <div className="flex items-center gap-1">
@@ -180,7 +180,7 @@ export default function Header() {
             aria-label="Search"
             className="text-on-surface hover:text-primary transition-colors p-2 cursor-pointer"
           >
-            <Search size={22} className="stroke-[1.5]" />
+            <Search size={21} className="stroke-[1.5]" />
           </button>
           
           <button
@@ -188,9 +188,9 @@ export default function Header() {
             aria-label="Cart"
             className="text-on-surface hover:text-primary transition-colors p-2 relative cursor-pointer"
           >
-            <ShoppingBag size={22} className="stroke-[1.5]" />
+            <ShoppingBag size={21} className="stroke-[1.5]" />
             {cartCount > 0 && (
-              <span className="absolute top-0 right-0 bg-on-background text-white text-[8px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center">
+              <span className="absolute top-0.5 right-0.5 bg-on-background text-white text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                 {cartCount}
               </span>
             )}
@@ -268,14 +268,14 @@ export default function Header() {
               transition={{ type: "tween", duration: 0.35, ease: "easeOut" }}
               className="fixed top-0 left-0 h-screen w-[280px] bg-white z-50 shadow-2xl flex flex-col border-r border-outline/30"
             >
-              <div className="p-6 border-b border-outline flex justify-between items-center bg-surface-container-low">
-                <span className="font-display text-[22px] text-primary tracking-wider font-light">AURORA <span className="font-semibold text-on-background">LUXE</span></span>
+              <div className="p-6 border-b border-outline/10 flex justify-between items-center bg-white">
+                <span className="font-display text-[22px] text-on-background tracking-[0.2em] font-light">AURORA <span className="text-primary font-semibold tracking-[0.15em]">LUXE</span></span>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
                   aria-label="Close menu"
-                  className="text-on-surface-variant hover:text-primary p-2 border border-outline rounded-full cursor-pointer"
+                  className="text-on-surface-variant hover:text-primary p-2 border border-outline/10 rounded-full cursor-pointer"
                 >
-                  <X size={16} className="stroke-[1.5]" />
+                  <X size={15} className="stroke-[1.5]" />
                 </button>
               </div>
 
