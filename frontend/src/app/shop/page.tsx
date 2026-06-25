@@ -7,6 +7,7 @@ import { useStore } from "@/store/useStore";
 import FilterSidebar from "@/components/product/FilterSidebar";
 import MobileFilterDrawer from "@/components/product/MobileFilterDrawer";
 import ProductCard from "@/components/ProductCard";
+import ProductCardSkeleton from "@/components/ProductCardSkeleton";
 import { SlidersHorizontal, Search, Heart, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api, { mapBackendProduct } from "@/lib/api";
@@ -223,8 +224,10 @@ function ShopContent() {
         {/* Product Grid */}
         <div className="flex-grow">
             {loading ? (
-              <div className="flex justify-center items-center py-32">
-                <Loader2 className="animate-spin text-primary" size={48} />
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <ProductCardSkeleton key={i} />
+                ))}
               </div>
             ) : filtered.length === 0 ? (
               <div className="text-center py-32 border border-outline/30 bg-surface">
@@ -269,8 +272,10 @@ function ShopContent() {
 export default function ShopPage() {
   return (
     <Suspense fallback={
-      <div className="flex justify-center items-center py-40">
-        <span className="material-symbols-outlined text-[36px] animate-spin">progress_activity</span>
+      <div className="flex-grow pt-8 pb-32 max-w-container-max mx-auto w-full px-4 md:px-16">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16 mt-24">
+          {Array.from({ length: 6 }).map((_, i) => <ProductCardSkeleton key={i} />)}
+        </div>
       </div>
     }>
       <ShopContent />

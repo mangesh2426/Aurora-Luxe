@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useStore } from "@/store/useStore";
+import MagneticButton from "@/components/MagneticButton";
 import CartDrawer from "@/components/cart/CartDrawer";
 import SearchBar from "./SearchBar";
 import { Search, Heart, ShoppingBag, User, Menu, X, Store, Truck, Home, LayoutDashboard } from "lucide-react";
@@ -37,16 +38,22 @@ export default function Header() {
   return (
     <>
       {/* Sticky Main Nav (Desktop) */}
-      <nav
+      <motion.nav
         className={`hidden md:flex justify-between items-center w-full px-16 sticky top-0 z-40 transition-all duration-500 ${
           scrolled
-            ? "bg-white/80 backdrop-blur-lg border-b border-outline/10 shadow-[0_8px_30px_rgba(0,0,0,0.015)] py-3"
-            : "bg-white border-b border-outline/20 py-5.5"
+            ? "bg-white/65 backdrop-blur-2xl border-b border-[rgba(0,0,0,0.05)] shadow-glass py-3"
+            : "bg-white border-b border-[rgba(0,0,0,0.02)] py-6"
         }`}
       >
         {/* Left Side: Logo */}
-        <Link href="/" className="font-display text-[26px] text-on-background tracking-[0.25em] font-light hover:text-primary transition-colors duration-300">
-          AURORA <span className="text-primary font-semibold tracking-[0.2em]">LUXE</span>
+        <Link href="/" className="flex items-center">
+          <motion.div 
+            animate={{ scale: scrolled ? 0.85 : 1, originX: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="font-display text-[26px] text-on-background tracking-[0.25em] font-light hover:text-primary transition-colors duration-300"
+          >
+            AURORA <span className="text-primary font-semibold tracking-[0.2em]">LUXE</span>
+          </motion.div>
         </Link>
 
         {/* Center: Navigation Links */}
@@ -111,37 +118,35 @@ export default function Header() {
           <SearchBar />
 
           {/* Wishlist Link */}
-          <Link
-            href="/wishlist"
-            aria-label="Wishlist"
-            className="text-on-surface hover:text-primary transition-colors duration-300 relative p-1"
-          >
-            <Heart size={21} className={`stroke-[1.5] ${wishlistCount > 0 ? "fill-primary text-primary" : ""}`} />
-            {wishlistCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-primary text-white text-[8px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center">
-                {wishlistCount}
-              </span>
-            )}
-          </Link>
+          <MagneticButton as="div" strength={0.35}>
+            <Link
+              href="/wishlist"
+              aria-label="Wishlist"
+              className="text-on-surface hover:text-primary transition-colors duration-300 relative p-1 block"
+            >
+              <Heart size={21} className={`stroke-[1.5] ${wishlistCount > 0 ? "fill-primary text-primary" : ""}`} />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-primary text-white text-[8px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center pointer-events-none">
+                  {wishlistCount}
+                </span>
+              )}
+            </Link>
+          </MagneticButton>
 
           {/* Cart Bag Link */}
-          <button
-            onClick={() => setCartDrawerOpen(true)}
-            aria-label="Cart"
-            className="text-on-surface hover:text-primary transition-colors duration-300 relative p-1 cursor-pointer"
-          >
+          <MagneticButton as="button" strength={0.35} onClick={() => setCartDrawerOpen(true)} aria-label="Cart" className="text-on-surface hover:text-primary transition-colors duration-300 relative p-1 cursor-pointer">
             <ShoppingBag size={21} className="stroke-[1.5]" />
             {cartCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-on-background text-white text-[8px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center">
                 {cartCount}
               </span>
             )}
-          </button>
+          </MagneticButton>
 
           {/* Account/Profile Link */}
           <div className="flex items-center gap-2">
             {mounted && user && (
-              <span className="text-[11px] font-body text-on-surface-variant/80 max-w-[80px] truncate font-light tracking-wide">
+              <span className="text-[11px] font-body text-on-surface-variant max-w-[80px] truncate font-light tracking-wide">
                 Hi, {user.name.split(" ")[0]}
               </span>
             )}
@@ -154,12 +159,12 @@ export default function Header() {
             </Link>
           </div>
         </div>
-      </nav>
+      </motion.nav>
 
       {/* Mobile Top Header */}
       <header
-        className={`md:hidden flex justify-between items-center w-full px-6 py-3.5 sticky top-0 z-40 transition-all duration-300 border-b border-outline/10 ${
-          scrolled ? "bg-white/80 backdrop-blur-md shadow-sm" : "bg-white"
+        className={`md:hidden flex justify-between items-center w-full px-6 py-3.5 sticky top-0 z-40 transition-all duration-300 border-b border-[rgba(0,0,0,0.05)] ${
+          scrolled ? "bg-white/65 backdrop-blur-2xl shadow-glass" : "bg-white"
         }`}
       >
         <button

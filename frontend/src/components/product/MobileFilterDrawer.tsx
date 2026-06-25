@@ -50,6 +50,12 @@ export default function MobileFilterDrawer({
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "tween", duration: 0.35, ease: "easeOut" }}
+            drag="x"
+            dragConstraints={{ left: 0, right: 300 }}
+            dragElastic={0.2}
+            onDragEnd={(e, info) => {
+              if (info.offset.x > 100) onClose();
+            }}
             className="fixed top-0 right-0 h-screen w-[300px] bg-white z-50 shadow-2xl flex flex-col border-l border-outline/30 md:hidden"
           >
             {/* Header */}
