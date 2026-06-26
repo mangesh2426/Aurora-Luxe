@@ -72,7 +72,7 @@ export class ProductsController {
     if (!file) {
       throw new BadRequestException('No file uploaded');
     }
-    const imageUrl = `${process.env.API_URL || 'http://localhost:3001'}/uploads/${file.filename}`;
+    const imageUrl = `${process.env.RENDER_EXTERNAL_URL || process.env.API_URL || 'http://localhost:3001'}/uploads/${file.filename}`;
     return { success: true, imageUrl };
   }
 

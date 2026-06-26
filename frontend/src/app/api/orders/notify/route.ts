@@ -339,13 +339,14 @@ function renderAdminEmailHtml(
 }
 
 function renderItemsRows(items: any[]): string {
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
   return items.map(item => {
     const imgUrl = item.imageUrl || '';
     const absoluteImgUrl = imgUrl.startsWith('http')
       ? imgUrl
       : imgUrl.startsWith('/')
-        ? `http://localhost:3001${imgUrl}`
-        : `http://localhost:3001/${imgUrl}`;
+        ? `${backendUrl}${imgUrl}`
+        : `${backendUrl}/${imgUrl}`;
 
     return `
       <tr>

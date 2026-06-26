@@ -398,12 +398,12 @@ export class NotificationsService {
       const p = item.product || {};
       const imgUrl = p.images?.[0]?.url || '';
       
-      // Resolve relative path if uploads folder
+      const backendUrl = process.env.RENDER_EXTERNAL_URL || process.env.API_URL || 'http://localhost:3001';
       const absoluteImgUrl = imgUrl.startsWith('http') 
         ? imgUrl 
         : imgUrl.startsWith('/')
-          ? `http://localhost:3001${imgUrl}`
-          : `http://localhost:3001/${imgUrl}`;
+          ? `${backendUrl}${imgUrl}`
+          : `${backendUrl}/${imgUrl}`;
 
       return `
         <tr>

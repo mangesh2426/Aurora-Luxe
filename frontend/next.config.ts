@@ -16,6 +16,12 @@ const nextConfig: NextConfig = {
         port: '3001',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'aurora-luxe.onrender.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
   experimental: {
