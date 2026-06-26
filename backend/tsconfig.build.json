@@ -1,4 +1,7 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": ["node_modules", "test", "dist", "**/*spec.ts", "check_user.ts", "prisma.config.ts", "prisma"]
+  "compilerOptions": {
+    "rootDir": "src"
+  },
+  "exclude": ["node_modules", "test", "dist", "**/*spec.ts", "check_user.ts", "prisma.config.ts", "prisma", "check_relationships.ts", "test_delete.ts"]
 }
