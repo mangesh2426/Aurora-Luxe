@@ -87,7 +87,7 @@ export class OrdersController {
     @Param('id') id: string,
     @Body(new ZodValidationPipe(updateOrderStatusSchema)) body: UpdateOrderStatusInput,
   ) {
-    const order = await this.ordersService.updateOrderStatusAdmin(id, body.status);
+    const order = await this.ordersService.updateOrderStatusAdmin(id, body);
     return { success: true, message: 'Order status updated successfully', data: order };
   }
 
