@@ -25,6 +25,19 @@ export default function CheckoutPage() {
   const [paymentOption, setPaymentOption] = useState<"options" | "card" | "upi" | "processing">("options");
   const [formDataCache, setFormDataCache] = useState<CheckoutFields | null>(null);
 
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [createdOrderId, setCreatedOrderId] = useState("");
+
+  // Auto-redirect after 5 seconds if Success Modal is open
+  useEffect(() => {
+    if (showSuccessModal && createdOrderId) {
+      const timer = setTimeout(() => {
+        router.push(`/tracking?orderId=${createdOrderId}`);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSuccessModal, createdOrderId, router]);
+
   useEffect(() => {
     const cached = localStorage.getItem("aurora_active_discount");
     if (cached) {
@@ -147,7 +160,8 @@ export default function CheckoutPage() {
       clearCart();
       localStorage.removeItem("aurora_active_discount");
       setRazorpayOpen(false);
-      router.push(`/tracking?orderId=${orderId}`);
+      setCreatedOrderId(orderId);
+      setShowSuccessModal(true);
     } catch (error) {
       console.error(error);
       alert("Failed to create order on server. Please try again.");
@@ -495,6 +509,122 @@ export default function CheckoutPage() {
                   <Lock size={10} className="stroke-[1.5]" /> Powered by Razorpay | PCI-DSS Compliant Secure
                 </div>
               </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Order Booking Success Modal */}
+      <AnimatePresence>
+        {showSuccessModal && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 bg-black/80 z-[100] backdrop-blur-md pointer-events-auto flex items-center justify-center p-4"
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                className="w-full max-w-[500px] bg-neutral-950 text-white p-8 relative border border-[#E6C787]/30 text-center shadow-2xl rounded-sm"
+              >
+                {/* Close Button */}
+                <button
+                  onClick={() => router.push(`/tracking?orderId=${createdOrderId}`)}
+                  className="absolute top-4 right-4 text-neutral-400 hover:text-white text-[24px] cursor-pointer"
+                >
+                  &times;
+                </button>
+
+                {/* Animated Gold Sparkles and Check Icon */}
+                <div className="flex justify-center mb-6">
+                  <div className="relative">
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: [0, 1.2, 1] }}
+                      transition={{ duration: 0.5, ease: "easeOut" }}
+                      className="w-20 h-20 rounded-full border-2 border-[#E6C787] flex items-center justify-center text-[#E6C787]"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="2"
+                        stroke="currentColor"
+                        className="w-10 h-10"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M4.5 12.75l6 6 9-13.5"
+                        />
+                      </svg>
+                    </motion.div>
+                    
+                    {/* Floating Sparkles decoration */}
+                    <motion.div
+                      animate={{ y: [-2, 2, -2], opacity: [0.5, 1, 0.5] }}
+                      transition={{ repeat: Infinity, duration: 2 }}
+                      className="absolute -top-3 -right-3 text-[#E6C787]"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                    </motion.div>
+                  </div>
+                </div>
+
+                {/* Luxury Typography */}
+                <h3 className="font-display text-[20px] sm:text-[24px] tracking-[0.15em] text-[#E6C787] uppercase font-semibold mb-2">
+                  Order Successfully Booked
+                </h3>
+                <p className="font-body text-[13px] text-neutral-300 font-light max-w-sm mx-auto mb-6">
+                  Thank you for shopping with Aurora Luxe. Your payment has been confirmed, and your anti-tarnish jewelry piece is being prepared.
+                </p>
+
+                {/* Order Details Panel */}
+                <div className="bg-neutral-900 border border-neutral-800 p-4 mb-6 rounded-sm text-left flex flex-col gap-2 font-body text-[13px]">
+                  <div className="flex justify-between">
+                    <span className="text-neutral-400">Order ID:</span>
+                    <span className="font-semibold text-[#E6C787] tracking-wider">{createdOrderId}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-neutral-400">Delivery Method:</span>
+                    <span>Standard Express Shipping</span>
+                  </div>
+                  <div className="flex justify-between border-t border-neutral-800 pt-2 mt-2 font-semibold">
+                    <span>Total Charged:</span>
+                    <span>₹{total.toLocaleString()}</span>
+                  </div>
+                </div>
+
+                {/* Navigation Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <button
+                    onClick={() => router.push(`/tracking?orderId=${createdOrderId}`)}
+                    className="bg-[#E6C787] text-neutral-950 px-6 py-3 font-label-caps text-[11px] tracking-widest uppercase hover:bg-[#d8b877] font-bold transition-colors cursor-pointer w-full sm:w-auto text-center"
+                  >
+                    Track Your Order
+                  </button>
+                  <button
+                    onClick={() => router.push("/shop")}
+                    className="border border-neutral-600 text-white px-6 py-3 font-label-caps text-[11px] tracking-widest uppercase hover:bg-white hover:text-neutral-950 font-bold transition-all cursor-pointer w-full sm:w-auto text-center"
+                  >
+                    Continue Shopping
+                  </button>
+                </div>
+
+                {/* Auto Redirect Info */}
+                <p className="text-[11px] text-neutral-500 mt-6 flex items-center justify-center gap-2">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E6C787] opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E6C787]"></span>
+                  </span>
+                  Redirecting to live tracking page in a few seconds...
+                </p>
+              </motion.div>
             </motion.div>
           </>
         )}
