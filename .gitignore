@@ -10,6 +10,8 @@ out/
 # Production build outputs
 dist/
 build/
+*.tsbuildinfo
+**/*.tsbuildinfo
 
 # Local environment variables files
 .env
