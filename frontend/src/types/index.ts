@@ -17,6 +17,11 @@ export interface Product {
   isBestSeller?: boolean;
   careInstructions?: string;
   shippingInfo?: string;
+  sku?: string;
+  originalStock?: number;
+  categoryId?: string;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
 }
 
 export interface CartItem {

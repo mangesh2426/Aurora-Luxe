@@ -20,8 +20,35 @@ export class AdminService {
       return sum;
     }, 0);
 
+    // Calculations for today's orders
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+
+    const ordersToday = await this.prisma.order.count({
+      where: {
+        createdAt: {
+          gte: todayStart,
+          lte: todayEnd,
+        },
+      },
+    });
+
+    const pendingOrders = await this.prisma.order.count({
+      where: { status: 'PENDING' },
+    });
+
+    const deliveredOrders = await this.prisma.order.count({
+      where: { status: 'DELIVERED' },
+    });
+
+    const cancelledOrders = await this.prisma.order.count({
+      where: { status: 'CANCELLED' },
+    });
+
     // 2. Orders count
-    const ordersCount = await this.prisma.order.count();
+    const ordersCount = orders.length;
 
     // 3. Customers count (total registered users)
     const usersCount = await this.prisma.user.count({
@@ -33,10 +60,20 @@ export class AdminService {
     const outOfStockProducts = await this.prisma.product.count({
       where: { stock: 0 },
     });
+    const lowStockProducts = await this.prisma.product.count({
+      where: {
+        stock: {
+          gt: 0,
+          lte: 10,
+        },
+      },
+    });
+    const allProducts = await this.prisma.product.findMany({ select: { stock: true } });
+    const liveInventory = allProducts.reduce((sum, p) => sum + p.stock, 0);
 
-    // 5. Recent transactions log (last 5 orders)
+    // 5. Recent transactions log (last 10 orders)
     const recentOrders = await this.prisma.order.findMany({
-      take: 5,
+      take: 10,
       orderBy: { createdAt: 'desc' },
       include: {
         user: {
@@ -46,13 +83,26 @@ export class AdminService {
       },
     });
 
+    const latestOrder = await this.prisma.order.findFirst({
+      orderBy: { createdAt: 'desc' },
+      select: { createdAt: true },
+    });
+
     return {
       revenue,
       ordersCount,
+      ordersToday,
+      pendingOrders,
+      deliveredOrders,
+      cancelledOrders,
       usersCount,
       totalProducts,
       outOfStockProducts,
+      lowStockProducts,
+      liveInventory,
       recentOrders,
+      latestOrderTime: latestOrder?.createdAt || null,
+      lastUpdated: new Date(),
     };
   }
 

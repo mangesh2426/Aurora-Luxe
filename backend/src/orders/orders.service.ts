@@ -78,6 +78,9 @@ export class OrdersService {
 
   // --- Order Operations ---
   async createOrder(userId: string, data: CreateOrderInput) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
     // 1. Get user cart
     const cart = await this.prisma.cart.findUnique({
       where: { userId },
@@ -144,6 +147,12 @@ export class OrdersService {
             phone: address.phone,
           },
           couponId,
+          orderNumber: `ORD-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`,
+          customerName: user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : 'Valued Customer',
+          customerEmail: user?.email || 'customer@auroraluxe.com',
+          customerPhone: address.phone,
+          paymentStatus: 'PENDING',
+          shippingStatus: 'PENDING',
         },
       });
 
@@ -212,6 +221,12 @@ export class OrdersService {
           status: OrderStatus.PENDING,
           totalAmount: data.totalAmount,
           shippingAddress: data.shippingAddress,
+          orderNumber: data.orderNumber || `ORD-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`,
+          customerName: data.shippingAddress?.name || 'Walk-in Customer',
+          customerEmail: data.shippingAddress?.email || 'customer@auroraluxe.com',
+          customerPhone: data.shippingAddress?.phone || 'N/A',
+          paymentStatus: data.paymentStatus === 'Paid' ? 'SUCCESS' : 'PENDING',
+          shippingStatus: 'PENDING',
         },
       });
 
@@ -365,7 +380,7 @@ export class OrdersService {
     });
   }
 
-  async updateOrderStatusAdmin(orderId: string, status: OrderStatus) {
+  async updateOrderStatusAdmin(orderId: string, updateDto: any) {
     const order = await this.prisma.order.findUnique({ where: { id: orderId } });
     if (!order) {
       throw new NotFoundException('Order not found');
@@ -374,28 +389,45 @@ export class OrdersService {
     // Auto-update Payment Status to SUCCESS if status is set to DELIVERED
     const updatedOrder = await this.prisma.$transaction(async (tx) => {
       const now = new Date();
-      const updateData: any = { status };
+      const updateData: any = {};
 
-      if (status === OrderStatus.PENDING) {
-        updateData.placedAt = now;
-        updateData.processingAt = null;
-        updateData.shippedAt = null;
-        updateData.deliveredAt = null;
-        updateData.cancelledAt = null;
-      } else if (status === OrderStatus.PROCESSING) {
-        updateData.processingAt = now;
-        updateData.shippedAt = null;
-        updateData.deliveredAt = null;
-        updateData.cancelledAt = null;
-      } else if (status === OrderStatus.SHIPPED) {
-        updateData.shippedAt = now;
-        updateData.deliveredAt = null;
-        updateData.cancelledAt = null;
-      } else if (status === OrderStatus.DELIVERED) {
-        updateData.deliveredAt = now;
-        updateData.cancelledAt = null;
-      } else if (status === OrderStatus.CANCELLED) {
-        updateData.cancelledAt = now;
+      if (updateDto.status) {
+        const status = updateDto.status;
+        updateData.status = status;
+        if (status === OrderStatus.PENDING) {
+          updateData.placedAt = now;
+          updateData.processingAt = null;
+          updateData.shippedAt = null;
+          updateData.deliveredAt = null;
+          updateData.cancelledAt = null;
+        } else if (status === OrderStatus.PROCESSING) {
+          updateData.processingAt = now;
+          updateData.shippedAt = null;
+          updateData.deliveredAt = null;
+          updateData.cancelledAt = null;
+        } else if (status === OrderStatus.SHIPPED) {
+          updateData.shippedAt = now;
+          updateData.deliveredAt = null;
+          updateData.cancelledAt = null;
+        } else if (status === OrderStatus.DELIVERED) {
+          updateData.deliveredAt = now;
+          updateData.cancelledAt = null;
+        } else if (status === OrderStatus.CANCELLED) {
+          updateData.cancelledAt = now;
+        }
+      }
+
+      if (updateDto.paymentStatus) {
+        updateData.paymentStatus = updateDto.paymentStatus;
+      }
+      if (updateDto.shippingStatus) {
+        updateData.shippingStatus = updateDto.shippingStatus;
+      }
+      if (updateDto.trackingId !== undefined) {
+        updateData.trackingId = updateDto.trackingId;
+      }
+      if (updateDto.adminNotes !== undefined) {
+        updateData.adminNotes = updateDto.adminNotes;
       }
 
       const nextOrder = await tx.order.update({
@@ -403,10 +435,28 @@ export class OrdersService {
         data: updateData,
       });
 
-      if (status === OrderStatus.DELIVERED) {
+      if (updateDto.paymentStatus) {
+        await tx.payment.updateMany({
+          where: { orderId },
+          data: { status: updateDto.paymentStatus === 'SUCCESS' ? PaymentStatus.SUCCESS : PaymentStatus.PENDING },
+        });
+      }
+
+      if (updateDto.status === OrderStatus.DELIVERED) {
         await tx.payment.updateMany({
           where: { orderId },
           data: { status: PaymentStatus.SUCCESS },
+        });
+        await tx.order.update({
+          where: { id: orderId },
+          data: { paymentStatus: 'SUCCESS', shippingStatus: 'DELIVERED' },
+        });
+      }
+
+      if (updateDto.status) {
+        await tx.order.update({
+          where: { id: orderId },
+          data: { shippingStatus: updateDto.status },
         });
       }
 

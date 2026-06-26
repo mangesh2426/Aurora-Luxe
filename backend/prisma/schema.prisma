@@ -42,6 +42,7 @@ model Product {
   discountPrice    Decimal?       @db.Decimal(10, 2)
   discountPercent  Int?
   stock            Int            @default(0)
+  sku              String?
   categoryId       String
   isBestSeller     Boolean        @default(false)
   isNewArrival     Boolean        @default(false)
@@ -87,6 +88,16 @@ model Order {
   shippedAt       DateTime?
   deliveredAt     DateTime?
   cancelledAt     DateTime?
+  
+  orderNumber     String?     @unique
+  customerName    String?
+  customerEmail   String?
+  customerPhone   String?
+  paymentStatus   String?     @default("PENDING")
+  shippingStatus  String?     @default("PENDING")
+  trackingId      String?
+  adminNotes      String?
+
   address         Address?    @relation(fields: [addressId], references: [id])
   coupon          Coupon?     @relation(fields: [couponId], references: [id])
   user            User        @relation(fields: [userId], references: [id])

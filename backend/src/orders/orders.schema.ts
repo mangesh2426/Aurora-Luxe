@@ -6,7 +6,11 @@ export const createOrderSchema = z.object({
 });
 
 export const updateOrderStatusSchema = z.object({
-  status: z.enum(['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED']),
+  status: z.enum(['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED']).optional(),
+  paymentStatus: z.enum(['PENDING', 'SUCCESS', 'FAILED', 'REFUNDED']).optional(),
+  shippingStatus: z.string().optional(),
+  trackingId: z.string().optional().nullable(),
+  adminNotes: z.string().optional().nullable(),
 });
 
 export const createCouponSchema = z.object({

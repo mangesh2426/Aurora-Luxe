@@ -231,10 +231,12 @@ async function main() {
 
   for (const product of products) {
     const { category, images, inStock, ...rest } = product;
+    const sku = rest.id.toUpperCase().replace(/-/g, '_');
     await prisma.product.upsert({
       where: { slug: rest.slug },
       update: {
         ...rest,
+        sku,
         categoryId: categoryMap[category],
         images: {
           deleteMany: {},
@@ -243,6 +245,7 @@ async function main() {
       },
       create: {
         ...rest,
+        sku,
         categoryId: categoryMap[category],
         images: {
           create: images.map(url => ({ url })),
@@ -251,6 +254,34 @@ async function main() {
     });
   }
   console.log('Products created.');
+
+  // Migrate/Populate missing fields on existing Orders
+  console.log('Migrating existing orders...');
+  const existingOrders = await prisma.order.findMany({
+    include: { user: true, payment: true },
+  });
+  for (const order of existingOrders) {
+    const sa: any = order.shippingAddress || {};
+    const customerName = order.customerName || sa.name || (order.user ? `${order.user.firstName || ''} ${order.user.lastName || ''}`.trim() : '') || 'Valued Customer';
+    const customerEmail = order.customerEmail || sa.email || order.user?.email || 'customer@auroraluxe.com';
+    const customerPhone = order.customerPhone || sa.phone || 'N/A';
+    const paymentStatus = order.paymentStatus || (order.payment?.status === 'SUCCESS' ? 'SUCCESS' : 'PENDING');
+    const shippingStatus = order.shippingStatus || (order.status as string);
+    const orderNumber = order.orderNumber || `ORD-${order.createdAt.getTime()}-${order.id.substring(0, 4).toUpperCase()}`;
+
+    await prisma.order.update({
+      where: { id: order.id },
+      data: {
+        customerName,
+        customerEmail,
+        customerPhone,
+        paymentStatus,
+        shippingStatus,
+        orderNumber,
+      },
+    });
+  }
+  console.log('Orders migration completed.');
 }
 
 main()
