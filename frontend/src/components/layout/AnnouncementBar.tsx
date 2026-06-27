@@ -1,37 +1,42 @@
 "use client";
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const ANNOUNCEMENTS = [
-  "✨ Complimentary Shipping on Orders over ₹1,999 ✨",
-  "💖 Lifetime Warranty Against Tarnishing on All Pieces 💖",
-  "🌟 Enjoy 10% Off Your First Acquisition — Code: GOLDEN10 🌟"
+  "✨ Complimentary Shipping Above ₹1,999",
+  "✨ Easy Returns",
+  "✨ Premium Anti Tarnish Jewellery",
+  "✨ Secure Payments"
 ];
 
 export default function AnnouncementBar() {
   const [current, setCurrent] = useState(0);
-  const [fade, setFade] = useState(true);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setFade(false);
-      setTimeout(() => {
-        setCurrent((prev) => (prev + 1) % ANNOUNCEMENTS.length);
-        setFade(true);
-      }, 400);
+      setCurrent((prev) => (prev + 1) % ANNOUNCEMENTS.length);
     }, 5000);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="w-full bg-[#111111] py-2.5 text-center transition-all duration-300">
-      <p
-        className={`font-label-caps text-[9px] md:text-[9.5px] tracking-[0.25em] uppercase text-primary transition-all duration-500 font-medium ${
-          fade ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1"
-        }`}
-      >
-        {ANNOUNCEMENTS[current]}
-      </p>
+    <div className="w-full bg-[#111111] h-[40px] flex items-center justify-center overflow-hidden border-b border-white/5 relative z-50">
+      <div className="relative w-full max-w-container-max px-6 flex justify-center items-center">
+        <AnimatePresence mode="wait">
+          <motion.p
+            key={current}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+            className="font-label-caps text-[10px] md:text-[11px] tracking-[0.25em] uppercase text-primary font-medium text-center whitespace-nowrap"
+            style={{ color: "#C9A227" }}
+          >
+            {ANNOUNCEMENTS[current]}
+          </motion.p>
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

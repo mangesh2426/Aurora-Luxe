@@ -212,13 +212,19 @@ export default function SearchBar({ isMobileOverlay = false, onCloseMobile }: Se
   }
 
   return (
-    <div ref={containerRef} className={`relative w-48 lg:w-56`}>
-      {/* Desktop Search Input Bar */}
-      <div className="relative flex items-center">
+    <div ref={containerRef} className="relative w-[200px] lg:w-[240px] flex-shrink">
+      {/* Desktop Search Input Bar — Premium Rounded Search Pill */}
+      <div className={`relative flex items-center rounded-full px-4.5 transition-all duration-300 h-[44px] border ${
+        isFocused 
+          ? "border-primary shadow-[0_0_8px_rgba(201,162,39,0.15)] bg-white" 
+          : "border-[rgba(0,0,0,0.08)] hover:border-primary/45 bg-[#FAFAFA]"
+      }`}>
+        <Search size={15} className="text-on-surface-variant/50 stroke-[1.5] mr-2.5 shrink-0" />
+        
         <input
           ref={inputRef}
           type="text"
-          placeholder="Search..."
+          placeholder="Search rings, necklaces..."
           value={searchQuery}
           onChange={(e) => {
             setSearchQuery(e.target.value);
@@ -229,16 +235,18 @@ export default function SearchBar({ isMobileOverlay = false, onCloseMobile }: Se
             setDropdownOpen(true);
           }}
           onKeyDown={handleKeyDown}
-          className="w-full bg-transparent border-b border-outline focus:border-on-background pl-0 pr-10 py-2 text-[12px] font-body font-light text-on-background focus:outline-none placeholder-on-surface-variant/50 tracking-wide transition-colors"
+          className="w-full bg-transparent text-[13px] font-body font-light text-on-background focus:outline-none placeholder-on-surface-variant/50 tracking-wide"
         />
-        <div className="absolute right-0 flex items-center gap-2">
-          {loading && <Loader2 className="animate-spin text-primary/50" size={14} />}
-          {searchQuery ? (
-            <button onClick={() => { setSearchQuery(""); inputRef.current?.focus(); }} className="text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
-              <X size={14} className="stroke-[1.5]" />
+        
+        <div className="flex items-center gap-1.5 shrink-0 ml-1.5">
+          {loading && <Loader2 className="animate-spin text-primary/60" size={12} />}
+          {searchQuery && (
+            <button 
+              onClick={() => { setSearchQuery(""); inputRef.current?.focus(); }} 
+              className="text-on-surface-variant/50 hover:text-primary transition-colors cursor-pointer"
+            >
+              <X size={13} className="stroke-[1.5]" />
             </button>
-          ) : (
-            <Search size={14} className="text-on-surface-variant/60 stroke-[1.5]" />
           )}
         </div>
       </div>
