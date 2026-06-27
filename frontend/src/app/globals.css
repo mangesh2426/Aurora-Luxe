@@ -28,13 +28,15 @@
   
   --color-tertiary: #C0C0C0; /* Silver */
 
-  /* === Borders (Very subtle) === */
-  --color-outline: rgba(0, 0, 0, 0.04);
-  --color-outline-variant: rgba(0, 0, 0, 0.02);
+  /* === Borders (Very subtle but visible) === */
+  --color-outline: rgba(0, 0, 0, 0.09);
+  --color-outline-variant: rgba(0, 0, 0, 0.04);
 
-  /* === Error === */
+  /* === Error & Success === */
   --color-error: #B03A2E;
   --color-error-container: #FDEDEC;
+  --color-success: #1A7A4A;
+  --color-success-container: #E8F5EE;
 
   /* === Radius — Luxury Rounded === */
   --radius: 12px;
@@ -184,6 +186,13 @@
   [class*="animate-[float"] {
     will-change: transform, opacity;
     transform: translateZ(0);
+  }
+  /* --- Transition Durations --- */
+  .duration-400 { transition-duration: 400ms; }
+
+  /* --- Input Focus Style --- */
+  input:focus, select:focus, textarea:focus {
+    outline: none;
   }
 }
 

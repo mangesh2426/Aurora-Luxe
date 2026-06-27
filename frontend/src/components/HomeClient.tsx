@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ShieldCheck, Droplets, HeartHandshake, Award, Star, Mail, CheckCircle2, Lock, Gift, StarHalf, Truck, Headset, Check } from "lucide-react";
+import { ShieldCheck, Droplets, HeartHandshake, Award, Star, Mail, CircleCheck, Lock, Gift, StarHalf, Truck, Headset, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
 import { Product } from "@/types";
@@ -344,7 +344,7 @@ export default function HomeClient({ bestSellers, newArrivals }: HomeClientProps
               "Secure Payment", "Premium Quality", "Anti Tarnish", "Free Shipping", "Easy Returns", "Warranty"
             ].map((text, i) => (
               <div key={i} className="flex items-center gap-3 shrink-0">
-                <CheckCircle2 size={16} className="text-primary stroke-[1.5]" />
+                <CircleCheck size={16} className="text-primary stroke-[1.5]" />
                 <span className="font-label-caps text-[10px] tracking-widest text-on-background uppercase font-semibold whitespace-nowrap">{text}</span>
               </div>
             ))}

@@ -14,7 +14,7 @@ interface WishlistDrawerProps {
 }
 
 export default function WishlistDrawer({ isOpen, onClose }: WishlistDrawerProps) {
-  const { wishlist, removeFromWishlist } = useStore();
+  const { wishlist, toggleWishlist } = useStore();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -114,7 +114,7 @@ export default function WishlistDrawer({ isOpen, onClose }: WishlistDrawerProps)
                               <h4 className="font-display text-[20px] text-on-background hover:text-primary transition-colors leading-tight font-medium">{item.name}</h4>
                             </Link>
                             <button
-                              onClick={() => removeFromWishlist(item.id)}
+                              onClick={() => toggleWishlist(item.id)}
                               className="text-on-surface-variant/50 hover:text-error transition-colors cursor-pointer ml-2"
                               aria-label="Remove item"
                             >

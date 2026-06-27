@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Search, X, Loader2, TrendingUp, Clock } from "lucide-react";
+import { Search, X, Loader2, TrendingUp } from "lucide-react";
 import api, { mapBackendProduct } from "@/lib/api";
 import { Product } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";

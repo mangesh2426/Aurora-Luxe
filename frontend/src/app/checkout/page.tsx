@@ -175,8 +175,26 @@ export default function CheckoutPage() {
   }
 
   return (
-    <main className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-8 pb-32 bg-white text-on-background overflow-hidden">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
+    <main className="bg-background text-on-background overflow-hidden">
+      {/* Page Header */}
+      <div className="bg-white border-b border-outline">
+        <div className="max-w-container-max mx-auto px-6 md:px-16 py-12 flex items-end justify-between">
+          <div>
+            <nav className="font-label-caps text-[9px] tracking-[0.3em] uppercase text-on-surface-variant mb-4">
+              <a href="/" className="hover:text-primary transition-colors">Home</a>
+              <span className="mx-3 text-outline/50">/</span>
+              <span className="text-primary font-semibold">Secure Checkout</span>
+            </nav>
+            <h1 className="font-display text-[40px] md:text-[52px] leading-none text-on-background font-light tracking-wide">Secure Checkout</h1>
+          </div>
+          <div className="hidden md:flex items-center gap-2 text-on-surface-variant/60 mb-2">
+            <Lock size={14} className="stroke-[1.5]" />
+            <span className="font-label-caps text-[9px] tracking-widest uppercase">SSL Encrypted</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-container-max mx-auto px-6 md:px-16 py-16 grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
         {/* Left Form Panel */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -184,22 +202,22 @@ export default function CheckoutPage() {
           transition={{ duration: 0.6 }}
           className="lg:col-span-7"
         >
-          <form onSubmit={handleSubmit(handleCheckoutSubmit)} className="space-y-10">
+          <form onSubmit={handleSubmit(handleCheckoutSubmit)} className="space-y-12">
             {/* Step 1: Contacts */}
             <div>
-              <h2 className="font-display text-[26px] mb-6 flex items-center gap-3">
-                <span className="w-6 h-6 bg-on-background text-white rounded-full flex items-center justify-center font-body text-[11px]">1</span>
+              <h2 className="font-display text-[24px] mb-8 flex items-center gap-4">
+                <span className="w-8 h-8 bg-on-background text-white rounded-full flex items-center justify-center font-label-caps text-[11px] shrink-0">1</span>
                 Contact Information
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="email" className="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant">Email Address</label>
-                  <input type="email" id="email" {...register("email")} className="h-12 border border-outline px-4 text-[13px] font-body focus:border-primary outline-none" />
+                  <label htmlFor="email" className="font-label-caps text-[9px] tracking-[0.25em] uppercase text-on-surface-variant font-semibold">Email Address</label>
+                  <input type="email" id="email" {...register("email")} className="h-12 border border-outline px-4 text-[13px] font-body focus:border-on-background focus:outline-none bg-white transition-colors" />
                   {errors.email && <span className="text-[11px] text-error font-medium">{errors.email.message}</span>}
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="phone" className="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant">Phone Number</label>
-                  <input type="tel" id="phone" {...register("phone")} className="h-12 border border-outline px-4 text-[13px] font-body focus:border-primary outline-none" placeholder="10 digits" />
+                  <label htmlFor="phone" className="font-label-caps text-[9px] tracking-[0.25em] uppercase text-on-surface-variant font-semibold">Phone Number</label>
+                  <input type="tel" id="phone" {...register("phone")} className="h-12 border border-outline px-4 text-[13px] font-body focus:border-on-background focus:outline-none bg-white transition-colors" placeholder="10 digits" />
                   {errors.phone && <span className="text-[11px] text-error font-medium">{errors.phone.message}</span>}
                 </div>
               </div>
@@ -207,62 +225,62 @@ export default function CheckoutPage() {
 
             {/* Step 2: Shipping */}
             <div>
-              <h2 className="font-display text-[26px] mb-6 flex items-center gap-3">
-                <span className="w-6 h-6 bg-on-background text-white rounded-full flex items-center justify-center font-body text-[11px]">2</span>
-                Shipping Address
+              <h2 className="font-display text-[24px] mb-8 flex items-center gap-4">
+                <span className="w-8 h-8 bg-on-background text-white rounded-full flex items-center justify-center font-label-caps text-[11px] shrink-0">2</span>
+                Delivery Address
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="firstName" className="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant">First Name</label>
-                  <input type="text" id="firstName" {...register("firstName")} className="h-12 border border-outline px-4 text-[13px] font-body focus:border-primary outline-none" />
+                  <label htmlFor="firstName" className="font-label-caps text-[9px] tracking-[0.25em] uppercase text-on-surface-variant font-semibold">First Name</label>
+                  <input type="text" id="firstName" {...register("firstName")} className="h-12 border border-outline px-4 text-[13px] font-body focus:border-on-background focus:outline-none bg-white transition-colors" />
                   {errors.firstName && <span className="text-[11px] text-error font-medium">{errors.firstName.message}</span>}
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="lastName" className="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant">Last Name</label>
-                  <input type="text" id="lastName" {...register("lastName")} className="h-12 border border-outline px-4 text-[13px] font-body focus:border-primary outline-none" />
+                  <label htmlFor="lastName" className="font-label-caps text-[9px] tracking-[0.25em] uppercase text-on-surface-variant font-semibold">Last Name</label>
+                  <input type="text" id="lastName" {...register("lastName")} className="h-12 border border-outline px-4 text-[13px] font-body focus:border-on-background focus:outline-none bg-white transition-colors" />
                   {errors.lastName && <span className="text-[11px] text-error font-medium">{errors.lastName.message}</span>}
                 </div>
                 <div className="flex flex-col gap-2 md:col-span-2">
-                  <label htmlFor="address" className="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant">Address Line 1</label>
-                  <input type="text" id="address" {...register("address")} className="h-12 border border-outline px-4 text-[13px] font-body focus:border-primary outline-none" placeholder="Street name and house number" />
+                  <label htmlFor="address" className="font-label-caps text-[9px] tracking-[0.25em] uppercase text-on-surface-variant font-semibold">Address Line 1</label>
+                  <input type="text" id="address" {...register("address")} className="h-12 border border-outline px-4 text-[13px] font-body focus:border-on-background focus:outline-none bg-white transition-colors" placeholder="Street name and house number" />
                   {errors.address && <span className="text-[11px] text-error font-medium">{errors.address.message}</span>}
                 </div>
                 <div className="flex flex-col gap-2 md:col-span-2">
-                  <label htmlFor="apartment" className="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant">Apartment, Floor, Unit (Optional)</label>
-                  <input type="text" id="apartment" {...register("apartment")} className="h-12 border border-outline px-4 text-[13px] font-body focus:border-primary outline-none" />
+                  <label htmlFor="apartment" className="font-label-caps text-[9px] tracking-[0.25em] uppercase text-on-surface-variant font-semibold">Apartment, Floor, Unit <span className="normal-case text-on-surface-variant/50">(Optional)</span></label>
+                  <input type="text" id="apartment" {...register("apartment")} className="h-12 border border-outline px-4 text-[13px] font-body focus:border-on-background focus:outline-none bg-white transition-colors" />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="city" className="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant">City</label>
-                  <input type="text" id="city" {...register("city")} className="h-12 border border-outline px-4 text-[13px] font-body focus:border-primary outline-none" />
+                  <label htmlFor="city" className="font-label-caps text-[9px] tracking-[0.25em] uppercase text-on-surface-variant font-semibold">City</label>
+                  <input type="text" id="city" {...register("city")} className="h-12 border border-outline px-4 text-[13px] font-body focus:border-on-background focus:outline-none bg-white transition-colors" />
                   {errors.city && <span className="text-[11px] text-error font-medium">{errors.city.message}</span>}
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="state" className="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant">State</label>
-                  <input type="text" id="state" {...register("state")} className="h-12 border border-outline px-4 text-[13px] font-body focus:border-primary outline-none" />
+                  <label htmlFor="state" className="font-label-caps text-[9px] tracking-[0.25em] uppercase text-on-surface-variant font-semibold">State</label>
+                  <input type="text" id="state" {...register("state")} className="h-12 border border-outline px-4 text-[13px] font-body focus:border-on-background focus:outline-none bg-white transition-colors" />
                   {errors.state && <span className="text-[11px] text-error font-medium">{errors.state.message}</span>}
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="pincode" className="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant">Pincode</label>
-                  <input type="text" id="pincode" {...register("pincode")} className="h-12 border border-outline px-4 text-[13px] font-body focus:border-primary outline-none" placeholder="6 digits" />
+                  <label htmlFor="pincode" className="font-label-caps text-[9px] tracking-[0.25em] uppercase text-on-surface-variant font-semibold">Pincode</label>
+                  <input type="text" id="pincode" {...register("pincode")} className="h-12 border border-outline px-4 text-[13px] font-body focus:border-on-background focus:outline-none bg-white transition-colors" placeholder="6 digits" />
                   {errors.pincode && <span className="text-[11px] text-error font-medium">{errors.pincode.message}</span>}
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="font-label-caps text-[10px] tracking-widest uppercase text-on-surface-variant">Country</label>
-                  <input type="text" value="India" disabled className="h-12 border border-outline px-4 text-[13px] font-body bg-surface-container-low text-on-surface-variant/70" />
+                  <label className="font-label-caps text-[9px] tracking-[0.25em] uppercase text-on-surface-variant font-semibold">Country</label>
+                  <input type="text" value="India" disabled className="h-12 border border-outline px-4 text-[13px] font-body bg-surface-container-low text-on-surface-variant/60 cursor-not-allowed" />
                 </div>
               </div>
             </div>
 
             {/* Step 3: Payment */}
             <div>
-              <h2 className="font-display text-[26px] mb-6 flex items-center gap-3">
-                <span className="w-6 h-6 bg-on-background text-white rounded-full flex items-center justify-center font-body text-[11px]">3</span>
-                Payment Options
+              <h2 className="font-display text-[24px] mb-8 flex items-center gap-4">
+                <span className="w-8 h-8 bg-on-background text-white rounded-full flex items-center justify-center font-label-caps text-[11px] shrink-0">3</span>
+                Payment Method
               </h2>
               <div className="space-y-4">
                 {/* Razorpay */}
-                <label className={`flex gap-4 p-5 border cursor-pointer select-none transition-all duration-300 ${
-                  selectedPayment === "Razorpay" ? "border-primary bg-primary/5" : "border-outline hover:border-primary/50"
+                <label className={`flex gap-5 p-6 border cursor-pointer select-none transition-all duration-300 ${
+                  selectedPayment === "Razorpay" ? "border-on-background bg-surface-container-low" : "border-outline hover:border-on-background/40"
                 }`}>
                   <input
                     type="radio"
@@ -273,16 +291,16 @@ export default function CheckoutPage() {
                     className="mt-1 accent-primary"
                   />
                   <div>
-                    <h4 className="font-display text-[18px] text-on-background font-semibold flex items-center gap-2">
-                      Razorpay Secure Gateway <ShieldCheck size={16} className="text-primary stroke-[1.5]" />
+                    <h4 className="font-display text-[18px] text-on-background flex items-center gap-3">
+                      Razorpay Secure <ShieldCheck size={16} className="text-primary stroke-[1.5]" />
                     </h4>
-                    <p className="font-body text-[12px] text-on-surface-variant font-light mt-1">Pay instantly with Credit/Debit cards, UPI handles, NetBanking, or wallets.</p>
+                    <p className="font-body text-[12px] text-on-surface-variant font-light mt-1.5 leading-relaxed">Pay instantly with Credit/Debit cards, UPI handles, NetBanking, or wallets.</p>
                   </div>
                 </label>
                 
                 {/* COD */}
-                <label className={`flex gap-4 p-5 border cursor-pointer select-none transition-all duration-300 ${
-                  selectedPayment === "COD" ? "border-primary bg-primary/5" : "border-outline hover:border-primary/50"
+                <label className={`flex gap-5 p-6 border cursor-pointer select-none transition-all duration-300 ${
+                  selectedPayment === "COD" ? "border-on-background bg-surface-container-low" : "border-outline hover:border-on-background/40"
                 }`}>
                   <input
                     type="radio"
@@ -293,8 +311,8 @@ export default function CheckoutPage() {
                     className="mt-1 accent-primary"
                   />
                   <div>
-                    <h4 className="font-display text-[18px] text-on-background font-semibold">Cash On Delivery (COD)</h4>
-                    <p className="font-body text-[12px] text-on-surface-variant font-light mt-1">Pay in cash on parcel delivery. Adds ₹50 shipping handling fee.</p>
+                    <h4 className="font-display text-[18px] text-on-background">Cash On Delivery</h4>
+                    <p className="font-body text-[12px] text-on-surface-variant font-light mt-1.5 leading-relaxed">Pay in cash on parcel delivery. Adds ₹50 handling fee.</p>
                   </div>
                 </label>
               </div>
@@ -302,7 +320,7 @@ export default function CheckoutPage() {
 
             <button
               type="submit"
-              className="w-full bg-on-background text-white py-4 font-label-caps text-[12px] tracking-[0.25em] uppercase hover:bg-primary transition-colors flex items-center justify-center font-bold cursor-pointer"
+              className="w-full bg-on-background text-white py-5 font-label-caps text-[11px] tracking-[0.25em] uppercase hover:bg-primary transition-all duration-300 flex items-center justify-center font-medium cursor-pointer shadow-luxury hover:shadow-luxury-hover"
             >
               Complete Order & Pay
             </button>
@@ -316,53 +334,57 @@ export default function CheckoutPage() {
           transition={{ duration: 0.6, delay: 0.15 }}
           className="lg:col-span-5"
         >
-          <div className="sticky top-[140px] bg-surface-container-low p-8 border border-outline flex flex-col gap-6 shadow-sm">
-            <h3 className="font-label-caps text-[12px] tracking-[0.2em] uppercase text-on-background border-b border-outline pb-4 font-semibold">Order Summary</h3>
-            
-            <div className="max-h-[200px] overflow-y-auto divide-y divide-outline/50 pr-2 space-y-4">
-              {cart.map((item, idx) => (
-                <div key={idx} className="flex gap-4 items-center pt-4 first:pt-0">
-                  <div className="relative w-12 aspect-[4/5] bg-surface overflow-hidden border border-outline/30 flex-shrink-0">
-                    <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
-                    <span className="absolute -top-1.5 -right-1.5 bg-on-background text-white text-[8px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold">
-                      {item.quantity}
-                    </span>
-                  </div>
-                  <div className="flex-grow min-w-0">
-                    <h4 className="font-display text-[15px] font-semibold truncate text-on-background">{item.name}</h4>
-                    <span className="font-body text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold">{item.selectedFinish}</span>
-                  </div>
-                  <span className="font-body text-[14px] text-on-background font-semibold">₹{(item.price * item.quantity).toLocaleString()}</span>
-                </div>
-              ))}
+          <div className="sticky top-[100px] border border-outline overflow-hidden">
+            <div className="px-8 py-6 border-b border-outline bg-surface-container-low">
+              <h3 className="font-label-caps text-[11px] tracking-[0.25em] uppercase text-on-background font-semibold">Your Order</h3>
             </div>
+            
+            <div className="px-8 py-8 flex flex-col gap-6 bg-white">
+              <div className="max-h-[240px] overflow-y-auto divide-y divide-outline/30 -mx-2">
+                {cart.map((item, idx) => (
+                  <div key={idx} className="flex gap-4 items-center py-4">
+                    <div className="relative w-14 aspect-[3/4] bg-surface overflow-hidden border border-outline flex-shrink-0">
+                      <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
+                      <span className="absolute -top-1 -right-1 bg-on-background text-white text-[8px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                        {item.quantity}
+                      </span>
+                    </div>
+                    <div className="flex-grow min-w-0">
+                      <h4 className="font-display text-[15px] font-medium truncate text-on-background">{item.name}</h4>
+                      <span className="font-body text-[10px] text-on-surface-variant uppercase tracking-wider">{item.selectedFinish}</span>
+                    </div>
+                    <span className="font-body text-[14px] text-on-background font-medium shrink-0">₹{(item.price * item.quantity).toLocaleString()}</span>
+                  </div>
+                ))}
+              </div>
 
-            <div className="border-t border-outline/50 pt-4 flex flex-col gap-3 font-body text-[13px] text-on-surface-variant">
-              <div className="flex justify-between">
-                <span>Subtotal</span>
-                <span>₹{subtotal.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Shipping Fees</span>
-                <span>{shipping === 0 ? "Complimentary" : `₹${shipping}`}</span>
-              </div>
-              {discount > 0 && (
-                <div className="flex justify-between text-primary font-semibold">
-                  <span>Discount ({activeDiscount?.code})</span>
-                  <span>-₹{discount.toLocaleString()}</span>
+              <div className="border-t border-outline pt-6 flex flex-col gap-3 font-body text-[13px] text-on-surface-variant">
+                <div className="flex justify-between">
+                  <span>Subtotal</span>
+                  <span>₹{subtotal.toLocaleString()}</span>
                 </div>
-              )}
-              <div className="flex justify-between text-on-background font-bold text-[17px] pt-4 border-t border-outline mt-2 tracking-wider">
-                <span>Total to Pay</span>
-                <span>₹{total.toLocaleString()}</span>
+                <div className="flex justify-between">
+                  <span>Shipping</span>
+                  <span className={shipping === 0 ? "text-primary font-medium" : ""}>{shipping === 0 ? "Complimentary" : `₹${shipping}`}</span>
+                </div>
+                {discount > 0 && (
+                  <div className="flex justify-between text-primary">
+                    <span>Discount ({activeDiscount?.code})</span>
+                    <span className="font-medium">-₹{discount.toLocaleString()}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-on-background pt-5 border-t border-outline mt-2">
+                  <span className="font-display text-[20px] font-light">Total</span>
+                  <span className="font-display text-[20px] font-light">₹{total.toLocaleString()}</span>
+                </div>
               </div>
-            </div>
-            
-            <div className="flex items-center gap-3 text-on-surface-variant bg-white p-4 border border-outline/40">
-              <RotateCcw size={18} className="text-primary stroke-[1.5]" />
-              <span className="font-body text-[11px] font-light leading-normal">
-                <strong>7-Day Easy Exchange Policy:</strong> Exchange any piece for wrong size or finish within 7 days of delivery.
-              </span>
+              
+              <div className="flex items-start gap-4 p-5 border border-outline bg-surface-container-low">
+                <RotateCcw size={16} className="text-primary stroke-[1.5] shrink-0 mt-0.5" />
+                <p className="font-body text-[12px] font-light leading-relaxed text-on-surface-variant">
+                  <strong className="font-semibold text-on-background">7-Day Easy Exchange:</strong> Exchange any piece for wrong size or finish within 7 days of delivery.
+                </p>
+              </div>
             </div>
           </div>
         </motion.div>

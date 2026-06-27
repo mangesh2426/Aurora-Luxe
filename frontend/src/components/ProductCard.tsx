@@ -58,7 +58,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               transition={{ delay: 0.15, duration: 0.35 }}
               className="bg-primary text-white font-label-caps text-[9px] px-3 py-1 uppercase tracking-widest font-medium rounded-sm shadow-sm"
             >
-              Icon
+              Bestseller
             </motion.span>
           )}
           {product.discount && (
