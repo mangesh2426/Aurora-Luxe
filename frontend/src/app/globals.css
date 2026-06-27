@@ -2,33 +2,35 @@
 @import "tailwindcss";
 
 @theme {
-  /* === Primary Palette — Champagne Gold === */
-  --color-primary: #C59F27;
-  --color-primary-container: #A47E1B;
-  --color-on-primary: #ffffff;
+  /* === Primary Palette — Luxury Gold === */
+  --color-primary: #C9A227;
+  --color-primary-container: #A6851F;
+  --color-on-primary: #FFFFFF;
 
-  /* === Background & Surface (WARM LUXURY IVORY) === */
-  --color-background: #ffffff;
-  --color-on-background: #11110f;
+  /* === Background & Surface (WARM LUXURY WHITE) === */
+  --color-background: #FAF9F6;
+  --color-on-background: #111111;
 
-  --color-surface: #FAF8F5;
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #F6F4F0;
-  --color-surface-container: #EFEBFA;
-  --color-surface-container-high: #EAEAE4;
-  --color-surface-container-highest: #E0E0DA;
+  --color-surface: #FFFFFF;
+  --color-surface-container-lowest: #FFFFFF;
+  --color-surface-container-low: #FDFDFD;
+  --color-surface-container: #F7F3EE;
+  --color-surface-container-high: #F2EBE1;
+  --color-surface-container-highest: #ECE3D4;
 
-  --color-on-surface: #11110f;
-  --color-on-surface-variant: #5A5A54;
+  --color-on-surface: #111111;
+  --color-on-surface-variant: #555555;
 
-  /* === Secondary / Neutral === */
-  --color-secondary: #5A5A54;
-  --color-secondary-container: #F0F0EC;
-  --color-on-secondary-container: #22221E;
+  /* === Secondary / Accent === */
+  --color-secondary: #B76E79; /* Rose Gold */
+  --color-secondary-container: #F8E9EB;
+  --color-on-secondary-container: #2A171B;
+  
+  --color-tertiary: #C0C0C0; /* Silver */
 
-  /* === Borders (Delicate Fine Lines) === */
-  --color-outline: #EAEAE5;
-  --color-outline-variant: #F5F5F0;
+  /* === Borders (Very subtle) === */
+  --color-outline: rgba(0, 0, 0, 0.04);
+  --color-outline-variant: rgba(0, 0, 0, 0.02);
 
   /* === Error === */
   --color-error: #B03A2E;
@@ -42,10 +44,10 @@
   --radius-xl: 28px;
   --radius-full: 9999px;
 
-  /* === Shadows (Stripe / Apple Inspired) === */
-  --shadow-luxury: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.025);
-  --shadow-luxury-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
-  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.03);
+  /* === Shadows (Soft, minimal depth) === */
+  --shadow-luxury: 0 4px 12px -2px rgba(0, 0, 0, 0.03), 0 2px 6px -2px rgba(0, 0, 0, 0.02);
+  --shadow-luxury-hover: 0 12px 24px -4px rgba(0, 0, 0, 0.05), 0 8px 12px -6px rgba(0, 0, 0, 0.03);
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.02);
 
   /* === Spacing === */
   --spacing-margin-mobile: 24px;
@@ -60,8 +62,8 @@
 
   /* === Typography === */
   --font-display: var(--font-cormorant);
-  --font-body: var(--font-montserrat);
-  --font-label-caps: var(--font-montserrat);
+  --font-body: var(--font-inter);
+  --font-label-caps: var(--font-inter);
 }
 
 /* ==========================================
@@ -135,10 +137,10 @@
   }
 
   /* --- Luxury Borders (sharp, minimal) --- */
-  .lux-border   { border: 1px solid rgba(0, 0, 0, 0.05); }
-  .lux-border-b { border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
-  .lux-border-t { border-top: 1px solid rgba(0, 0, 0, 0.05); }
-  .lux-border-gold { border: 1px solid rgba(197, 159, 39, 0.3); }
+  .lux-border   { border: 1px solid var(--color-outline); }
+  .lux-border-b { border-bottom: 1px solid var(--color-outline); }
+  .lux-border-t { border-top: 1px solid var(--color-outline); }
+  .lux-border-gold { border: 1px solid rgba(201, 162, 39, 0.15); }
 
   /* --- Smooth Luxury Transition --- */
   .lux-transition {

@@ -5,16 +5,21 @@ import { usePathname, useRouter } from "next/navigation";
 import { useStore } from "@/store/useStore";
 import MagneticButton from "@/components/MagneticButton";
 import CartDrawer from "@/components/cart/CartDrawer";
+import WishlistDrawer from "@/components/layout/WishlistDrawer";
 import SearchBar from "./SearchBar";
-import { Search, Heart, ShoppingBag, User, Menu, X, Store, Truck, Home, LayoutDashboard } from "lucide-react";
+import { Search, Heart, ShoppingBag, User, Menu, X, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
+  const [wishlistDrawerOpen, setWishlistDrawerOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   
+  // Mega menu states
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
+
   const pathname = usePathname();
   const router = useRouter();
   const { cart, wishlist, user, logout } = useStore();
@@ -35,20 +40,93 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const handleMouseEnter = (menu: string) => {
+    setActiveMenu(menu);
+  };
+
+  const handleMouseLeave = () => {
+    setActiveMenu(null);
+  };
+
+  // Nav Item component
+  const NavItem = ({ label, href, hasDropdown = false }: { label: string, href: string, hasDropdown?: boolean }) => {
+    const isActive = pathname === href;
+    return (
+      <div 
+        className="relative py-6 px-2 cursor-pointer group"
+        onMouseEnter={() => hasDropdown && handleMouseEnter(label)}
+        onMouseLeave={handleMouseLeave}
+      >
+        <Link
+          href={href}
+          className={`flex items-center gap-1 font-label-caps text-[11px] tracking-[0.2em] uppercase transition-colors duration-300 relative ${
+            isActive ? "text-primary font-medium" : "text-on-background hover:text-primary"
+          }`}
+        >
+          {label}
+          {hasDropdown && <ChevronDown size={14} className="group-hover:rotate-180 transition-transform duration-300" />}
+          <span className={`absolute -bottom-1 left-0 h-[1px] bg-primary transition-all duration-300 ${isActive ? "w-full" : "w-0 group-hover:w-full"}`} />
+        </Link>
+
+        {/* Mega Menu Dropdown */}
+        {hasDropdown && activeMenu === label && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.2 }}
+            className="absolute top-full left-1/2 -translate-x-1/2 w-max bg-white/90 backdrop-blur-2xl border border-outline/20 shadow-glass rounded-2xl overflow-hidden py-8 px-10 grid grid-cols-2 gap-12 z-50"
+          >
+            {label === "Categories" && (
+              <>
+                <div className="flex flex-col gap-4">
+                  <h4 className="font-display text-[16px] text-primary">By Type</h4>
+                  <Link href="/shop?category=Necklaces" className="text-sm font-light hover:text-primary transition-colors">Necklaces</Link>
+                  <Link href="/shop?category=Earrings" className="text-sm font-light hover:text-primary transition-colors">Earrings</Link>
+                  <Link href="/shop?category=Rings" className="text-sm font-light hover:text-primary transition-colors">Rings</Link>
+                  <Link href="/shop?category=Bracelets" className="text-sm font-light hover:text-primary transition-colors">Bracelets</Link>
+                </div>
+                <div className="flex flex-col gap-4">
+                  <h4 className="font-display text-[16px] text-primary">Featured</h4>
+                  <Link href="/shop?category=Combos" className="text-sm font-light hover:text-primary transition-colors">Bridal Combos</Link>
+                  <Link href="/shop?isBestSeller=true" className="text-sm font-light hover:text-primary transition-colors">Best Sellers</Link>
+                </div>
+              </>
+            )}
+            {label === "Collections" && (
+              <>
+                <div className="flex flex-col gap-4">
+                  <h4 className="font-display text-[16px] text-primary">Curations</h4>
+                  <Link href="/shop?collection=signature" className="text-sm font-light hover:text-primary transition-colors">The Signature Collection</Link>
+                  <Link href="/shop?collection=lumina" className="text-sm font-light hover:text-primary transition-colors">Lumina Essentials</Link>
+                  <Link href="/shop?collection=classic" className="text-sm font-light hover:text-primary transition-colors">Classic Gold</Link>
+                </div>
+                <div className="flex flex-col justify-center items-center bg-surface-container-low p-6 rounded-xl">
+                  <span className="font-label-caps text-[10px] tracking-widest text-primary mb-2">Explore All</span>
+                  <Link href="/shop" className="border-b border-primary text-sm font-medium pb-1">Shop Collections</Link>
+                </div>
+              </>
+            )}
+          </motion.div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <>
       {/* Sticky Main Nav (Desktop) */}
       <motion.nav
-        className={`hidden md:flex justify-between items-center w-full px-16 sticky top-0 z-40 transition-all duration-500 ${
+        className={`hidden xl:flex justify-between items-center w-full px-16 sticky top-0 z-40 transition-all duration-500 ${
           scrolled
-            ? "bg-white/65 backdrop-blur-2xl border-b border-[rgba(0,0,0,0.05)] shadow-glass py-3"
-            : "bg-white border-b border-[rgba(0,0,0,0.02)] py-6"
+            ? "bg-white/80 backdrop-blur-2xl border-b border-outline/10 shadow-glass py-0"
+            : "bg-white border-b border-outline/5 py-2"
         }`}
       >
         {/* Left Side: Logo */}
         <Link href="/" className="flex items-center">
           <motion.div 
-            animate={{ scale: scrolled ? 0.85 : 1, originX: 0 }}
+            animate={{ scale: scrolled ? 0.9 : 1, originX: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
             className="font-display text-[26px] text-on-background tracking-[0.25em] font-light hover:text-primary transition-colors duration-300"
           >
@@ -57,59 +135,14 @@ export default function Header() {
         </Link>
 
         {/* Center: Navigation Links */}
-        <div className="flex gap-9 items-center">
-          <Link
-            href="/"
-            className={`font-label-caps text-[10.5px] tracking-[0.2em] uppercase transition-colors duration-300 relative py-1 ${
-              pathname === "/"
-                ? "text-primary font-semibold after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1.5px] after:bg-primary"
-                : "text-on-surface-variant hover:text-primary after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:h-[1.5px] after:bg-primary after:transition-all after:duration-300"
-            }`}
-          >
-            Home
-          </Link>
-          <Link
-            href="/shop"
-            className={`font-label-caps text-[10.5px] tracking-[0.2em] uppercase transition-colors duration-300 relative py-1 ${
-              pathname === "/shop"
-                ? "text-primary font-semibold after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1.5px] after:bg-primary"
-                : "text-on-surface-variant hover:text-primary after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:h-[1.5px] after:bg-primary after:transition-all after:duration-300"
-            }`}
-          >
-            Shop
-          </Link>
-          <Link
-            href="/wishlist"
-            className={`font-label-caps text-[10.5px] tracking-[0.2em] uppercase transition-colors duration-300 relative py-1 ${
-              pathname === "/wishlist"
-                ? "text-primary font-semibold after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1.5px] after:bg-primary"
-                : "text-on-surface-variant hover:text-primary after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:h-[1.5px] after:bg-primary after:transition-all after:duration-300"
-            }`}
-          >
-            Wishlist
-          </Link>
-          <Link
-            href="/tracking"
-            className={`font-label-caps text-[10.5px] tracking-[0.2em] uppercase transition-colors duration-300 relative py-1 ${
-              pathname === "/tracking"
-                ? "text-primary font-semibold after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1.5px] after:bg-primary"
-                : "text-on-surface-variant hover:text-primary after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:h-[1.5px] after:bg-primary after:transition-all after:duration-300"
-            }`}
-          >
-            Track Order
-          </Link>
-          {mounted && user?.role === "admin" && (
-            <Link
-              href="/admin"
-              className={`font-label-caps text-[10.5px] tracking-[0.2em] uppercase transition-colors duration-300 relative py-1 ${
-                pathname?.startsWith("/admin")
-                  ? "text-primary font-semibold after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1.5px] after:bg-primary"
-                  : "text-on-surface-variant hover:text-primary after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 hover:after:w-full after:h-[1.5px] after:bg-primary after:transition-all after:duration-300"
-              }`}
-            >
-              Admin
-            </Link>
-          )}
+        <div className="flex gap-4 items-center">
+          <NavItem label="Categories" href="/shop" hasDropdown={true} />
+          <NavItem label="Collections" href="/shop" hasDropdown={true} />
+          <NavItem label="New Arrivals" href="/shop?isNew=true" />
+          <NavItem label="Best Sellers" href="/shop?isBestSeller=true" />
+          <NavItem label="Gift Guide" href="/shop?collection=gift-guide" />
+          <NavItem label="About" href="/about" />
+          <NavItem label="Contact" href="/contact" />
         </div>
 
         {/* Right Side: Search and Icons */}
@@ -118,72 +151,61 @@ export default function Header() {
           <SearchBar />
 
           {/* Wishlist Link */}
-          <MagneticButton as="div" strength={0.35}>
-            <Link
-              href="/wishlist"
-              aria-label="Wishlist"
-              className="text-on-surface hover:text-primary transition-colors duration-300 relative p-1 block"
-            >
-              <Heart size={21} className={`stroke-[1.5] ${wishlistCount > 0 ? "fill-primary text-primary" : ""}`} />
-              {wishlistCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-primary text-white text-[8px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center pointer-events-none">
-                  {wishlistCount}
-                </span>
-              )}
-            </Link>
-          </MagneticButton>
-
-          {/* Cart Bag Link */}
-          <MagneticButton as="button" strength={0.35} onClick={() => setCartDrawerOpen(true)} aria-label="Cart" className="text-on-surface hover:text-primary transition-colors duration-300 relative p-1 cursor-pointer">
-            <ShoppingBag size={21} className="stroke-[1.5]" />
-            {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-on-background text-white text-[8px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center">
-                {cartCount}
+          <MagneticButton as="button" strength={0.35} onClick={() => setWishlistDrawerOpen(true)} aria-label="Wishlist" className="text-on-background hover:text-primary transition-colors duration-300 relative p-1 cursor-pointer block">
+            <Heart size={21} className={`stroke-[1.5] ${wishlistCount > 0 ? "fill-primary text-primary" : ""}`} />
+            {wishlistCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-primary text-white text-[9px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center pointer-events-none">
+                {wishlistCount}
               </span>
             )}
           </MagneticButton>
 
           {/* Account/Profile Link */}
           <div className="flex items-center gap-2">
-            {mounted && user && (
-              <span className="text-[11px] font-body text-on-surface-variant max-w-[80px] truncate font-light tracking-wide">
-                Hi, {user.name.split(" ")[0]}
-              </span>
-            )}
             <Link
               href="/login"
               aria-label="Account"
-              className="text-on-surface hover:text-primary transition-colors duration-300 p-1"
+              className="text-on-background hover:text-primary transition-colors duration-300 p-1"
             >
               <User size={21} className="stroke-[1.5]" />
             </Link>
           </div>
+
+          {/* Cart Bag Link */}
+          <MagneticButton as="button" strength={0.35} onClick={() => setCartDrawerOpen(true)} aria-label="Cart" className="text-on-background hover:text-primary transition-colors duration-300 relative p-1 cursor-pointer">
+            <ShoppingBag size={21} className="stroke-[1.5]" />
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-primary text-white text-[9px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
+          </MagneticButton>
         </div>
       </motion.nav>
 
       {/* Mobile Top Header */}
       <header
-        className={`md:hidden flex justify-between items-center w-full px-6 py-3.5 sticky top-0 z-40 transition-all duration-300 border-b border-[rgba(0,0,0,0.05)] ${
-          scrolled ? "bg-white/65 backdrop-blur-2xl shadow-glass" : "bg-white"
+        className={`xl:hidden flex justify-between items-center w-full px-6 py-4 sticky top-0 z-40 transition-all duration-300 border-b border-[rgba(0,0,0,0.05)] ${
+          scrolled ? "bg-white/80 backdrop-blur-2xl shadow-glass" : "bg-white"
         }`}
       >
         <button
           onClick={() => setMobileMenuOpen(true)}
           aria-label="Menu"
-          className="text-on-surface hover:text-primary transition-colors p-2 cursor-pointer"
+          className="text-on-background hover:text-primary transition-colors p-2 cursor-pointer"
         >
-          <Menu size={22} className="stroke-[1.5]" />
+          <Menu size={24} className="stroke-[1.5]" />
         </button>
         
         <Link href="/" className="font-display text-[22px] text-on-background tracking-[0.2em] font-light">
           AURORA <span className="text-primary font-medium tracking-[0.12em]">LUXE</span>
         </Link>
         
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setMobileSearchOpen(true)}
             aria-label="Search"
-            className="text-on-surface hover:text-primary transition-colors p-2 cursor-pointer"
+            className="text-on-background hover:text-primary transition-colors p-2 cursor-pointer"
           >
             <Search size={21} className="stroke-[1.5]" />
           </button>
@@ -191,68 +213,17 @@ export default function Header() {
           <button
             onClick={() => setCartDrawerOpen(true)}
             aria-label="Cart"
-            className="text-on-surface hover:text-primary transition-colors p-2 relative cursor-pointer"
+            className="text-on-background hover:text-primary transition-colors p-2 relative cursor-pointer"
           >
             <ShoppingBag size={21} className="stroke-[1.5]" />
             {cartCount > 0 && (
-              <span className="absolute top-0.5 right-0.5 bg-on-background text-white text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+              <span className="absolute top-0 right-0 bg-primary text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                 {cartCount}
               </span>
             )}
           </button>
         </div>
       </header>
-
-      {/* Bottom Nav Bar (Mobile Navigation Convenience) */}
-      <nav className="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-3 pb-safe glass-panel border-t border-outline/30 z-45 shadow-2xl">
-        <Link
-          href="/shop"
-          className={`flex flex-col items-center justify-center transition-colors duration-200 ${
-            pathname === "/shop" ? "text-primary" : "text-on-surface-variant hover:text-primary"
-          }`}
-        >
-          <Store size={20} className="mb-0.5 stroke-[1.5]" />
-          <span className="font-label-caps text-[9px] tracking-wider uppercase">Shop</span>
-        </Link>
-        <Link
-          href="/wishlist"
-          className={`flex flex-col items-center justify-center transition-colors duration-200 ${
-            pathname === "/wishlist" ? "text-primary" : "text-on-surface-variant hover:text-primary"
-          }`}
-        >
-          <Heart size={20} className={`mb-0.5 stroke-[1.5] ${pathname === "/wishlist" && wishlistCount > 0 ? "fill-primary text-primary" : ""}`} />
-          <span className="font-label-caps text-[9px] tracking-wider uppercase">Wishlist</span>
-        </Link>
-        <Link
-          href="/"
-          className={`flex flex-col items-center justify-center transition-colors duration-200 ${
-            pathname === "/" ? "text-primary" : "text-on-surface-variant hover:text-primary"
-          }`}
-        >
-          <Home size={20} className="mb-0.5 stroke-[1.5]" />
-          <span className="font-label-caps text-[9px] tracking-wider uppercase">Home</span>
-        </Link>
-        <Link
-          href="/tracking"
-          className={`flex flex-col items-center justify-center transition-colors duration-200 ${
-            pathname === "/tracking" ? "text-primary" : "text-on-surface-variant hover:text-primary"
-          }`}
-        >
-          <Truck size={20} className="mb-0.5 stroke-[1.5]" />
-          <span className="font-label-caps text-[9px] tracking-wider uppercase">Track</span>
-        </Link>
-        {mounted && user?.role === "admin" && (
-          <Link
-            href="/admin"
-            className={`flex flex-col items-center justify-center transition-colors duration-200 ${
-              pathname?.startsWith("/admin") ? "text-primary" : "text-on-surface-variant hover:text-primary"
-            }`}
-          >
-            <LayoutDashboard size={20} className="mb-0.5 stroke-[1.5]" />
-            <span className="font-label-caps text-[9px] tracking-wider uppercase">Admin</span>
-          </Link>
-        )}
-      </nav>
 
       {/* Mobile Sidebar Menu Navigation */}
       <AnimatePresence>
@@ -271,35 +242,44 @@ export default function Header() {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "tween", duration: 0.35, ease: "easeOut" }}
-              className="fixed top-0 left-0 h-screen w-[280px] bg-white z-50 shadow-2xl flex flex-col border-r border-outline/30"
+              className="fixed top-0 left-0 h-screen w-4/5 max-w-sm bg-white z-50 shadow-2xl flex flex-col border-r border-outline/30"
             >
               <div className="p-6 border-b border-outline/10 flex justify-between items-center bg-white">
                 <span className="font-display text-[22px] text-on-background tracking-[0.2em] font-light">AURORA <span className="text-primary font-semibold tracking-[0.15em]">LUXE</span></span>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
                   aria-label="Close menu"
-                  className="text-on-surface-variant hover:text-primary p-2 border border-outline/10 rounded-full cursor-pointer"
+                  className="text-on-background hover:text-primary p-2 border border-outline/10 rounded-full cursor-pointer"
                 >
-                  <X size={15} className="stroke-[1.5]" />
+                  <X size={20} className="stroke-[1.5]" />
                 </button>
               </div>
 
-              <div className="p-6 flex flex-col gap-6 font-body text-[15px] tracking-wide">
+              <div className="p-6 flex flex-col gap-6 font-label-caps text-[13px] tracking-widest uppercase overflow-y-auto">
                 <Link href="/" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-colors py-1">Home</Link>
-                <Link href="/shop" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-colors py-1">Shop All Jewelry</Link>
-                <Link href="/shop?category=Necklaces" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-colors py-1 pl-4 text-on-surface-variant text-[14px]">- Necklaces</Link>
-                <Link href="/shop?category=Rings" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-colors py-1 pl-4 text-on-surface-variant text-[14px]">- Rings</Link>
-                <Link href="/shop?category=Earrings" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-colors py-1 pl-4 text-on-surface-variant text-[14px]">- Earrings</Link>
-                <Link href="/shop?category=Bracelets" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-colors py-1 pl-4 text-on-surface-variant text-[14px]">- Bracelets</Link>
-                <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-colors py-1">Our Story</Link>
-                <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-colors py-1">Contact Us</Link>
+                <div className="border-t border-outline/10 pt-4 mt-2">
+                  <h4 className="text-primary font-semibold mb-4 text-[10px]">Categories</h4>
+                  <Link href="/shop?category=Necklaces" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-colors py-1 block text-on-surface-variant">Necklaces</Link>
+                  <Link href="/shop?category=Rings" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-colors py-1 block text-on-surface-variant">Rings</Link>
+                  <Link href="/shop?category=Earrings" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-colors py-1 block text-on-surface-variant">Earrings</Link>
+                  <Link href="/shop?category=Bracelets" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-colors py-1 block text-on-surface-variant">Bracelets</Link>
+                </div>
+                <div className="border-t border-outline/10 pt-4 mt-2">
+                  <Link href="/shop?isNew=true" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-colors py-1 block">New Arrivals</Link>
+                  <Link href="/shop?isBestSeller=true" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-colors py-1 block mt-4">Best Sellers</Link>
+                  <Link href="/shop?collection=gift-guide" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-colors py-1 block mt-4">Gift Guide</Link>
+                </div>
+                <div className="border-t border-outline/10 pt-4 mt-2">
+                  <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-colors py-1 block">About Us</Link>
+                  <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-colors py-1 block mt-4">Contact</Link>
+                </div>
               </div>
 
-              <div className="mt-auto p-6 border-t border-outline bg-surface-container-low flex flex-col gap-4">
+              <div className="mt-auto p-6 border-t border-outline/10 bg-surface flex flex-col gap-4">
                 {mounted && user ? (
                   <div className="flex flex-col gap-2">
                     <div className="text-[12px] font-body text-on-surface-variant text-center">
-                      Logged in as <span className="font-semibold text-on-background">{user.name}</span>
+                      Welcome back, <span className="font-semibold text-on-background">{user.name}</span>
                     </div>
                     <button
                       onClick={() => {
@@ -307,7 +287,7 @@ export default function Header() {
                         setMobileMenuOpen(false);
                         router.push("/");
                       }}
-                      className="w-full py-3 bg-red-600/95 text-white text-center font-label-caps text-[10px] tracking-widest uppercase hover:bg-red-700 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full py-3 bg-red-600/95 text-white text-center font-label-caps text-[10px] tracking-widest uppercase hover:bg-red-700 transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-luxury"
                     >
                       Log Out
                     </button>
@@ -316,7 +296,7 @@ export default function Header() {
                   <Link
                     href="/login"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="w-full py-3 bg-on-background text-white text-center font-label-caps text-[10px] tracking-widest uppercase hover:bg-primary transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-3 bg-on-background text-white text-center font-label-caps text-[10px] tracking-widest uppercase hover:bg-primary transition-colors flex items-center justify-center gap-2 shadow-luxury"
                   >
                     <User size={16} className="stroke-[1.5]" /> Sign In / Account
                   </Link>
@@ -335,7 +315,7 @@ export default function Header() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.25 }}
-            className="fixed inset-0 bg-white z-50 md:hidden flex flex-col p-6"
+            className="fixed inset-0 bg-white z-50 xl:hidden flex flex-col p-6"
           >
             {/* Header part of overlay */}
             <div className="flex items-center justify-between mb-6">
@@ -345,9 +325,9 @@ export default function Header() {
               <button
                 onClick={() => setMobileSearchOpen(false)}
                 aria-label="Close search"
-                className="text-on-surface-variant hover:text-primary p-2 border border-outline rounded-full cursor-pointer"
+                className="text-on-background hover:text-primary p-2 border border-outline rounded-full cursor-pointer"
               >
-                <X size={18} className="stroke-[1.5]" />
+                <X size={20} className="stroke-[1.5]" />
               </button>
             </div>
             
@@ -361,6 +341,7 @@ export default function Header() {
 
       {/* Cart Drawer */}
       <CartDrawer isOpen={cartDrawerOpen} onClose={() => setCartDrawerOpen(false)} />
+      <WishlistDrawer isOpen={wishlistDrawerOpen} onClose={() => setWishlistDrawerOpen(false)} />
     </>
   );
 }

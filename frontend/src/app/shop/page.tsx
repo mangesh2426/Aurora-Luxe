@@ -160,53 +160,53 @@ function ShopContent() {
   }
 
   return (
-    <main className="flex-grow pt-8 pb-32 max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop bg-white text-on-background overflow-hidden">
+    <main className="flex-grow pb-32 bg-background text-on-background overflow-hidden">
       {/* Page Header */}
-      <div className="mb-12 border-b border-outline pb-8 flex flex-col md:flex-row justify-between items-end gap-6">
-        <div>
-          <nav aria-label="Breadcrumb" className="flex text-on-surface-variant mb-4 font-label-caps text-[9px] tracking-[0.25em] uppercase">
-            <Link href="/" className="hover:text-primary transition-colors">Home</Link>
-            <span className="mx-3 text-outline">/</span>
-            <span className="text-primary font-medium">Shop All</span>
-          </nav>
-          <h1 className="font-display text-[42px] md:text-[58px] text-on-background leading-none font-light tracking-wide">
-            The Collection
-          </h1>
-        </div>
-        
-        <div className="flex items-center justify-between w-full md:w-auto gap-8 font-label-caps text-[10px] tracking-[0.2em] uppercase">
-          <span className="text-on-surface-variant hidden md:inline-block font-semibold">
-            {filtered.length} Pieces Found
-          </span>
-          <button
-            onClick={() => setMobileFiltersOpen(true)}
-            className="md:hidden flex items-center gap-2 text-on-surface border border-outline px-6 py-3 hover:bg-surface-container-low transition-colors font-semibold cursor-pointer"
-          >
-            <SlidersHorizontal size={14} className="stroke-[1.5]" />
-            Filters
-          </button>
+      <div className="bg-white border-b border-outline">
+        <div className="max-w-container-max mx-auto px-6 md:px-16 py-16 flex flex-col md:flex-row justify-between items-end gap-6">
+          <div>
+            <nav aria-label="Breadcrumb" className="flex text-on-surface-variant mb-4 font-label-caps text-[9px] tracking-[0.3em] uppercase">
+              <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+              <span className="mx-3 text-outline/50">/</span>
+              <span className="text-primary font-semibold">The Collection</span>
+            </nav>
+            <h1 className="font-display text-[48px] md:text-[64px] text-on-background leading-none font-light tracking-wide">
+              The Collection
+            </h1>
+            <p className="font-body text-[13px] text-on-surface-variant font-light mt-3">{filtered.length} curated pieces</p>
+          </div>
           
-          <div className="relative group z-20">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="bg-transparent border border-outline text-on-surface text-[10px] uppercase font-label-caps tracking-widest px-4 py-3 cursor-pointer focus:outline-none"
+          <div className="flex items-center justify-between w-full md:w-auto gap-6">
+            <button
+              onClick={() => setMobileFiltersOpen(true)}
+              className="md:hidden flex items-center gap-2 text-on-surface border border-outline px-6 py-3 hover:bg-surface-container-low transition-colors font-label-caps text-[10px] tracking-widest uppercase cursor-pointer"
             >
-              <option value="default">Sort: Recommended</option>
-              <option value="newest">Newest Arrivals</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="rating">Customer Rating</option>
-              <option value="discount">Highest Discount</option>
-            </select>
+              <SlidersHorizontal size={14} className="stroke-[1.5]" />
+              Filters
+            </button>
+            
+            <div className="relative z-20">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-transparent border border-outline text-on-background text-[10px] uppercase font-label-caps tracking-widest px-5 py-3 cursor-pointer focus:outline-none focus:border-primary hover:border-on-background transition-colors"
+              >
+                <option value="default">Sort: Recommended</option>
+                <option value="newest">Newest Arrivals</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="rating">Customer Rating</option>
+                <option value="discount">Highest Discount</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-16">
+      <div className="max-w-container-max mx-auto px-6 md:px-16 pt-12 flex flex-col md:flex-row gap-12 md:gap-16">
         {/* Desktop Sidebar Filters */}
-        <aside className="hidden md:block w-[240px] flex-shrink-0">
-          <div className="sticky top-[140px] max-h-[calc(100vh-160px)] overflow-y-auto hide-scrollbar pr-4">
+        <aside className="hidden md:block w-[260px] flex-shrink-0">
+          <div className="sticky top-[100px] max-h-[calc(100vh-120px)] overflow-y-auto hide-scrollbar">
             <FilterSidebar
               selectedCategories={selectedCategories}
               onCategoryChange={handleCategoryChange}
@@ -224,25 +224,25 @@ function ShopContent() {
         {/* Product Grid */}
         <div className="flex-grow">
             {loading ? (
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-16">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <ProductCardSkeleton key={i} />
                 ))}
               </div>
             ) : filtered.length === 0 ? (
-              <div className="text-center py-32 border border-outline/30 bg-surface">
-                <Search size={48} className="text-outline mb-6 mx-auto stroke-[1.2]" />
-                <h3 className="font-display text-[26px] text-on-background mb-4 font-semibold">No Products Match Your Criteria</h3>
-                <p className="font-body text-[14px] text-on-surface-variant font-light mb-8 max-w-sm mx-auto">Try clearing your filters or altering search words to discover items.</p>
+              <div className="text-center py-40 border border-outline">
+                <Search size={40} className="text-on-surface-variant/30 mb-6 mx-auto stroke-[1]" />
+                <h3 className="font-display text-[28px] text-on-background mb-4 font-light">No Pieces Found</h3>
+                <p className="font-body text-[14px] text-on-surface-variant font-light mb-10 max-w-sm mx-auto">Try clearing your filters or exploring our full collection.</p>
                 <button
                   onClick={clearAllFilters}
-                  className="px-10 py-4 bg-primary text-on-primary font-label-caps text-[11px] tracking-[0.2em] uppercase hover:bg-primary-container transition-colors cursor-pointer font-semibold"
+                  className="px-10 py-4 bg-on-background text-white font-label-caps text-[11px] tracking-[0.2em] uppercase hover:bg-primary transition-colors cursor-pointer font-medium"
                 >
                   Clear All Filters
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-16">
                 {filtered.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Montserrat } from "next/font/google";
+import { Cormorant_Garamond, Inter } from "next/font/google";
 import dynamic from "next/dynamic";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
 import Header from "@/components/layout/Header";
@@ -19,8 +19,8 @@ const cormorant = Cormorant_Garamond({
   display: "swap",
 });
 
-const montserrat = Montserrat({
-  variable: "--font-montserrat",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600"],
   display: "swap",
@@ -71,7 +71,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body
-        className={`${cormorant.variable} ${montserrat.variable} bg-white text-on-background min-h-screen flex flex-col font-body antialiased overflow-x-hidden selection:bg-primary selection:text-white`}
+        className={`${cormorant.variable} ${inter.variable} bg-white text-on-background min-h-screen flex flex-col font-body antialiased overflow-x-hidden selection:bg-primary selection:text-white`}
         suppressHydrationWarning
       >
         <MouseGlow />

@@ -1,11 +1,10 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { Heart, ShoppingBag, Star } from "lucide-react";
+import { Heart, ShoppingBag, Star, Eye } from "lucide-react";
 import { motion } from "framer-motion";
 import { useStore } from "@/store/useStore";
 import { Product } from "@/types";
-import { buttonVariants } from "@/lib/animations";
 
 interface ProductCardProps {
   product: Product;
@@ -29,26 +28,25 @@ export default function ProductCard({ product }: ProductCardProps) {
     toggleWishlist(product.id);
   };
 
+  const secondaryImage = product.images && product.images.length > 1 ? product.images[1] : product.imageUrl;
+
   return (
     <motion.div
-      className="group flex flex-col h-full bg-white border border-outline/20 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.02)] rounded-2xl overflow-hidden relative"
-      whileHover={{ y: -3, boxShadow: "0 20px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.02)" }}
-      transition={{ type: "spring", stiffness: 280, damping: 24 }}
+      className="group flex flex-col h-full bg-white rounded-md overflow-hidden relative"
+      whileHover={{ y: -4 }}
+      transition={{ type: "tween", duration: 0.4, ease: "easeOut" }}
     >
-      {/* Subtle inner border for premium lighting effect */}
-      <div className="absolute inset-0 rounded-2xl border border-white/50 pointer-events-none z-10" />
-
       {/* Image and Action Layer */}
-      <div className="relative w-full aspect-[4/5] bg-[#FAF8F5] overflow-hidden">
+      <div className="relative w-full aspect-[3/4] bg-surface-container-lowest overflow-hidden rounded-md border border-outline">
 
         {/* Badges Frame */}
-        <div className="absolute top-3.5 left-3.5 z-10 flex flex-col gap-1.5 pointer-events-none">
+        <div className="absolute top-4 left-4 z-20 flex flex-col gap-2 pointer-events-none">
           {product.isNew && (
             <motion.span
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1, duration: 0.35 }}
-              className="bg-white/90 backdrop-blur-md border border-outline/15 text-primary font-label-caps text-[8.5px] px-2.5 py-0.5 uppercase tracking-widest font-semibold rounded-md"
+              className="bg-white/95 backdrop-blur-sm border border-outline/30 text-on-background font-label-caps text-[9px] px-3 py-1 uppercase tracking-widest font-medium rounded-sm shadow-sm"
             >
               New
             </motion.span>
@@ -58,9 +56,9 @@ export default function ProductCard({ product }: ProductCardProps) {
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.15, duration: 0.35 }}
-              className="bg-[#111111] text-[#C59F27] font-label-caps text-[8.5px] px-2.5 py-0.5 uppercase tracking-widest font-semibold rounded-md border border-[#C59F27]/20"
+              className="bg-primary text-white font-label-caps text-[9px] px-3 py-1 uppercase tracking-widest font-medium rounded-sm shadow-sm"
             >
-              Best Seller
+              Icon
             </motion.span>
           )}
           {product.discount && (
@@ -68,7 +66,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2, duration: 0.35 }}
-              className="bg-[#C59F27] text-white font-label-caps text-[8.5px] px-2.5 py-0.5 uppercase tracking-widest font-semibold rounded-md"
+              className="bg-on-background text-white font-label-caps text-[9px] px-3 py-1 uppercase tracking-widest font-medium rounded-sm shadow-sm"
             >
               -{product.discount}%
             </motion.span>
@@ -79,23 +77,20 @@ export default function ProductCard({ product }: ProductCardProps) {
         <motion.button
           onClick={handleWishlistToggle}
           aria-label="Toggle Wishlist"
-          className="absolute top-3.5 right-3.5 z-10 p-2.5 bg-white/90 backdrop-blur-md rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.03)] border border-outline/10 text-on-surface cursor-pointer"
-          whileHover={{ scale: 1.12 }}
-          whileTap={{ scale: 0.92 }}
-          transition={{ type: "spring", stiffness: 380, damping: 22 }}
+          className="absolute top-4 right-4 z-20 p-2.5 bg-white/50 hover:bg-white backdrop-blur-md rounded-full shadow-sm border border-outline/30 text-on-surface cursor-pointer transition-colors"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
         >
           <Heart
-            size={15}
-            className={`stroke-[1.5] transition-colors duration-300 ${isWishlisted ? "fill-primary text-primary" : "text-on-surface/70"}`}
+            size={16}
+            className={`stroke-[1.5] transition-colors duration-300 ${isWishlisted ? "fill-primary text-primary" : "text-on-surface/80 hover:text-primary"}`}
           />
         </motion.button>
 
-        {/* Main Product Link with image zoom */}
+        {/* Main Product Link with dual image hover */}
         <Link href={`/product/${product.id}`} className="block relative w-full h-full">
           <motion.div
-            className="relative w-full h-full"
-            whileHover={{ scale: 1.06 }}
-            transition={{ duration: 0.9, ease: [0.25, 0.1, 0.25, 1.0] }}
+            className="absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out opacity-100 group-hover:opacity-0"
           >
             <Image
               src={product.imageUrl}
@@ -105,21 +100,28 @@ export default function ProductCard({ product }: ProductCardProps) {
               sizes="(max-width: 768px) 50vw, 25vw"
             />
           </motion.div>
+          <motion.div
+            className="absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out opacity-0 group-hover:opacity-100"
+          >
+            <Image
+              src={secondaryImage}
+              alt={`${product.name} alternate view`}
+              fill
+              className="object-cover scale-105 group-hover:scale-100 transition-transform duration-1000"
+              sizes="(max-width: 768px) 50vw, 25vw"
+            />
+          </motion.div>
+          
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500 z-10 pointer-events-none" />
 
-          {/* Subtle overlay shading */}
-          <div className="absolute inset-0 bg-black/[0.005] group-hover:bg-black/[0.025] transition-colors duration-500 z-[1]" />
-
-          {/* Quick Add button – slides up on card hover (CSS group-hover) */}
-          <div className="absolute bottom-0 left-0 w-full p-4 hidden md:block z-20 translate-y-full group-hover:translate-y-0 transition-transform duration-[380ms] ease-[cubic-bezier(0.25,0.1,0.25,1.0)]">
+          {/* Quick Add overlay */}
+          <div className="absolute bottom-4 left-4 right-4 hidden md:flex flex-col gap-2 z-20 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out">
             <motion.button
               onClick={handleQuickAdd}
-              variants={buttonVariants}
-              initial="rest"
-              whileHover="hover"
-              whileTap="tap"
-              className="w-full bg-[#111111]/90 backdrop-blur-md text-white font-label-caps text-[9px] tracking-[0.25em] py-3.5 uppercase cursor-pointer flex items-center justify-center gap-2 font-semibold rounded-xl border border-white/10 shadow-glass"
+              whileTap={{ scale: 0.98 }}
+              className="w-full bg-white/95 hover:bg-on-background hover:text-white backdrop-blur-md text-on-background font-label-caps text-[10px] tracking-[0.2em] py-3 uppercase cursor-pointer flex items-center justify-center gap-2 font-semibold rounded-sm border border-outline/50 shadow-sm transition-colors"
             >
-              <ShoppingBag size={12} className="stroke-[1.5]" />
+              <ShoppingBag size={14} className="stroke-[1.5]" />
               Quick Add
             </motion.button>
           </div>
@@ -127,37 +129,20 @@ export default function ProductCard({ product }: ProductCardProps) {
       </div>
 
       {/* Info Layer */}
-      <div className="flex flex-col flex-grow items-center text-center pt-5 pb-5 px-4.5 bg-white">
-        <span className="font-label-caps text-[9px] text-[#C59F27] tracking-[0.2em] uppercase mb-1.5 block font-semibold">
-          {product.category}
-        </span>
-        <Link href={`/product/${product.id}`} className="block max-w-full mb-1">
-          <h3 className="font-display text-[18px] md:text-[20px] text-on-background hover:text-primary transition-colors tracking-wide font-medium line-clamp-1">
+      <div className="flex flex-col flex-grow items-center text-center pt-6 pb-2 px-2 bg-white">
+        <Link href={`/product/${product.id}`} className="block w-full">
+          <h3 className="font-display text-[20px] text-on-background hover:text-primary transition-colors tracking-wide font-medium line-clamp-1">
             {product.name}
           </h3>
         </Link>
 
-        {/* Rating */}
-        <div className="flex items-center gap-1.5 mt-0.5 mb-2 text-[10.5px] text-on-surface-variant/70 justify-center">
-          <div className="flex text-[#C59F27]">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star
-                key={i}
-                size={11}
-                className={`stroke-[1.5] ${i < Math.floor(product.rating || 5) ? "fill-[#C59F27] text-[#C59F27]" : "text-[#C59F27]/20"}`}
-              />
-            ))}
-          </div>
-          <span className="font-body font-light text-on-surface-variant">({product.reviewsCount || 15})</span>
-        </div>
-
         {/* Price */}
-        <div className="flex gap-2 justify-center items-center mt-auto">
-          <span className="font-body text-[13.5px] text-[#111111] font-semibold tracking-wider">
+        <div className="flex gap-3 justify-center items-center mt-3 mb-3">
+          <span className="font-body text-[14px] text-on-background font-medium tracking-wide">
             ₹{product.price.toLocaleString()}
           </span>
           {product.originalPrice && (
-            <span className="font-body text-[11.5px] text-on-surface-variant/70 line-through tracking-wider">
+            <span className="font-body text-[12px] text-on-surface-variant line-through tracking-wide">
               ₹{product.originalPrice.toLocaleString()}
             </span>
           )}

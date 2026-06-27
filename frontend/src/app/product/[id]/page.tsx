@@ -92,7 +92,7 @@ export default function ProductDetailsPage() {
   const isWishlisted = wishlist.includes(product.id);
 
   return (
-    <main className="max-w-container-max mx-auto px-6 md:px-16 pt-8 pb-32 bg-[#FCFBF9] text-on-background overflow-hidden">
+    <main className="max-w-container-max mx-auto px-6 md:px-16 pt-8 pb-32 bg-background text-on-background overflow-hidden">
       {/* Breadcrumbs */}
       <nav aria-label="Breadcrumb" className="flex text-[10px] tracking-[0.2em] uppercase text-on-surface-variant mb-10">
         <ol className="inline-flex items-center space-x-2">
@@ -119,7 +119,7 @@ export default function ProductDetailsPage() {
           transition={{ duration: 0.6 }}
           className="lg:col-span-7"
         >
-          <div className="bg-white p-4 rounded-3xl border border-outline/10 shadow-[0_8px_30px_rgba(0,0,0,0.01)]">
+          <div className="bg-white rounded-md border border-outline overflow-hidden shadow-luxury">
             <ProductImageGallery images={product.images} />
           </div>
         </motion.div>
@@ -131,29 +131,29 @@ export default function ProductDetailsPage() {
           transition={{ duration: 0.6, delay: 0.15 }}
           className="lg:col-span-5 flex flex-col pt-4 md:pt-0"
         >
-          <div className="flex justify-between items-start mb-4">
+          <div className="flex justify-between items-start mb-6">
             <div>
-              <span className="font-label-caps text-[10px] tracking-[0.22em] uppercase text-primary mb-2 block font-bold">{product.category}</span>
-              <h1 className="font-display text-[36px] md:text-[42px] text-on-background leading-[1.15] tracking-wide font-light">{product.name}</h1>
+              <span className="font-label-caps text-[10px] tracking-[0.3em] uppercase text-primary mb-3 block font-semibold">{product.category}</span>
+              <h1 className="font-display text-[36px] md:text-[48px] text-on-background leading-[1.1] tracking-wide font-light">{product.name}</h1>
             </div>
             
             <button
               onClick={() => toggleWishlist(product.id)}
               aria-label="Wishlist toggle"
-              className="text-on-surface-variant hover:text-primary p-3 border border-outline/15 rounded-full ml-4 cursor-pointer transition-all duration-300 hover:scale-105 bg-white shadow-sm"
+              className="text-on-surface-variant hover:text-primary p-3 border border-outline rounded-full ml-4 cursor-pointer transition-all duration-300 hover:border-primary bg-white shadow-sm"
             >
               <Heart size={20} className={`stroke-[1.5] ${isWishlisted ? "fill-primary text-primary" : "text-on-surface-variant"}`} />
             </button>
           </div>
 
           {/* Rating */}
-          <div className="flex items-center gap-2 mb-6 text-[13px] text-on-surface-variant/80">
-            <div className="flex text-[#C59F27]">
+          <div className="flex items-center gap-2 mb-8 text-[13px] text-on-surface-variant/80">
+            <div className="flex text-primary">
               {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} size={15} className={`stroke-[1.5] ${i < Math.floor(product.rating) ? "fill-[#C59F27] text-[#C59F27]" : "text-[#C59F27]/20"}`} />
+                <Star key={i} size={14} className={`stroke-[1] ${i < Math.floor(product.rating) ? "fill-primary text-primary" : "text-primary/20"}`} />
               ))}
             </div>
-            <span className="font-body font-light">{product.rating} ({product.reviewsCount} verified reviews)</span>
+            <span className="font-body font-light text-[13px]">{product.rating} ({product.reviewsCount} verified reviews)</span>
           </div>
 
           <p className="font-body text-[13.5px] leading-relaxed text-on-surface-variant/90 mb-8 font-light tracking-wide">
@@ -161,13 +161,13 @@ export default function ProductDetailsPage() {
           </p>
 
           {/* Price Container */}
-          <div className="flex items-end gap-4 p-6 mb-8 bg-white border border-outline/10 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.015)]">
-            <span className="font-body text-[25px] text-[#111111] font-semibold">₹{product.price.toLocaleString()}</span>
+          <div className="flex items-end gap-4 p-6 mb-8 bg-surface-container-low border border-outline rounded-sm">
+            <span className="font-display text-[32px] text-on-background font-light tracking-wide">₹{product.price.toLocaleString()}</span>
             {product.originalPrice && (
-              <span className="font-body text-[15px] text-on-surface-variant/50 line-through mb-1.5">₹{product.originalPrice.toLocaleString()}</span>
+              <span className="font-body text-[16px] text-on-surface-variant/50 line-through mb-1">₹{product.originalPrice.toLocaleString()}</span>
             )}
             {product.discount && (
-              <span className="bg-[#C59F27]/10 border border-[#C59F27]/20 text-[#C59F27] text-[9.5px] uppercase font-label-caps px-3 py-1 tracking-wider ml-auto font-bold rounded-lg">
+              <span className="bg-primary/10 border border-primary/20 text-primary text-[9px] uppercase font-label-caps px-3 py-1.5 tracking-widest ml-auto font-semibold rounded-sm">
                 Save {product.discount}%
               </span>
             )}
@@ -175,16 +175,16 @@ export default function ProductDetailsPage() {
 
           {/* Variant Selector: Finish */}
           <div className="mb-6">
-            <span className="block font-label-caps text-[9px] tracking-[0.2em] uppercase text-on-surface mb-3 font-bold">Color Finish: {selectedFinish}</span>
+            <span className="block font-label-caps text-[10px] tracking-[0.25em] uppercase text-on-background mb-4 font-semibold">Color Finish: <span className="text-primary">{selectedFinish}</span></span>
             <div className="flex gap-3 flex-wrap">
               {product.finishes.map(f => (
                 <button
                   key={f}
                   onClick={() => setSelectedFinish(f)}
-                  className={`px-5 py-2.5 border text-[12px] font-body transition-all duration-300 cursor-pointer rounded-xl ${
+                  className={`px-5 py-2.5 border text-[12px] font-body transition-all duration-300 cursor-pointer rounded-sm font-medium ${
                     selectedFinish === f
-                      ? "border-primary bg-primary/5 text-primary font-semibold"
-                      : "border-outline hover:border-primary/50 text-on-surface-variant/80 bg-white"
+                      ? "border-on-background bg-on-background text-white"
+                      : "border-outline hover:border-on-background text-on-surface-variant"
                   }`}
                 >
                   {f}
@@ -195,16 +195,16 @@ export default function ProductDetailsPage() {
 
           {/* Variant Selector: Material */}
           <div className="mb-8">
-            <span className="block font-label-caps text-[9px] tracking-[0.2em] uppercase text-on-surface mb-3 font-bold">Base Metal: {selectedMaterial}</span>
+            <span className="block font-label-caps text-[10px] tracking-[0.25em] uppercase text-on-background mb-4 font-semibold">Base Metal: <span className="text-primary">{selectedMaterial}</span></span>
             <div className="flex gap-3 flex-wrap">
               {product.materials.map(m => (
                 <button
                   key={m}
                   onClick={() => setSelectedMaterial(m)}
-                  className={`px-5 py-2.5 border text-[12px] font-body transition-all duration-300 cursor-pointer rounded-xl ${
+                  className={`px-5 py-2.5 border text-[12px] font-body transition-all duration-300 cursor-pointer rounded-sm font-medium ${
                     selectedMaterial === m
-                      ? "border-primary bg-primary/5 text-primary font-semibold"
-                      : "border-outline hover:border-primary/50 text-on-surface-variant/80 bg-white"
+                      ? "border-on-background bg-on-background text-white"
+                      : "border-outline hover:border-on-background text-on-surface-variant"
                   }`}
                 >
                   {m}
@@ -223,73 +223,76 @@ export default function ProductDetailsPage() {
               />
               <button
                 onClick={handleAdd}
-                className="flex-1 bg-[#111111] text-white hover:bg-primary font-label-caps text-[10px] tracking-[0.22em] uppercase h-14 hover:shadow-lg transition-all duration-300 flex items-center justify-center cursor-pointer font-bold rounded-2xl border border-white/5"
+                className="flex-1 bg-on-background text-white hover:bg-primary font-label-caps text-[10px] tracking-[0.25em] uppercase h-14 transition-all duration-400 flex items-center justify-center cursor-pointer font-semibold rounded-sm shadow-luxury hover:shadow-luxury-hover"
               >
                 Add to Bag
               </button>
             </div>
             <button
               onClick={handleBuyNow}
-              className="w-full bg-[#C59F27] text-white hover:bg-[#111111] font-label-caps text-[10px] tracking-[0.22em] uppercase h-14 hover:shadow-lg transition-all duration-300 cursor-pointer font-bold rounded-2xl"
+              className="w-full bg-primary text-white hover:bg-on-background font-label-caps text-[10px] tracking-[0.25em] uppercase h-14 transition-all duration-400 cursor-pointer font-semibold rounded-sm shadow-luxury hover:shadow-luxury-hover"
             >
-              Buy It Now (Express Checkout)
+              Buy Now — Express Checkout
             </button>
           </div>
 
           {/* Trust Assurances Block */}
-          <div className="mt-4 p-6 bg-white border border-outline/10 rounded-2xl flex flex-col gap-4 mb-8 shadow-sm">
-            <div className="flex items-center gap-3.5">
-              <div className="text-primary bg-primary/5 p-1.5 rounded-lg border border-primary/10">
-                <ShieldCheck size={18} className="stroke-[2]" />
+          <div className="mt-4 p-6 bg-surface-container-low border border-outline rounded-sm flex flex-col gap-5 mb-8">
+            <div className="flex items-center gap-4">
+              <ShieldCheck size={18} className="text-primary stroke-[1.5] shrink-0" />
+              <div>
+                <span className="block font-label-caps text-[10px] tracking-[0.2em] text-on-background uppercase font-semibold">Lifetime Anti-Tarnish Warranty</span>
+                <span className="font-body text-[12px] text-on-surface-variant font-light">Your piece stays golden, guaranteed forever.</span>
               </div>
-              <span className="font-label-caps text-[9px] tracking-[0.18em] text-on-background uppercase font-bold">Lifetime Anti-Tarnish Warranty</span>
             </div>
-            <div className="flex items-center gap-3.5">
-              <div className="text-primary bg-primary/5 p-1.5 rounded-lg border border-primary/10">
-                <Truck size={18} className="stroke-[2]" />
+            <div className="flex items-center gap-4">
+              <Truck size={18} className="text-primary stroke-[1.5] shrink-0" />
+              <div>
+                <span className="block font-label-caps text-[10px] tracking-[0.2em] text-on-background uppercase font-semibold">Free Express Shipping</span>
+                <span className="font-body text-[12px] text-on-surface-variant font-light">Complimentary insured delivery across India, 3-5 days.</span>
               </div>
-              <span className="font-label-caps text-[9px] tracking-[0.18em] text-on-background uppercase font-bold">Free Insured Shipping & 7-Day Exchange</span>
             </div>
-            <div className="flex items-center gap-3.5">
-              <div className="text-primary bg-primary/5 p-1.5 rounded-lg border border-primary/10">
-                <RefreshCw size={18} className="stroke-[2]" />
+            <div className="flex items-center gap-4">
+              <RefreshCw size={18} className="text-primary stroke-[1.5] shrink-0" />
+              <div>
+                <span className="block font-label-caps text-[10px] tracking-[0.2em] text-on-background uppercase font-semibold">100% Skin Safe & Hypoallergenic</span>
+                <span className="font-body text-[12px] text-on-surface-variant font-light">Zero nickel, zero lead. Safe for all skin types.</span>
               </div>
-              <span className="font-label-caps text-[9px] tracking-[0.18em] text-on-background uppercase font-bold">100% Skin Safe & Hypoallergenic</span>
             </div>
           </div>
 
           {/* Collapsible Tabs Details */}
-          <div className="border-t border-outline/30 divide-y divide-outline/30 bg-white rounded-2xl border border-outline/10 overflow-hidden shadow-sm">
+          <div className="border border-outline divide-y divide-outline overflow-hidden">
             <details className="group border-none" open>
-              <summary className="flex justify-between items-center px-6 py-5 font-label-caps text-[10.5px] tracking-[0.22em] uppercase cursor-pointer list-none text-on-background hover:text-primary outline-none font-bold bg-[#FAF8F5]/30">
+              <summary className="flex justify-between items-center px-6 py-5 font-label-caps text-[10px] tracking-[0.25em] uppercase cursor-pointer list-none text-on-background hover:text-primary outline-none font-semibold">
                 Specifications
-                <ChevronDown size={16} className="transition-transform duration-300 group-open:rotate-180 text-primary stroke-[2]" />
+                <ChevronDown size={16} className="transition-transform duration-300 group-open:rotate-180 text-primary/60 stroke-[1.5]" />
               </summary>
-              <div className="text-body text-[13px] font-light tracking-wide text-on-surface-variant/90 px-6 pb-5 pt-3 leading-relaxed border-t border-outline/10">
-                <ul className="list-disc list-inside space-y-2">
-                  <li>Hypoallergenic medical-grade bases, 100% free of nickel and lead.</li>
-                  <li>Electroplated with thick 18K gold via physical vapor deposition.</li>
-                  <li>Lifetime anti-corrosion, anti-rust, and anti-greening warranty coverage.</li>
+              <div className="font-body text-[13px] font-light tracking-wide text-on-surface-variant px-6 pb-6 pt-4 leading-relaxed border-t border-outline bg-surface">
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">—</span> Hypoallergenic medical-grade bases, 100% free of nickel and lead.</li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">—</span> Electroplated with thick 18K gold via physical vapor deposition.</li>
+                  <li className="flex items-start gap-3"><span className="text-primary mt-1">—</span> Lifetime anti-corrosion, anti-rust, and anti-greening warranty coverage.</li>
                 </ul>
               </div>
             </details>
             
             <details className="group border-none">
-              <summary className="flex justify-between items-center px-6 py-5 font-label-caps text-[10.5px] tracking-[0.22em] uppercase cursor-pointer list-none text-on-background hover:text-primary outline-none font-bold bg-[#FAF8F5]/30">
+              <summary className="flex justify-between items-center px-6 py-5 font-label-caps text-[10px] tracking-[0.25em] uppercase cursor-pointer list-none text-on-background hover:text-primary outline-none font-semibold">
                 Care Instructions
-                <ChevronDown size={16} className="transition-transform duration-300 group-open:rotate-180 text-primary stroke-[2]" />
+                <ChevronDown size={16} className="transition-transform duration-300 group-open:rotate-180 text-primary/60 stroke-[1.5]" />
               </summary>
-              <div className="text-body text-[13px] font-light tracking-wide leading-relaxed text-on-surface-variant/90 px-6 pb-5 pt-3 border-t border-outline/10">
+              <div className="font-body text-[13px] font-light tracking-wide leading-relaxed text-on-surface-variant px-6 pb-6 pt-4 border-t border-outline bg-surface">
                 {product.careInstructions || "Avoid contact with harsh industrial chemicals or highly concentrated detergents. Simply clean using a soft dry microfiber cloth."}
               </div>
             </details>
 
             <details className="group border-none">
-              <summary className="flex justify-between items-center px-6 py-5 font-label-caps text-[10.5px] tracking-[0.22em] uppercase cursor-pointer list-none text-on-background hover:text-primary outline-none font-bold bg-[#FAF8F5]/30">
+              <summary className="flex justify-between items-center px-6 py-5 font-label-caps text-[10px] tracking-[0.25em] uppercase cursor-pointer list-none text-on-background hover:text-primary outline-none font-semibold">
                 Shipping & Exchanges
-                <ChevronDown size={16} className="transition-transform duration-300 group-open:rotate-180 text-primary stroke-[2]" />
+                <ChevronDown size={16} className="transition-transform duration-300 group-open:rotate-180 text-primary/60 stroke-[1.5]" />
               </summary>
-              <div className="text-body text-[13px] font-light tracking-wide leading-relaxed text-on-surface-variant/90 px-6 pb-5 pt-3 border-t border-outline/10">
+              <div className="font-body text-[13px] font-light tracking-wide leading-relaxed text-on-surface-variant px-6 pb-6 pt-4 border-t border-outline bg-surface">
                 {product.shippingInfo || "Free express home deliveries. Standard delivery time is 3-5 business days. 7-day exchanges on clean items."}
               </div>
             </details>

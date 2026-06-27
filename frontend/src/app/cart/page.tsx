@@ -53,11 +53,22 @@ export default function CartPage() {
   };
 
   return (
-    <main className="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-8 pb-32 bg-white text-on-background flex flex-col gap-16 overflow-hidden">
-      <header className="flex justify-between items-end border-b border-outline pb-8">
-        <h1 className="font-display text-[40px] md:text-[56px] leading-[1.1] text-on-background">Your Cart</h1>
-        <span className="font-label-caps text-[10px] tracking-[0.2em] uppercase text-on-surface-variant mb-4 font-semibold">{cart.length} Items</span>
-      </header>
+    <main className="flex-grow w-full bg-background text-on-background overflow-hidden">
+      {/* Page Header */}
+      <div className="bg-white border-b border-outline">
+        <div className="max-w-container-max mx-auto px-6 md:px-16 py-16 flex justify-between items-end">
+          <div>
+            <nav className="font-label-caps text-[9px] tracking-[0.3em] uppercase text-on-surface-variant mb-4">
+              <a href="/" className="hover:text-primary transition-colors">Home</a>
+              <span className="mx-3 text-outline/50">/</span>
+              <span className="text-primary font-semibold">Your Selection</span>
+            </nav>
+            <h1 className="font-display text-[48px] md:text-[64px] leading-none text-on-background font-light tracking-wide">Your Selection</h1>
+          </div>
+          <span className="font-label-caps text-[10px] tracking-[0.2em] uppercase text-on-surface-variant font-medium mb-2">{cart.length} {cart.length === 1 ? 'Piece' : 'Pieces'}</span>
+        </div>
+      </div>
+      <div className="max-w-container-max mx-auto px-6 md:px-16 py-16 flex flex-col gap-16">
       
       <div className="flex flex-col lg:flex-row gap-16 relative">
         {/* Left column: Cart Items list */}
@@ -68,37 +79,37 @@ export default function CartPage() {
           className="w-full lg:w-2/3 flex flex-col gap-8"
         >
           {cart.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 text-center border border-outline bg-surface-container-low shadow-sm">
-              <ShoppingBag size={64} className="text-outline mb-6 stroke-[1.2]" />
-              <h2 className="font-display text-[32px] text-on-background mb-4 font-semibold">Your Cart is Empty</h2>
-              <p className="font-body text-[14px] font-light tracking-[0.05em] text-on-surface-variant mb-10 max-w-md">Looks like you haven't added anything to your cart yet.</p>
-              <Link href="/shop" className="px-10 py-4 bg-primary text-on-primary font-label-caps text-[12px] tracking-[0.2em] uppercase hover:bg-primary-container transition-colors border border-transparent font-semibold">
-                EXPLORE COLLECTIONS
+            <div className="flex flex-col items-center justify-center py-40 text-center border border-outline">
+              <ShoppingBag size={48} className="text-on-surface-variant/30 mb-8 stroke-[1]" />
+              <h2 className="font-display text-[36px] text-on-background mb-4 font-light">Your selection is empty</h2>
+              <p className="font-body text-[14px] font-light text-on-surface-variant mb-12 max-w-md leading-relaxed">Discover our curated collection of waterproof, anti-tarnish jewelry.</p>
+              <Link href="/shop" className="px-12 py-4 bg-on-background text-white font-label-caps text-[11px] tracking-[0.2em] uppercase hover:bg-primary transition-colors font-medium">
+                Explore Collections
               </Link>
             </div>
           ) : (
             cart.map((item, idx) => (
-              <div key={idx} className="flex gap-8 pb-8 border-b border-outline relative group items-start">
-                <Link href={`/product/${item.id}`} className="w-32 md:w-44 aspect-[4/5] shrink-0 bg-surface-container-low relative overflow-hidden border border-outline/30">
-                  <Image src={item.imageUrl} alt={item.name} fill className="object-cover transition-transform duration-[1.2s] group-hover:scale-105" />
+              <div key={idx} className="flex gap-8 pb-10 border-b border-outline/30 relative group items-start">
+                <Link href={`/product/${item.id}`} className="w-28 md:w-40 aspect-[3/4] shrink-0 bg-surface-container-low relative overflow-hidden rounded-sm border border-outline">
+                  <Image src={item.imageUrl} alt={item.name} fill className="object-cover transition-transform duration-1000 group-hover:scale-105" />
                 </Link>
                 
-                <div className="flex flex-col justify-between flex-grow self-stretch py-2">
+                <div className="flex flex-col justify-between flex-grow self-stretch py-1">
                   <div>
-                    <div className="flex justify-between items-start mb-2">
+                    <div className="flex justify-between items-start mb-3">
                       <Link href={`/product/${item.id}`}>
-                        <h3 className="font-display text-[22px] md:text-[24px] text-on-background hover:text-primary transition-colors leading-tight font-medium">{item.name}</h3>
+                        <h3 className="font-display text-[24px] md:text-[28px] text-on-background hover:text-primary transition-colors leading-tight font-light">{item.name}</h3>
                       </Link>
                       <button
                         onClick={() => removeFromCart(item.id, item.selectedFinish, item.selectedMaterial)}
                         aria-label="Remove item"
-                        className="text-on-surface-variant hover:text-error transition-colors p-2 border border-outline rounded-full cursor-pointer"
+                        className="text-on-surface-variant/50 hover:text-on-background transition-colors p-2 cursor-pointer ml-2"
                       >
                         <X size={16} className="stroke-[1.5]" />
                       </button>
                     </div>
-                    <p className="font-body text-[11px] tracking-[0.1em] text-on-surface-variant mb-4 uppercase font-medium">
-                      Finish: {item.selectedFinish} / Base: {item.selectedMaterial}
+                    <p className="font-body text-[11px] tracking-widest text-on-surface-variant mb-6 uppercase font-medium">
+                      {item.selectedFinish} &bull; {item.selectedMaterial}
                     </p>
                   </div>
                   
@@ -109,7 +120,7 @@ export default function CartPage() {
                       onDecrease={() => updateCartQty(item.id, item.selectedFinish, item.selectedMaterial, item.quantity - 1)}
                       size="sm"
                     />
-                    <span className="font-body text-[18px] text-primary tracking-wider font-semibold">₹{(item.price * item.quantity).toLocaleString()}</span>
+                    <span className="font-display text-[22px] text-on-background font-light tracking-wide">₹{(item.price * item.quantity).toLocaleString()}</span>
                   </div>
                 </div>
               </div>
@@ -117,9 +128,9 @@ export default function CartPage() {
           )}
           
           {cart.length > 0 && (
-            <div className="mt-6">
-              <Link href="/shop" className="btn px-8 py-3 border border-outline font-label-caps text-[10px] tracking-widest uppercase hover:bg-surface-container-low transition-colors flex items-center w-fit font-semibold">
-                <ArrowLeft size={14} className="mr-2 stroke-[1.5]" /> Continue Shopping
+            <div className="mt-4">
+              <Link href="/shop" className="font-label-caps text-[10px] tracking-widest uppercase hover:text-primary transition-colors flex items-center gap-2 w-fit text-on-surface-variant">
+                <ArrowLeft size={14} className="stroke-[1.5]" /> Continue Shopping
               </Link>
             </div>
           )}
@@ -133,100 +144,76 @@ export default function CartPage() {
             transition={{ duration: 0.6, delay: 0.15 }}
             className="w-full lg:w-1/3"
           >
-            <div className="sticky top-[140px] bg-surface-container-low p-8 border border-outline flex flex-col gap-8 shadow-sm">
-              <h2 className="font-label-caps text-[12px] tracking-[0.2em] uppercase text-on-background border-b border-outline pb-6 font-semibold">Order Summary</h2>
+            <div className="sticky top-[100px] bg-white border border-outline flex flex-col gap-0 overflow-hidden">
+              <div className="px-8 py-6 border-b border-outline bg-surface-container-low">
+                <h2 className="font-label-caps text-[11px] tracking-[0.25em] uppercase text-on-background font-semibold">Order Summary</h2>
+              </div>
               
-              <div className="flex flex-col gap-4 font-body text-[14px]">
-                <div className="flex justify-between text-on-surface-variant">
-                  <span>Subtotal</span>
-                  <span>₹{subtotal.toLocaleString()}</span>
-                </div>
-                
-                <div className="flex justify-between text-on-surface-variant">
-                  <span>Shipping</span>
-                  <span>{shippingCharge === 0 ? "Complimentary" : `₹₹{shippingCharge}`}</span>
-                </div>
-
-                {appliedDiscountPercent > 0 && (
-                  <div className="flex justify-between text-primary font-semibold">
-                    <span>Discount ({appliedCodeName})</span>
-                    <span>-₹{discountAmount.toLocaleString()}</span>
+              <div className="px-8 py-8 flex flex-col gap-5">
+                <div className="flex flex-col gap-4 font-body text-[14px]">
+                  <div className="flex justify-between text-on-surface-variant">
+                    <span>Subtotal</span>
+                    <span>₹{subtotal.toLocaleString()}</span>
                   </div>
-                )}
+                  
+                  <div className="flex justify-between text-on-surface-variant">
+                    <span>Shipping</span>
+                    <span className={shippingCharge === 0 ? "text-primary font-medium" : ""}>{shippingCharge === 0 ? "Complimentary" : `₹${shippingCharge}`}</span>
+                  </div>
+
+                  {appliedDiscountPercent > 0 && (
+                    <div className="flex justify-between text-primary">
+                      <span>Discount ({appliedCodeName})</span>
+                      <span className="font-medium">-₹{discountAmount.toLocaleString()}</span>
+                    </div>
+                  )}
+                  
+                  <div className="flex justify-between text-on-background pt-5 border-t border-outline mt-2">
+                    <span className="font-display text-[20px] font-light">Estimated Total</span>
+                    <span className="font-display text-[20px] font-light">₹{total.toLocaleString()}</span>
+                  </div>
+                </div>
                 
-                <div className="flex justify-between font-body text-[18px] text-primary pt-6 border-t border-outline mt-2 tracking-wider font-bold">
-                  <span>Total</span>
-                  <span>₹{total.toLocaleString()}</span>
+                {/* Promo Coupon Form */}
+                <div className="pt-2">
+                  <label htmlFor="couponInput" className="sr-only">Gift card or discount code</label>
+                  <div className="flex border border-outline focus-within:border-on-background transition-colors">
+                    <input 
+                      type="text" 
+                      id="couponInput" 
+                      placeholder="Promo or gift code"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                      className="w-full bg-transparent px-4 py-3 font-body text-[13px] font-light text-on-background placeholder-on-surface-variant/50 focus:outline-none" 
+                    />
+                    <button
+                      onClick={handleApplyCoupon}
+                      className="font-label-caps text-[9px] tracking-[0.2em] uppercase text-primary hover:text-on-background transition-colors px-4 cursor-pointer font-semibold border-l border-outline shrink-0"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                  {couponSuccess && <p className="text-[11px] text-primary mt-2 font-medium">{couponSuccess}</p>}
+                  {couponError && <p className="text-[11px] text-error mt-2 font-medium">{couponError}</p>}
                 </div>
-              </div>
-              
-              {/* Promo Coupon Form */}
-              <div className="pt-4">
-                <label htmlFor="couponInput" className="sr-only">Gift card or discount code</label>
-                <div className="flex border-b border-outline pb-4">
-                  <input 
-                    type="text" 
-                    id="couponInput" 
-                    placeholder="Gift card or promo code"
-                    value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value)}
-                    className="w-full bg-transparent border-none focus:ring-0 p-0 font-body text-[14px] font-light text-on-background placeholder-on-surface-variant focus:outline-none" 
-                  />
-                  <button
-                    onClick={handleApplyCoupon}
-                    className="font-label-caps text-[10px] tracking-[0.2em] uppercase text-primary hover:text-primary-container transition-colors ml-4 cursor-pointer font-semibold"
-                  >
-                    APPLY
-                  </button>
+                
+                <Link
+                  href="/checkout"
+                  className="w-full bg-on-background text-white py-4.5 font-label-caps text-[11px] tracking-[0.2em] uppercase hover:bg-primary transition-all duration-300 flex items-center justify-center font-medium shadow-luxury"
+                >
+                  Proceed to Checkout
+                </Link>
+                
+                <div className="flex items-center justify-center gap-2 text-on-surface-variant/60">
+                  <Lock size={12} className="stroke-[1.5]" />
+                  <span className="font-label-caps text-[9px] tracking-[0.2em] uppercase">Secure Encrypted Payment</span>
                 </div>
-                {couponSuccess && <p className="text-[11px] text-success mt-2 font-medium">{couponSuccess}</p>}
-                {couponError && <p className="text-[11px] text-error mt-2 font-medium">{couponError}</p>}
-              </div>
-              
-              <Link
-                href="/checkout"
-                className="w-full bg-on-background text-white py-4 font-label-caps text-[12px] tracking-[0.2em] uppercase hover:bg-primary transition-colors flex items-center justify-center font-bold"
-              >
-                PROCEED TO CHECKOUT
-              </Link>
-              
-              <div className="flex items-center justify-center gap-3 text-on-surface-variant mt-2">
-                <Lock size={16} className="stroke-[1.5]" />
-                <span className="font-label-caps text-[10px] tracking-[0.15em] uppercase font-semibold">Secure Encrypted Payment</span>
               </div>
             </div>
           </motion.div>
         )}
+        </div>
       </div>
-
-      {/* Reusable cross-sell section */}
-      <section className="mt-24 border-t border-outline/30 pt-24">
-        <div className="flex flex-col items-center mb-16">
-          <h2 className="font-display text-[36px] text-on-background mb-4 font-light">You Might Also Like</h2>
-          <div className="w-[40px] h-[1px] bg-primary"></div>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-          {PRODUCTS.slice(4, 8).map((product, idx) => (
-            <motion.div
-              key={product.id}
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: idx * 0.05 }}
-            >
-              <Link href={`/product/${product.id}`} className="group cursor-pointer">
-                <div className="aspect-[4/5] bg-surface-container-low overflow-hidden mb-6 relative border border-outline/30">
-                  <Image src={product.imageUrl} alt={product.name} fill className="object-cover transition-transform duration-[1.2s] group-hover:scale-105" />
-                </div>
-                <div className="text-center">
-                  <h3 className="font-display text-[18px] text-on-background mb-2 group-hover:text-primary transition-colors font-medium">{product.name}</h3>
-                  <p className="font-body text-[14px] text-primary tracking-wider font-semibold">₹{product.price.toLocaleString()}</p>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-      </section>
     </main>
   );
 }
