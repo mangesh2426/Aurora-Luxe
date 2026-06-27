@@ -426,7 +426,7 @@ export default function HomeClient({ bestSellers, newArrivals }: HomeClientProps
                   exit={{ scale: 0.9, opacity: 0 }}
                   className="bg-primary/20 border border-primary/40 rounded-sm py-6 px-8 flex items-center justify-center gap-4 text-white"
                 >
-                  <CheckCircle2 size={20} className="text-primary" />
+                  <CircleCheck size={20} className="text-primary" />
                   <span className="font-label-caps text-[11px] tracking-[0.2em] uppercase font-medium">Welcome. Check your inbox.</span>
                 </motion.div>
               ) : (
