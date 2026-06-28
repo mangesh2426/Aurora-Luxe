@@ -92,6 +92,7 @@ export default function Header() {
               transition={{ duration: 0.25, ease: "easeOut" }}
               className="absolute top-full left-1/2 -translate-x-1/2 w-[920px] bg-white border border-[#EDE8DE] shadow-[0_24px_64px_rgba(0,0,0,0.10)] rounded-xl overflow-hidden z-50 mt-[-4px] border-t-2 border-t-[#C9A227]"
             style={{ padding: 0 }}
+            onClick={() => setActiveMenu(null)}
             >
               {label === "Categories" && (
                 <div className="grid grid-cols-12 gap-0">
