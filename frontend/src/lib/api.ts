@@ -1,15 +1,28 @@
 import axios from 'axios';
 import { Product } from '@/types';
 
+// ─── Base URL ────────────────────────────────────────────────────────────────
+// Priority: NEXT_PUBLIC_API_URL env var → deployed Render backend fallback
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'https://aurora-luxe.onrender.com';
+
+// Temporary diagnostic log — remove once connection is confirmed stable
+if (typeof window !== 'undefined') {
+  console.log('[api] Axios baseURL:', BASE_URL);
+}
+
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3001',
+  baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+  // Give Render's free-tier server up to 15s to wake up on cold start
+  timeout: 15000,
 });
 
+// ─── Request Interceptor ─────────────────────────────────────────────────────
+// Attach JWT auth token from Zustand persisted store on every request
 api.interceptors.request.use((config) => {
-  // Read token from Zustand's persisted store (single source of truth)
   try {
     const storeRaw = localStorage.getItem('aurora-luxe-store');
     if (storeRaw) {
@@ -25,7 +38,30 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Helper to map backend product to frontend product interface
+// ─── Response Interceptor ────────────────────────────────────────────────────
+// Surface helpful errors to the console without crashing the UI
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
+      console.error(
+        `[api] Network Error — could not reach ${BASE_URL}. ` +
+        'Make sure the backend is running or NEXT_PUBLIC_API_URL is correct.'
+      );
+    } else if (error.response) {
+      // Server responded with a non-2xx status — log it but don't crash
+      console.error(
+        `[api] ${error.config?.method?.toUpperCase()} ${error.config?.url} → ` +
+        `${error.response.status} ${error.response.statusText}`
+      );
+    }
+    // Always reject so individual call-sites can handle the error gracefully
+    return Promise.reject(error);
+  }
+);
+
+// ─── Product Mapper ───────────────────────────────────────────────────────────
+// Helper to map backend product shape to frontend Product interface
 export const mapBackendProduct = (backendProduct: any): Product => {
   return {
     id: backendProduct.id,

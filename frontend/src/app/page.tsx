@@ -2,7 +2,7 @@ import { Product } from "@/types";
 import HomeClient from "@/components/HomeClient";
 
 // ─── server-side data fetcher ──────────────────────────────────────────────
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:3001";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://aurora-luxe.onrender.com';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mapProduct = (p: any): Product => ({
