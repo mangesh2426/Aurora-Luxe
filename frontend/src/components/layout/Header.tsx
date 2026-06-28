@@ -16,6 +16,7 @@ export default function Header() {
   const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
   const [wishlistDrawerOpen, setWishlistDrawerOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   
   // Mega menu state
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
@@ -276,13 +277,120 @@ export default function Header() {
             </button>
 
             {/* Account/Profile Link inside 42px Hover Circle */}
-            <Link
-              href="/login"
-              aria-label="Account"
-              className="h-[42px] w-[42px] rounded-full hover:bg-gray-100/80 active:bg-gray-200/50 flex items-center justify-center transition-all duration-300 text-[#111111] hover:text-primary hover:scale-[1.08]"
-            >
-              <User size={20} className="stroke-[1.5]" />
-            </Link>
+            <div className="relative">
+              <button
+                onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+                aria-label="Account"
+                className={`h-[42px] w-[42px] rounded-full hover:bg-gray-100/80 active:bg-gray-200/50 flex items-center justify-center transition-all duration-300 hover:scale-[1.08] cursor-pointer ${
+                  profileMenuOpen ? "text-[#C9A227] bg-gray-100/80" : "text-[#111111] hover:text-[#C9A227]"
+                }`}
+              >
+                <User size={20} className="stroke-[1.5]" />
+              </button>
+
+              {/* Profile Card / Dropdown below the icon */}
+              <AnimatePresence>
+                {profileMenuOpen && (
+                  <>
+                    {/* Invisible backdrop to close on outside click */}
+                    <div 
+                      className="fixed inset-0 z-30 cursor-default"
+                      onClick={() => setProfileMenuOpen(false)}
+                    />
+                    <motion.div
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      transition={{ duration: 0.2, ease: "easeOut" }}
+                      className="absolute right-0 top-full mt-2 w-[280px] bg-white border border-[#EDE8DE] shadow-[0_12px_32px_rgba(0,0,0,0.08)] rounded-xl overflow-hidden z-40 border-t-2 border-t-[#C9A227]"
+                    >
+                      {mounted && user ? (
+                        /* Logged In View */
+                        <div className="p-5 flex flex-col">
+                          <div className="flex items-center gap-3 mb-4">
+                            <div className="h-10 w-10 rounded-full bg-[#C9A227]/10 text-[#C9A227] flex items-center justify-center font-serif text-lg font-medium">
+                              {user.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="flex flex-col min-w-0">
+                              <span className="font-sans font-semibold text-[14px] text-[#111] truncate">{user.name}</span>
+                              <span className="font-sans text-[11px] text-gray-500 truncate">{user.email}</span>
+                            </div>
+                          </div>
+
+                          <div className="border-t border-[#F5F0E8] my-1" />
+
+                          <div className="flex flex-col py-2 gap-1">
+                            {user.role === "admin" && (
+                              <Link 
+                                href="/admin" 
+                                onClick={() => setProfileMenuOpen(false)}
+                                className="flex items-center gap-2 px-2.5 py-2 text-[13px] text-gray-700 hover:text-[#C9A227] hover:bg-[#FCFBF9] rounded-md transition-colors font-sans"
+                              >
+                                Admin Dashboard
+                              </Link>
+                            )}
+                            <Link 
+                              href="/dashboard" 
+                              onClick={() => setProfileMenuOpen(false)}
+                              className="flex items-center gap-2 px-2.5 py-2 text-[13px] text-gray-700 hover:text-[#C9A227] hover:bg-[#FCFBF9] rounded-md transition-colors font-sans"
+                            >
+                              My Account
+                            </Link>
+                            <Link 
+                              href="/tracking" 
+                              onClick={() => setProfileMenuOpen(false)}
+                              className="flex items-center gap-2 px-2.5 py-2 text-[13px] text-gray-700 hover:text-[#C9A227] hover:bg-[#FCFBF9] rounded-md transition-colors font-sans"
+                            >
+                              Track Order
+                            </Link>
+                          </div>
+
+                          <div className="border-t border-[#F5F0E8] my-1" />
+
+                          <button
+                            onClick={() => {
+                              logout();
+                              setProfileMenuOpen(false);
+                              router.push("/");
+                            }}
+                            className="mt-3 w-full py-2.5 bg-red-50 text-red-600 hover:bg-red-100/70 text-center font-label-caps text-[10px] tracking-widest uppercase transition-all duration-300 font-semibold rounded-md cursor-pointer border-0"
+                          >
+                            Log Out
+                          </button>
+                        </div>
+                      ) : (
+                        /* Logged Out View */
+                        <div className="p-5 flex flex-col text-center">
+                          <p className="font-serif text-[15px] text-[#111] mb-1 font-medium">Welcome back</p>
+                          <p className="font-sans text-[11px] text-gray-400 mb-4 leading-relaxed">
+                            Sign in to view orders, manage wishlist and complete checkout faster.
+                          </p>
+
+                          <Link
+                            href="/login"
+                            onClick={() => setProfileMenuOpen(false)}
+                            className="w-full py-2.5 bg-[#C9A227] text-white text-center font-label-caps text-[10px] tracking-widest uppercase hover:bg-[#B08D20] transition-colors rounded-sm shadow-sm"
+                          >
+                            Sign In
+                          </Link>
+
+                          <div className="mt-3 flex items-center justify-center gap-1.5 text-[11px] text-gray-500 font-sans">
+                            <span>New customer?</span>
+                            <Link 
+                              href="/register" 
+                              onClick={() => setProfileMenuOpen(false)}
+                              className="text-[#C9A227] hover:underline font-semibold"
+                            >
+                              Register
+                            </Link>
+                          </div>
+                        </div>
+                      )}
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+            </div>
 
             {/* Cart Bag Link inside 42px Hover Circle */}
             <button 

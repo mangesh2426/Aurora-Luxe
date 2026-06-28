@@ -168,8 +168,8 @@ export default function FeaturedCollection() {
         {/* Desktop/Laptop Layout (lg and above: 1024px+) */}
         <div className="hidden lg:grid grid-cols-2 gap-6 max-w-[1180px] mx-auto">
           {/* Left Column: Large featured collection */}
-          <div className="flex flex-col">
-            {renderCard(collections[0], "h-[380px] xl:h-[420px] w-full")}
+          <div className="flex flex-col h-full">
+            {renderCard(collections[0], "h-full w-full")}
           </div>
           {/* Right Column: Two stacked smaller collections */}
           <div className="flex flex-col gap-6">
