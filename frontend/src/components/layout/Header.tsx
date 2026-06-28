@@ -90,122 +90,134 @@ export default function Header() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
               transition={{ duration: 0.25, ease: "easeOut" }}
-              className="absolute top-full left-1/2 -translate-x-1/2 w-[900px] bg-white border border-[#E5E7EB] shadow-2xl rounded-2xl overflow-hidden p-8 grid grid-cols-12 gap-8 z-50 mt-[-4px]"
+              className="absolute top-full left-1/2 -translate-x-1/2 w-[920px] bg-white border border-[#EDE8DE] shadow-[0_24px_64px_rgba(0,0,0,0.10)] rounded-xl overflow-hidden z-50 mt-[-4px] border-t-2 border-t-[#C9A227]"
+            style={{ padding: 0 }}
             >
               {label === "Categories" && (
-                <>
-                  {/* Shop by Category / Occasion */}
-                  <div className="col-span-3 flex flex-col gap-5 text-left border-r border-[#E5E7EB] pr-4">
-                    <div>
-                      <h4 className="font-display font-semibold text-[15px] text-[#111111] tracking-wide mb-3">Shop by Category</h4>
-                      <div className="flex flex-col gap-2.5">
-                        <Link href="/shop?category=Necklaces" className="text-[13px] font-sans font-normal text-gray-500 hover:text-primary transition-colors">Necklaces</Link>
-                        <Link href="/shop?category=Earrings" className="text-[13px] font-sans font-normal text-gray-500 hover:text-primary transition-colors">Earrings</Link>
-                        <Link href="/shop?category=Rings" className="text-[13px] font-sans font-normal text-gray-500 hover:text-primary transition-colors">Rings</Link>
-                        <Link href="/shop?category=Bracelets" className="text-[13px] font-sans font-normal text-gray-500 hover:text-primary transition-colors">Bracelets</Link>
-                      </div>
+                <div className="grid grid-cols-12 gap-0">
+                  {/* Left: Category & Occasion links */}
+                  <div className="col-span-3 flex flex-col gap-0 border-r border-[#F0EBE0] px-7 py-7">
+                    <p className="text-[9px] font-sans font-semibold tracking-[0.22em] uppercase text-[#C9A227] mb-4">Shop by Category</p>
+                    <div className="flex flex-col mb-6">
+                      {[
+                        { label: "Necklaces", href: "/shop?category=Necklaces" },
+                        { label: "Earrings", href: "/shop?category=Earrings" },
+                        { label: "Rings", href: "/shop?category=Rings" },
+                        { label: "Bracelets", href: "/shop?category=Bracelets" },
+                        { label: "Combos & Sets", href: "/shop?category=Combos" },
+                      ].map((item) => (
+                        <Link key={item.label} href={item.href}
+                          className="group flex items-center justify-between py-2.5 border-b border-[#F5F0E8] last:border-0">
+                          <span className="text-[13px] font-sans text-[#1a1a1a] group-hover:text-primary transition-colors duration-200">{item.label}</span>
+                          <span className="text-[#C9A227] opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-[12px] font-light">→</span>
+                        </Link>
+                      ))}
                     </div>
-                    <div className="pt-1">
-                      <h4 className="font-display font-semibold text-[15px] text-[#111111] tracking-wide mb-3">Shop by Occasion</h4>
-                      <div className="flex flex-col gap-2.5">
-                        <Link href="/shop?collection=signature" className="text-[13px] font-sans font-normal text-gray-500 hover:text-primary transition-colors">Daily Radiance</Link>
-                        <Link href="/shop?category=Combos" className="text-[13px] font-sans font-normal text-gray-500 hover:text-primary transition-colors">Bridal & Festive</Link>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Shop by Material / Trending */}
-                  <div className="col-span-3 flex flex-col gap-5 text-left border-r border-[#E5E7EB] pr-4">
-                    <div>
-                      <h4 className="font-display font-semibold text-[15px] text-[#111111] tracking-wide mb-3">Shop by Material</h4>
-                      <div className="flex flex-col gap-2.5">
-                        <span className="text-[13px] font-sans text-gray-400 cursor-default">18k Gold Plating</span>
-                        <span className="text-[13px] font-sans text-gray-400 cursor-default">925 Sterling Silver</span>
-                        <span className="text-[13px] font-sans text-gray-400 cursor-default">Vacuum PVD Plating</span>
-                      </div>
-                    </div>
-                    <div className="pt-1">
-                      <h4 className="font-display font-semibold text-[15px] text-[#111111] tracking-wide mb-3">Trending</h4>
-                      <div className="flex flex-col gap-2.5">
-                        <Link href="/shop?isBestSeller=true" className="text-[13px] font-sans font-normal text-gray-500 hover:text-primary transition-colors">Best Sellers</Link>
-                        <Link href="/shop?isNew=true" className="text-[13px] font-sans font-normal text-gray-500 hover:text-primary transition-colors">New Arrivals</Link>
-                      </div>
+                    <p className="text-[9px] font-sans font-semibold tracking-[0.22em] uppercase text-[#C9A227] mb-4">By Occasion</p>
+                    <div className="flex flex-col">
+                      {[
+                        { label: "Daily Radiance", href: "/shop?collection=signature" },
+                        { label: "Bridal & Festive", href: "/shop?category=Combos" },
+                      ].map((item) => (
+                        <Link key={item.label} href={item.href}
+                          className="group flex items-center justify-between py-2.5 border-b border-[#F5F0E8] last:border-0">
+                          <span className="text-[13px] font-sans text-[#1a1a1a] group-hover:text-primary transition-colors duration-200">{item.label}</span>
+                          <span className="text-[#C9A227] opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-[12px] font-light">→</span>
+                        </Link>
+                      ))}
                     </div>
                   </div>
 
-                  {/* Mid Column Quick Thumbnails */}
-                  <div className="col-span-3 flex flex-col gap-4">
-                    <h4 className="font-display font-semibold text-[15px] text-[#111111] text-left tracking-wide">Category Spotlight</h4>
+                  {/* Center: 4 category image thumbnails */}
+                  <div className="col-span-5 border-r border-[#F0EBE0] px-7 py-7">
+                    <p className="text-[9px] font-sans font-semibold tracking-[0.22em] uppercase text-[#C9A227] mb-4">Category Spotlight</p>
                     <div className="grid grid-cols-2 gap-3">
-                      <Link href="/shop?category=Necklaces" className="group">
-                        <div className="relative aspect-square w-full overflow-hidden bg-gray-50 rounded-xl border border-outline/30">
-                          <Image src="/necklaces.png" alt="Necklaces" fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
-                        </div>
-                        <span className="text-[11px] font-sans font-medium text-gray-600 group-hover:text-primary transition-colors mt-1.5 block uppercase tracking-wider text-center">Necklaces</span>
-                      </Link>
-                      <Link href="/shop?category=Rings" className="group">
-                        <div className="relative aspect-square w-full overflow-hidden bg-gray-50 rounded-xl border border-outline/30">
-                          <Image src="/rings.png" alt="Rings" fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
-                        </div>
-                        <span className="text-[11px] font-sans font-medium text-gray-600 group-hover:text-primary transition-colors mt-1.5 block uppercase tracking-wider text-center">Rings</span>
-                      </Link>
+                      {[
+                        { label: "Necklaces", src: "/necklaces.png", href: "/shop?category=Necklaces" },
+                        { label: "Rings", src: "/rings.png", href: "/shop?category=Rings" },
+                        { label: "Earrings", src: "/earrings.png", href: "/shop?category=Earrings" },
+                        { label: "Bracelets", src: "/bracelets.png", href: "/shop?category=Bracelets" },
+                      ].map((cat) => (
+                        <Link key={cat.label} href={cat.href} className="group relative overflow-hidden rounded-lg">
+                          <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#F5F0E8]">
+                            <Image src={cat.src} alt={cat.label} fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
+                          </div>
+                          <div className="absolute bottom-0 left-0 right-0 p-2.5">
+                            <span className="text-[10px] font-sans font-semibold text-white uppercase tracking-[0.15em]">{cat.label}</span>
+                          </div>
+                        </Link>
+                      ))}
                     </div>
                   </div>
 
-                  {/* Right Column Featured Banner */}
-                  <div className="col-span-3 bg-gray-50 rounded-2xl overflow-hidden relative flex flex-col justify-end p-5 border border-outline/25">
-                    <Image src="/hero_model.png" alt="Trending model" fill className="object-cover brightness-[0.85]" />
-                    <div className="relative z-10 text-left text-white">
-                      <span className="text-[9px] font-sans font-semibold tracking-widest uppercase bg-primary text-white px-2 py-0.5 rounded mb-2 inline-block">Best Seller</span>
-                      <h5 className="font-display text-[15px] font-medium leading-snug">Royal Baroque Necklaces</h5>
-                      <Link href="/shop?category=Necklaces" className="text-[11px] font-sans font-semibold underline mt-2 block hover:text-primary transition-colors uppercase tracking-wider">Explore Design &rarr;</Link>
+                  {/* Right: Feature banner */}
+                  <div className="col-span-4 relative flex flex-col justify-end overflow-hidden" style={{ minHeight: 280 }}>
+                    <Image src="/hero_model.png" alt="Featured" fill className="object-cover brightness-[0.72]" />
+                    <div className="relative z-10 p-7 text-white">
+                      <span className="text-[8px] font-sans font-bold tracking-[0.25em] uppercase bg-[#C9A227] text-white px-2.5 py-1 mb-3 inline-block">Best Seller</span>
+                      <h5 className="font-display text-[17px] font-medium leading-snug mb-1">Royal Baroque Necklaces</h5>
+                      <p className="text-[11px] text-white/65 mb-4">Handcrafted in 18k gold plating</p>
+                      <Link href="/shop?category=Necklaces"
+                        className="text-[9px] font-sans font-bold uppercase tracking-[0.2em] border border-white/50 px-4 py-2 inline-block hover:bg-white hover:text-[#111] transition-all duration-200">
+                        Explore Design →
+                      </Link>
                     </div>
                   </div>
-                </>
+                </div>
               )}
 
               {label === "Collections" && (
-                <>
-                  {/* Left Column Curations list */}
-                  <div className="col-span-5 flex flex-col gap-4 text-left border-r border-[#E5E7EB] pr-6">
-                    <h4 className="font-display font-semibold text-[15px] text-[#111111] tracking-wide">Signature Curation Series</h4>
-                    <div className="flex flex-col gap-3">
-                      <Link href="/shop?collection=signature" className="group flex flex-col">
-                        <span className="text-[13px] font-sans font-medium text-gray-900 group-hover:text-primary transition-colors">The Signature Collection</span>
-                        <span className="text-[11px] font-sans font-light text-gray-400">Timeless pieces forged with waterproof layers.</span>
-                      </Link>
-                      <Link href="/shop?collection=lumina" className="group flex flex-col">
-                        <span className="text-[13px] font-sans font-medium text-gray-900 group-hover:text-primary transition-colors">Lumina Essentials</span>
-                        <span className="text-[11px] font-sans font-light text-gray-400">Minimal chains and stackable bands for daily wear.</span>
-                      </Link>
-                      <Link href="/shop?collection=classic" className="group flex flex-col">
-                        <span className="text-[13px] font-sans font-medium text-gray-900 group-hover:text-primary transition-colors">Classic Gold Collection</span>
-                        <span className="text-[11px] font-sans font-light text-gray-400">Iconic designs inspired by imperial elegance.</span>
-                      </Link>
+                <div className="grid grid-cols-12 gap-0">
+                  {/* Left: Collections list */}
+                  <div className="col-span-4 border-r border-[#F0EBE0] px-7 py-7">
+                    <p className="text-[9px] font-sans font-semibold tracking-[0.22em] uppercase text-[#C9A227] mb-4">Signature Curation Series</p>
+                    <div className="flex flex-col">
+                      {[
+                        { name: "The Signature Collection", desc: "Timeless pieces forged with waterproof layers.", href: "/shop?collection=signature" },
+                        { name: "Lumina Essentials", desc: "Minimal chains and stackable bands for daily wear.", href: "/shop?collection=lumina" },
+                        { name: "Classic Gold Collection", desc: "Iconic designs inspired by imperial elegance.", href: "/shop?collection=classic" },
+                      ].map((col) => (
+                        <Link key={col.name} href={col.href}
+                          className="group flex items-start justify-between gap-3 py-4 border-b border-[#F5F0E8] last:border-0">
+                          <div>
+                            <span className="block text-[13px] font-sans font-medium text-[#1a1a1a] group-hover:text-primary transition-colors duration-200">{col.name}</span>
+                            <span className="block text-[11px] font-sans font-light text-gray-400 mt-0.5 leading-snug">{col.desc}</span>
+                          </div>
+                          <span className="text-[#C9A227] opacity-0 group-hover:opacity-100 transition-opacity duration-200 mt-0.5 flex-shrink-0 text-[12px]">→</span>
+                        </Link>
+                      ))}
                     </div>
                   </div>
 
-                  {/* Mid Column Quick Thumbnails */}
-                  <div className="col-span-3 flex flex-col gap-4">
-                    <h4 className="font-display font-semibold text-[15px] text-[#111111] tracking-wide text-left">Curated Combos</h4>
-                    <Link href="/shop?category=Combos" className="group">
-                      <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-50 rounded-xl border border-outline/30">
-                        <Image src="/combos.png" alt="Signature series" fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
+                  {/* Center: Combo thumbnail */}
+                  <div className="col-span-4 border-r border-[#F0EBE0] px-7 py-7">
+                    <p className="text-[9px] font-sans font-semibold tracking-[0.22em] uppercase text-[#C9A227] mb-4">Curated Combos</p>
+                    <Link href="/shop?category=Combos" className="group relative overflow-hidden rounded-lg block">
+                      <div className="relative w-full overflow-hidden bg-[#F5F0E8]" style={{ aspectRatio: "4/3" }}>
+                        <Image src="/combos.png" alt="Festive Combos" fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
                       </div>
-                      <span className="text-[11px] font-sans font-medium text-gray-600 group-hover:text-primary transition-colors mt-1.5 block uppercase tracking-wider text-center">Festive Combos</span>
+                      <div className="absolute bottom-0 left-0 right-0 p-3">
+                        <span className="text-[10px] font-sans font-semibold text-white uppercase tracking-[0.15em]">Festive Combos</span>
+                      </div>
                     </Link>
                   </div>
 
-                  {/* Right Column Featured Banner */}
-                  <div className="col-span-4 bg-gray-50 rounded-2xl overflow-hidden relative flex flex-col justify-end p-5 border border-outline/25">
-                    <Image src="/bracelets.png" alt="Bracelets series" fill className="object-cover brightness-[0.8]" />
-                    <div className="relative z-10 text-left text-white">
-                      <span className="text-[9px] font-sans font-semibold tracking-widest uppercase bg-primary/20 backdrop-blur-sm text-white px-2.5 py-0.5 rounded border border-white/20 mb-2 inline-block">New Arrival</span>
-                      <h5 className="font-display text-[15px] font-medium leading-snug">The Classic Gold Bangles</h5>
-                      <Link href="/shop?category=Bracelets" className="text-[11px] font-sans font-semibold underline mt-2 block hover:text-primary transition-colors uppercase tracking-wider">Discover bangles &rarr;</Link>
+                  {/* Right: Feature banner */}
+                  <div className="col-span-4 relative flex flex-col justify-end overflow-hidden" style={{ minHeight: 280 }}>
+                    <Image src="/bracelets.png" alt="Classic Gold Bangles" fill className="object-cover brightness-[0.72]" />
+                    <div className="relative z-10 p-7 text-white">
+                      <span className="text-[8px] font-sans font-bold tracking-[0.25em] uppercase bg-[#C9A227] text-white px-2.5 py-1 mb-3 inline-block">New Arrival</span>
+                      <h5 className="font-display text-[17px] font-medium leading-snug mb-1">The Classic Gold Bangles</h5>
+                      <p className="text-[11px] text-white/65 mb-4">Stackable elegance, everyday luxury</p>
+                      <Link href="/shop?category=Bracelets"
+                        className="text-[9px] font-sans font-bold uppercase tracking-[0.2em] border border-white/50 px-4 py-2 inline-block hover:bg-white hover:text-[#111] transition-all duration-200">
+                        Discover →
+                      </Link>
                     </div>
                   </div>
-                </>
+                </div>
               )}
             </motion.div>
           )}
@@ -240,8 +252,6 @@ export default function Header() {
           <div className="flex gap-6 items-center h-full flex-shrink-0">
             <NavItem label="Categories" href="/shop" hasDropdown={true} />
             <NavItem label="Collections" href="/shop" hasDropdown={true} />
-            <NavItem label="New Arrivals" href="/shop?isNew=true" />
-            <NavItem label="Best Sellers" href="/shop?isBestSeller=true" />
             <NavItem label="Track Order" href="/tracking" />
           </div>
 
@@ -383,9 +393,7 @@ export default function Header() {
                   <Link href="/shop?category=Bracelets" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-colors py-1 block text-on-surface-variant">Bracelets</Link>
                 </div>
                 <div className="border-t border-outline/10 pt-4 mt-2">
-                  <Link href="/shop?isNew=true" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-colors py-1 block">New Arrivals</Link>
-                  <Link href="/shop?isBestSeller=true" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-colors py-1 block mt-4">Best Sellers</Link>
-                  <Link href="/tracking" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-colors py-1 block mt-4">Track Order</Link>
+                  <Link href="/tracking" onClick={() => setMobileMenuOpen(false)} className="hover:text-primary transition-colors py-1 block">Track Order</Link>
                 </div>
               </div>
 
