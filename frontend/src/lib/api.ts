@@ -16,8 +16,8 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  // Give Render's free-tier server up to 15s to wake up on cold start
-  timeout: 15000,
+  // Render free-tier can take 50s+ to wake up on cold start
+  timeout: 65000,
 });
 
 // ─── Request Interceptor ─────────────────────────────────────────────────────

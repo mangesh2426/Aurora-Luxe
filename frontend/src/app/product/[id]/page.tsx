@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useStore } from "@/store/useStore";
 import ProductImageGallery from "@/components/product/ProductImageGallery";
 import QuantitySelector from "@/components/product/QuantitySelector";
-import { Heart, Star, ChevronDown, Loader2, ShieldCheck, Truck, RefreshCw } from "lucide-react";
+import { Heart, Star, ShieldCheck, Truck, RefreshCw, ChevronDown, Loader2, BadgeCheck } from "lucide-react";
 import { motion } from "framer-motion";
 import api, { mapBackendProduct } from "@/lib/api";
 import { Product } from "@/types";
@@ -121,6 +121,81 @@ export default function ProductDetailsPage() {
         >
           <div className="bg-white rounded-md border border-outline overflow-hidden shadow-luxury">
             <ProductImageGallery images={product.images} />
+          </div>
+
+          {/* Craftsmanship highlight cards */}
+          <div className="mt-5 grid grid-cols-3 gap-3">
+            {[
+              { icon: <ShieldCheck size={18} className="text-primary stroke-[1.5]" />, title: "PVD Gold Plating", desc: "3–5× thicker than standard plating" },
+              { icon: <Truck size={18} className="text-primary stroke-[1.5]" />, title: "Waterproof", desc: "Pool, sweat & perfume safe" },
+              { icon: <RefreshCw size={18} className="text-primary stroke-[1.5]" />, title: "Lifetime Warranty", desc: "Anti-tarnish, guaranteed forever" },
+            ].map((feat) => (
+              <div key={feat.title} className="border border-[#EDE8DE] bg-[#FDFAF5] px-4 py-4 rounded-sm text-center flex flex-col items-center gap-2">
+                {feat.icon}
+                <p className="font-label-caps text-[9px] tracking-[0.16em] uppercase text-[#1a1a1a] font-semibold leading-tight">{feat.title}</p>
+                <p className="font-body text-[11px] text-gray-400 font-light leading-snug">{feat.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Verified customer mini-reviews */}
+          <div className="mt-4 flex flex-col gap-3">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="font-label-caps text-[9px] tracking-[0.22em] uppercase text-[#C9A227] font-semibold">Customer Reviews</span>
+              <div className="flex-1 h-px bg-[#EDE8DE]" />
+            </div>
+            {[
+              { name: "Priya M.", rating: 5, text: "Absolutely stunning — wore it to my wedding and got compliments all evening. The gold hasn't tarnished at all." },
+              { name: "Ananya R.", rating: 5, text: "Still perfect after 6 months of daily wear. Worth every rupee. The anti-tarnish guarantee is real!" },
+            ].map((review) => (
+              <div key={review.name} className="border border-[#EDE8DE] bg-white px-5 py-4 rounded-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="flex gap-0.5">
+                    {Array.from({ length: review.rating }).map((_, i) => (
+                      <Star key={i} size={11} className="fill-primary text-primary stroke-0" />
+                    ))}
+                  </div>
+                  <span className="font-label-caps text-[9px] tracking-widest text-[#1a1a1a] uppercase font-semibold">{review.name}</span>
+                  <span className="ml-auto flex items-center gap-1 text-[9px] font-label-caps text-primary tracking-widest uppercase">
+                    <BadgeCheck size={11} className="stroke-[1.5]" /> Verified
+                  </span>
+                </div>
+                <p className="font-body text-[12.5px] text-on-surface-variant font-light leading-relaxed italic">"{review.text}"</p>
+              </div>
+            ))}
+          </div>
+
+          {/* How to Style editorial card */}
+          <div className="mt-4 border border-[#EDE8DE] rounded-sm overflow-hidden">
+            <div className="bg-[#FDFAF5] border-b border-[#EDE8DE] px-5 py-3 flex items-center gap-2">
+              <span className="font-label-caps text-[9px] tracking-[0.22em] uppercase text-[#C9A227] font-semibold">How to Style</span>
+              <div className="flex-1 h-px bg-[#EDE8DE]" />
+            </div>
+            <div className="px-5 py-4 flex flex-col gap-3">
+              {[
+                { tip: "Layer It", desc: "Pair with a delicate chain necklace for an effortless layered look." },
+                { tip: "Day to Night", desc: "Minimal enough for work, striking enough for evenings." },
+                { tip: "Mix Metals", desc: "Champagne gold complements rose gold — stack freely." },
+              ].map((s) => (
+                <div key={s.tip} className="flex gap-3 items-start">
+                  <span className="text-[#C9A227] text-[10px] mt-0.5 font-bold shrink-0">✦</span>
+                  <p className="font-body text-[12.5px] text-on-surface-variant font-light leading-relaxed">
+                    <span className="font-semibold text-[#1a1a1a]">{s.tip} — </span>{s.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Signature packaging strip */}
+          <div className="mt-4 border border-[#EDE8DE] bg-[#1a1a1a] rounded-sm px-5 py-4 flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-[#C9A227]/15 border border-[#C9A227]/30 flex items-center justify-center shrink-0">
+              <span className="text-[#C9A227] text-[16px]">✦</span>
+            </div>
+            <div>
+              <p className="font-label-caps text-[9px] tracking-[0.22em] uppercase text-[#C9A227] font-semibold mb-0.5">Signature Gift Packaging</p>
+              <p className="font-body text-[12px] text-white/60 font-light leading-snug">Every Aurora Luxe piece arrives in our premium suede pouch with a luxury rigid gift box — ready to gift.</p>
+            </div>
           </div>
         </motion.div>
 
